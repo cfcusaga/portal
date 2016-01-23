@@ -1,16 +1,44 @@
-﻿@model IEnumerable<cfcusaga.data.Event>
+﻿@model PagedList.IPagedList<cfcusaga.domain.Events.Event>
 
 @{
     ViewBag.Title = "Index";
 }
-<h2>Index</h2>
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+<h2>Events</h2>
+
+@if (Request.IsAuthenticated && User.IsInRole("Admin"))
+{
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+}
+<div class="bs-docs-section">
+    <div class="row">
+        @using (Html.BeginForm("Index", "Items", FormMethod.Get))
+        {
+
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-addon">Find: </span>
+                    @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+                    <span class="input-group-btn">
+                        <input type="submit" class="btn btn-info btn-sm" value="Search" />
+                    </span>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Name)
+           @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.ActionLink("Start Date", "Index", new { sortOrder = ViewBag.DateSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.ActionLink("Org ID", "Index", new { sortOrder = ViewBag.OrgIdSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th></th>
     </tr>

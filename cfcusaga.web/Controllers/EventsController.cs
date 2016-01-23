@@ -1,21 +1,49 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using cfcusaga.data;
+using cfcusaga.domain.Events;
 
 namespace  Cfcusaga.Web.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class EventsController : Controller
     {
-        private PortalDbContext db = new PortalDbContext();
+        private readonly IEventServices _svc;
+        private PortalDbContext _db = new PortalDbContext();
+
+
+        public EventsController(IEventServices svc)
+        {
+            _svc = svc;
+        }
 
         // GET: Catagories
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            //return View(await db.Events.ToListAsync());
-            return View(await db.Events.ToListAsync());
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.OrgIdSortParm = sortOrder == "orgId" ? "orgId_desc" : "orgId";
+            ViewBag.DateSortParm = sortOrder == "startDate" ? "startDate_desc" : "startDate";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
+            //return View(_svc.ToPagedList());
+            int pageSize = 3;
+            int pageNumber = (page ?? 1);
+            //return View(await _db.Events.ToListAsync());
+            return View(await _svc.GetOpenEvents(sortOrder, searchString, pageSize, pageNumber));
         }
 
         // GET: Catagories/Details/5
@@ -25,12 +53,14 @@ namespace  Cfcusaga.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var catagorie = await db.Events.FindAsync(id);
-            if (catagorie == null)
+
+            //var anEvent = await _db.Events.FindAsync(id);
+            var anEvent = await _svc.GetEventDetails(id);
+            if (anEvent == null)
             {
                 return HttpNotFound();
             }
-            return View(catagorie);
+            return View(anEvent);
         }
 
         // GET: Catagories/Create
@@ -46,17 +76,32 @@ namespace  Cfcusaga.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> Create([Bind(Include = "ID,Name")] cfcusaga.data.Event catagorie)
+        public async Task<ActionResult> Create(cfcusaga.domain.Events.Event newEvent)
         {
             if (ModelState.IsValid)
             {
-                db.Events.Add(catagorie);
-                await db.SaveChangesAsync();
+                await _svc.SaveChangesAsync(newEvent);
                 return RedirectToAction("Index");
             }
 
-            return View(catagorie);
+            return View(newEvent);
         }
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //[Authorize(Roles = "Admin")]
+        //public async Task<ActionResult> Create([Bind(Include = "ID,Name")] cfcusaga.data.Event anEvent)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        _db.Events.Add(anEvent);
+        //        await _db.SaveChangesAsync();
+        //        return RedirectToAction("Index");
+        //    }
+
+        //    return View(anEvent);
+        //}
+
 
         // GET: Catagories/Edit/5
         public async Task<ActionResult> Edit(int? id)
@@ -65,12 +110,12 @@ namespace  Cfcusaga.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var catagorie = await db.Events.FindAsync(id);
-            if (catagorie == null)
+            var anEvent = await _db.Events.FindAsync(id);
+            if (anEvent == null)
             {
                 return HttpNotFound();
             }
-            return View(catagorie);
+            return View(anEvent);
         }
 
         // POST: Catagories/Edit/5
@@ -78,15 +123,15 @@ namespace  Cfcusaga.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ID,Name")] Catagory catagorie)
+        public async Task<ActionResult> Edit([Bind(Include = "ID,Name")] cfcusaga.data.Event anEvent)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(catagorie).State = EntityState.Modified;
-                await db.SaveChangesAsync();
+                _db.Entry(anEvent).State = EntityState.Modified;
+                await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            return View(catagorie);
+            return View(anEvent);
         }
 
         // GET: Catagories/Delete/5
@@ -96,12 +141,12 @@ namespace  Cfcusaga.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var catagorie = await db.Events.FindAsync(id);
-            if (catagorie == null)
+            var anEvent = await _db.Events.FindAsync(id);
+            if (anEvent == null)
             {
                 return HttpNotFound();
             }
-            return View(catagorie);
+            return View(anEvent);
         }
 
         // POST: Catagories/Delete/5
@@ -109,9 +154,9 @@ namespace  Cfcusaga.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            var catagorie = await db.Events.FindAsync(id);
-            db.Events.Remove(catagorie);
-            await db.SaveChangesAsync();
+            var catagorie = await _db.Events.FindAsync(id);
+            _db.Events.Remove(catagorie);
+            await _db.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
@@ -119,7 +164,7 @@ namespace  Cfcusaga.Web.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }
