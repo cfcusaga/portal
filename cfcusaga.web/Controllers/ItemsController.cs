@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using cfcusaga.data;
 using cfcusaga.domain.Events;
-using PagedList.Mvc;
-using PagedList;
-using Cfcusaga.Web.Models;
 using Item = Cfcusaga.Web.Models.Item;
 
 namespace Cfcusaga.Web.Controllers
@@ -58,33 +51,6 @@ namespace Cfcusaga.Web.Controllers
             //return View(await items.ToListAsync());
         }
 
-        //private IEnumerable<cfcusaga.data.Item> GetItems(string sortOrder, string searchString, int pageSize, int pageNumber)
-        //{
-        //    var items = from i in db.Items
-        //        select i;
-        //    if (!String.IsNullOrEmpty(searchString))
-        //    {
-        //        items = items.Where(s => s.Name.ToUpper().Contains(searchString.ToUpper())
-        //                                 || s.Catagory.Name.ToUpper().Contains(searchString.ToUpper()));
-        //    }
-        //    switch (sortOrder)
-        //    {
-        //        case "name_desc":
-        //            items = items.OrderByDescending(s => s.Name);
-        //            break;
-        //        case "Price":
-        //            items = items.OrderBy(s => s.Price);
-        //            break;
-        //        case "price_desc":
-        //            items = items.OrderByDescending(s => s.Price);
-        //            break;
-        //        default: // Name ascending 
-        //            items = items.OrderBy(s => s.Name);
-        //            break;
-        //    }
-        //    return items.ToPagedList(pageNumber, pageSize);
-        //}
-
         // GET: Items/Details/5
         public async Task<ActionResult> Details(int? id)
         {
@@ -92,7 +58,8 @@ namespace Cfcusaga.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var item = await _db.Items.FindAsync(id);
+            //var item = await _db.Items.FindAsync(id);
+            var item = await _svc.GetItemDetails(id);
             if (item == null)
             {
                 return HttpNotFound();
@@ -104,7 +71,9 @@ namespace Cfcusaga.Web.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
-            ViewBag.CatagorieId = new SelectList(_db.Catagories, "ID", "Name");
+
+            //ViewBag.CatagorieId = new SelectList(_db.Catagories, "ID", "Name");
+            ViewBag.CatagorieId = new SelectList(_svc.GetCatagories(), "ID", "Name");
             return View();
         }
 

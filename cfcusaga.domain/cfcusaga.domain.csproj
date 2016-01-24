@@ -75,12 +75,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\Enums.cs" />
     <Compile Include="Events\Event.cs" />
     <Compile Include="Events\EventServices.cs" />
     <Compile Include="Events\Item.cs" />
     <Compile Include="Helpers\PagedListExtended.cs" />
     <Compile Include="Mappers\AutomapperDomainConfiguration.cs" />
     <Compile Include="Mappers\DomainEventMapper.cs" />
+    <Compile Include="Mappers\ItemDomainToEntityMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

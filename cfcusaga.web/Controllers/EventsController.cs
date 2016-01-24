@@ -12,8 +12,7 @@ namespace  Cfcusaga.Web.Controllers
     public class EventsController : Controller
     {
         private readonly IEventServices _svc;
-        private PortalDbContext _db = new PortalDbContext();
-
+        //private PortalDbContext _db = new PortalDbContext();
 
         public EventsController(IEventServices svc)
         {
@@ -40,7 +39,7 @@ namespace  Cfcusaga.Web.Controllers
             ViewBag.CurrentFilter = searchString;
 
             //return View(_svc.ToPagedList());
-            int pageSize = 3;
+            int pageSize = 10;
             int pageNumber = (page ?? 1);
             //return View(await _db.Events.ToListAsync());
             return View(await _svc.GetOpenEvents(sortOrder, searchString, pageSize, pageNumber));
@@ -110,7 +109,8 @@ namespace  Cfcusaga.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var anEvent = await _db.Events.FindAsync(id);
+            //var anEvent = await _db.Events.FindAsync(id);
+            var anEvent = await _svc.GetEventDetails(id);
             if (anEvent == null)
             {
                 return HttpNotFound();
@@ -123,12 +123,13 @@ namespace  Cfcusaga.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ID,Name")] cfcusaga.data.Event anEvent)
+        public async Task<ActionResult> Edit(cfcusaga.domain.Events.Event anEvent)
         {
             if (ModelState.IsValid)
             {
-                _db.Entry(anEvent).State = EntityState.Modified;
-                await _db.SaveChangesAsync();
+                var updatedEvent = await _svc.Update(anEvent);
+                //_db.Entry(anEvent).State = EntityState.Modified;
+                //await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View(anEvent);
@@ -141,7 +142,8 @@ namespace  Cfcusaga.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var anEvent = await _db.Events.FindAsync(id);
+            //var anEvent = await _db.Events.FindAsync(id);
+            var anEvent = await _svc.GetEventDetails(id);
             if (anEvent == null)
             {
                 return HttpNotFound();
@@ -154,19 +156,21 @@ namespace  Cfcusaga.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            var catagorie = await _db.Events.FindAsync(id);
-            _db.Events.Remove(catagorie);
-            await _db.SaveChangesAsync();
+            //var catagorie = await _db.Events.FindAsync(id);
+            //_db.Events.Remove(catagorie);
+            //await _db.SaveChangesAsync();
+            await _svc.DeleteEvent(id);
+
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        _db.Dispose();
+        //    }
+        //    base.Dispose(disposing);
+        //}
     }
 }

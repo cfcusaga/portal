@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +18,8 @@ namespace cfcusaga.domain.Events
         Task<IPagedList<Event>> GetOpenEvents(string sortOrder, string searchString, int pageSize, int pageNumber);
         Task<int> SaveChangesAsync(Event newEvent);
         Task<Event> GetEventDetails(int? id);
+        Task<Event> Update(Event anEvent);
+        Task DeleteEvent(int id);
     }
 
     public class EventServices : IEventServices
@@ -97,10 +101,37 @@ namespace cfcusaga.domain.Events
             return anEvent;
         }
 
+        public async Task<Event> Update(Event anEvent)
+        {
+            var entity = await _db.Events.FindAsync(anEvent.Id);
+    //        Mapper.CreateMap<WarrantyViewModel, WarrantyModel>()
+    //.ForAllMembers(opt => opt.Condition(srs => !srs.IsSourceValueNull));
+
+            //TODO: Need to find a better to implement this using AutoMapper
+            //Mapper.Map(anEvent, entity);
+
+            entity.Name = anEvent.Name;
+            entity.Description = anEvent.Description;
+            entity.StartDate = anEvent.StartDate;
+            entity.EndDate = anEvent.EndDate;
+            entity.OrgId = anEvent.OrgId;
+            entity.ModifiedDate = DateTime.Now.ToUniversalTime();
+            _db.Entry(entity).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
+            return await GetEventDetails(anEvent.Id);
+        }
+
+        public async Task DeleteEvent(int id)
+        {
+            var entity = await _db.Events.FindAsync(id);
+            _db.Events.Remove(entity);
+            await _db.SaveChangesAsync();
+        }
+
         public async Task<int> AddItem(Item newItem)
         {
-            CreateItemMapper();
-            var item = _db.Set<cfcusaga.data.Item>().Create();
+            //CreateItemMapper();
+            var item = _db.Set<data.Item>().Create();
 
             //custExisting = Mapper.Map(Of CustomerDTO,  Customer)(custDTO, custExisting)
             Mapper.Map<Item, data.Item>(newItem, item);
@@ -109,8 +140,14 @@ namespace cfcusaga.domain.Events
             return item.ID;
         }
 
+        public async Task<Item> GetItemDetails(int? id)
+        {
+            var item = new Item();
+            var entity = await _db.Items.FindAsync(id);
+            Mapper.Map(entity, item);
+            return item;
+        }
 
-        
         public async Task<IPagedList<Item>> GetItems(string sortOrder, string searchString, int pageSize, int pageNumber)
         {
             //from t1 in db.Table1
@@ -157,42 +194,30 @@ namespace cfcusaga.domain.Events
             //return pagedList.ToPagedList();
         }
 
-        private static void CreateItemMapper()
-        {
-            Mapper.CreateMap<Item, data.Item>()
-                .ForMember(dest => dest.Name,
-                    opts => opts.MapFrom(src => src.Name))
-                .ForMember(dest => dest.Price,
-                    opts => opts.MapFrom(src => src.Price))
-                .ForMember(dest => dest.EventId,
-                    opts => opts.MapFrom(src => src.EventId))
-                .ForMember(dest => dest.CatagorieId,
-                    opts => opts.MapFrom(src => src.CatagorieId))
-                .ForMember(dest => dest.ItemPictureUrl,
-                    opts => opts.MapFrom(src => src.ItemPictureUrl))
-                .ForMember(dest => dest.Price,
-                    opts => opts.MapFrom(src => src.Price))
-                .ForMember(dest => dest.InternalImage,
-                    opts => opts.MapFrom(src => src.InternalImage))
-                .ReverseMap();
-        }
+        //private static void CreateItemMapper()
+        //{
+        //    Mapper.CreateMap<Item, data.Item>()
+        //        .ForMember(dest => dest.Name,
+        //            opts => opts.MapFrom(src => src.Name))
+        //        .ForMember(dest => dest.Price,
+        //            opts => opts.MapFrom(src => src.Price))
+        //        .ForMember(dest => dest.EventId,
+        //            opts => opts.MapFrom(src => src.EventId))
+        //        .ForMember(dest => dest.CatagorieId,
+        //            opts => opts.MapFrom(src => src.CatagorieId))
+        //        .ForMember(dest => dest.ItemPictureUrl,
+        //            opts => opts.MapFrom(src => src.ItemPictureUrl))
+        //        .ForMember(dest => dest.Price,
+        //            opts => opts.MapFrom(src => src.Price))
+        //        .ForMember(dest => dest.InternalImage,
+        //            opts => opts.MapFrom(src => src.InternalImage))
+        //        .ReverseMap();
+        //}
 
-        private static void CreateEventMapper()
+
+        public IEnumerable GetCatagories()
         {
-            Mapper.CreateMap<Event, data.Event>()
-                .ForMember(dest => dest.Id,
-                    opts => opts.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Name,
-                    opts => opts.MapFrom(src => src.Name))
-                .ForMember(dest => dest.Description,
-                    opts => opts.MapFrom(src => src.Description))
-                .ForMember(dest => dest.StartDate,
-                    opts => opts.MapFrom(src => src.StartDate))
-                .ForMember(dest => dest.EndDate,
-                    opts => opts.MapFrom(src => src.EndDate))
-                .ForMember(dest => dest.OrgId,
-                    opts => opts.MapFrom(src => src.OrgId))
-                .ReverseMap();
+            return _db.Catagories;
         }
     }
 

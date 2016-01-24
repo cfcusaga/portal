@@ -9,7 +9,7 @@ namespace cfcusaga.domain.Mappers
         {
             Mapper.CreateMap<Event, data.Event>()
                 .ForMember(dest => dest.Id,
-                    opts => opts.MapFrom(src => src.Id))
+                    opts => opts.Ignore())
                 .ForMember(dest => dest.Name,
                     opts => opts.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Description,

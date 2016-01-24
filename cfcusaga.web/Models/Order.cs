@@ -13,7 +13,6 @@ namespace Cfcusaga.Web.Models
     [Bind(Exclude = "OrderId")]
     public partial class Order
     {
-
         [ScaffoldColumn(false)]
         public int OrderId { get; set; }
 

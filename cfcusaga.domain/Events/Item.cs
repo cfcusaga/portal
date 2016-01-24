@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
+using cfcusaga.data;
 
 namespace cfcusaga.domain.Events
 {
@@ -19,6 +21,7 @@ namespace cfcusaga.domain.Events
 
         public byte[] InternalImage { get; set; }
 
+        [Display(Name = "Local file")]
         public HttpPostedFileBase File
         {
             get
@@ -47,5 +50,7 @@ namespace cfcusaga.domain.Events
         public string ItemPictureUrl { get; set; }
         public int EventId { get; set; }
         public string EventName { get; set; }
+
+        public virtual Catagory Catagorie { get; set; }
     }
 }
