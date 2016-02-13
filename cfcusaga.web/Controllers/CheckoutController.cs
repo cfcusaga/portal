@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using cfcusaga.data;
+using cfcusaga.domain;
 using  Cfcusaga.Web.Configuration;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -16,12 +17,18 @@ namespace  Cfcusaga.Web.Controllers
     [Authorize]
     public class CheckoutController : Controller
     {
+        private readonly IShoppingCartService _svc;
         PortalDbContext storeDB = new PortalDbContext();
         AppConfigurations appConfig = new AppConfigurations();
 
         public List<String> CreditCardTypes { get { return appConfig.CreditCardType;} }
 
-        //
+        public CheckoutController(IShoppingCartService svc)
+        {
+            _svc = svc;
+        }
+
+
         // GET: /Checkout/AddressAndPayment
         public ActionResult AddressAndPayment()
         {
@@ -84,7 +91,7 @@ namespace  Cfcusaga.Web.Controllers
                     storeDB.Orders.Add(order);
                     await storeDB.SaveChangesAsync();
                     //Process the order
-                    var cart = ShoppingCart.GetCart(this.HttpContext);
+                    var cart = ShoppingCart.GetCart(this.HttpContext,_svc);
                     order = cart.CreateOrder(order);
 
 

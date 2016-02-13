@@ -22,7 +22,7 @@ namespace cfcusaga.data
         }
     
         public int ID { get; set; }
-        public int CatagorieId { get; set; }
+        public int CatagoryID { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
         public string ItemPictureUrl { get; set; }

@@ -20,6 +20,7 @@ namespace cfcusaga.domain.Events
         Task<Event> GetEventDetails(int? id);
         Task<Event> Update(Event anEvent);
         Task DeleteEvent(int id);
+        Task<Item> GetEventItems(int id);
     }
 
     public class EventServices : IEventServices
@@ -128,6 +129,11 @@ namespace cfcusaga.domain.Events
             await _db.SaveChangesAsync();
         }
 
+        public Task<Item> GetEventItems(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<int> AddItem(Item newItem)
         {
             //CreateItemMapper();
@@ -161,7 +167,7 @@ namespace cfcusaga.domain.Events
                     Name = i.Name,
                     Price = i.Price,
                     Id = i.ID,
-                    CatagorieId = i.CatagorieId,
+                    CatagorieId = i.CatagoryID,
                     ItemPictureUrl = i.ItemPictureUrl,
                     InternalImage = i.InternalImage,
                     EventName = e.Name,

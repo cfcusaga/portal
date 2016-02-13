@@ -28,9 +28,9 @@ namespace cfcusaga.data
         public virtual DbSet<Cart> Carts { get; set; }
         public virtual DbSet<Catagory> Catagories { get; set; }
         public virtual DbSet<Event> Events { get; set; }
-        public virtual DbSet<Item> Items { get; set; }
         public virtual DbSet<Member> Members { get; set; }
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<Item> Items { get; set; }
     }
 }

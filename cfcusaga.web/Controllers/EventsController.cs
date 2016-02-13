@@ -172,5 +172,11 @@ namespace  Cfcusaga.Web.Controllers
         //    }
         //    base.Dispose(disposing);
         //}
+        public ActionResult EventItems(int id)
+        {
+            // return RedirectToAction("Index", "Items");
+            return RedirectToAction("Index", "Items");
+            //return View(await _svc.GetEventItems(id));
+        }
     }
 }

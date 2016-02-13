@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="PortalDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="PortalDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Carts">
           <Key>
             <PropertyRef Name="ID" />
@@ -40,7 +40,7 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CatagorieId" Type="int" Nullable="false" />
+          <Property Name="CatagoryID" Type="int" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="160" Nullable="false" />
           <Property Name="Price" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="ItemPictureUrl" Type="nvarchar" MaxLength="1024" />
@@ -120,7 +120,7 @@
               <PropertyRef Name="ID" />
             </Principal>
             <Dependent Role="Items">
-              <PropertyRef Name="CatagorieId" />
+              <PropertyRef Name="CatagoryID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -193,8 +193,7 @@
             <End Role="Items" EntitySet="Items" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="PortalDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -207,7 +206,7 @@
           <Property Name="ItemId" Type="Int32" Nullable="false" />
           <Property Name="Count" Type="Int32" Nullable="false" />
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Item" Relationship="Self.FK_dbo_Carts_dbo_Items_ItemId" FromRole="Carts" ToRole="Items" />
+          <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId" FromRole="Cart" ToRole="Item" />
         </EntityType>
         <EntityType Name="Catagory">
           <Key>
@@ -215,7 +214,7 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Items" Relationship="Self.FK_dbo_Items_dbo_Catagories_CatagorieId" FromRole="Catagories" ToRole="Items" />
+          <NavigationProperty Name="Items" Relationship="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId" FromRole="Catagory" ToRole="Item" />
         </EntityType>
         <EntityType Name="Event">
           <Key>
@@ -229,23 +228,7 @@
           <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="OrgId" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <NavigationProperty Name="Items" Relationship="Self.FK_Items_Events_EventId" FromRole="Events" ToRole="Items" />
-        </EntityType>
-        <EntityType Name="Item">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CatagorieId" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="160" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Price" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="ItemPictureUrl" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
-          <Property Name="InternalImage" Type="Binary" MaxLength="Max" FixedLength="false" />
-          <Property Name="EventId" Type="Int32" />
-          <NavigationProperty Name="Carts" Relationship="Self.FK_dbo_Carts_dbo_Items_ItemId" FromRole="Items" ToRole="Carts" />
-          <NavigationProperty Name="Catagory" Relationship="Self.FK_dbo_Items_dbo_Catagories_CatagorieId" FromRole="Items" ToRole="Catagories" />
-          <NavigationProperty Name="Event" Relationship="Self.FK_Items_Events_EventId" FromRole="Items" ToRole="Events" />
-          <NavigationProperty Name="OrderDetails" Relationship="Self.FK_dbo_OrderDetails_dbo_Items_ItemId" FromRole="Items" ToRole="OrderDetails" />
+          <NavigationProperty Name="Items" Relationship="PortalDbModel.FK_Items_Events_EventId" FromRole="Event" ToRole="Item" />
         </EntityType>
         <EntityType Name="Member">
           <Key>
@@ -275,8 +258,8 @@
           <Property Name="ItemId" Type="Int32" Nullable="false" />
           <Property Name="Quantity" Type="Int32" Nullable="false" />
           <Property Name="UnitPrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
-          <NavigationProperty Name="Item" Relationship="Self.FK_dbo_OrderDetails_dbo_Items_ItemId" FromRole="OrderDetails" ToRole="Items" />
           <NavigationProperty Name="Order" Relationship="Self.FK_dbo_OrderDetails_dbo_Orders_OrderId" FromRole="OrderDetails" ToRole="Orders" />
+          <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" FromRole="OrderDetail" ToRole="Item" />
         </EntityType>
         <EntityType Name="Order">
           <Key>
@@ -299,60 +282,6 @@
           <Property Name="SaveInfo" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="OrderDetails" Relationship="Self.FK_dbo_OrderDetails_dbo_Orders_OrderId" FromRole="Orders" ToRole="OrderDetails" />
         </EntityType>
-        <Association Name="FK_dbo_Carts_dbo_Items_ItemId">
-          <End Role="Items" Type="Self.Item" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Carts" Type="Self.Cart" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Items">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Carts">
-              <PropertyRef Name="ItemId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_dbo_Items_dbo_Catagories_CatagorieId">
-          <End Role="Catagories" Type="Self.Catagory" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Items" Type="Self.Item" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Catagories">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Items">
-              <PropertyRef Name="CatagorieId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Items_Events_EventId">
-          <End Role="Events" Type="Self.Event" Multiplicity="0..1" />
-          <End Role="Items" Type="Self.Item" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Events">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Items">
-              <PropertyRef Name="EventId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_dbo_OrderDetails_dbo_Items_ItemId">
-          <End Role="Items" Type="Self.Item" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="OrderDetails" Type="Self.OrderDetail" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Items">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="OrderDetails">
-              <PropertyRef Name="ItemId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_dbo_OrderDetails_dbo_Orders_OrderId">
           <End Role="Orders" Type="Self.Order" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -371,32 +300,102 @@
           <EntitySet Name="Carts" EntityType="Self.Cart" />
           <EntitySet Name="Catagories" EntityType="Self.Catagory" />
           <EntitySet Name="Events" EntityType="Self.Event" />
-          <EntitySet Name="Items" EntityType="Self.Item" />
           <EntitySet Name="Members" EntityType="Self.Member" />
           <EntitySet Name="OrderDetails" EntityType="Self.OrderDetail" />
           <EntitySet Name="Orders" EntityType="Self.Order" />
-          <AssociationSet Name="FK_dbo_Carts_dbo_Items_ItemId" Association="Self.FK_dbo_Carts_dbo_Items_ItemId">
-            <End Role="Items" EntitySet="Items" />
-            <End Role="Carts" EntitySet="Carts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_dbo_Items_dbo_Catagories_CatagorieId" Association="Self.FK_dbo_Items_dbo_Catagories_CatagorieId">
-            <End Role="Catagories" EntitySet="Catagories" />
-            <End Role="Items" EntitySet="Items" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Items_Events_EventId" Association="Self.FK_Items_Events_EventId">
-            <End Role="Events" EntitySet="Events" />
-            <End Role="Items" EntitySet="Items" />
-          </AssociationSet>
-          <AssociationSet Name="FK_dbo_OrderDetails_dbo_Items_ItemId" Association="Self.FK_dbo_OrderDetails_dbo_Items_ItemId">
-            <End Role="Items" EntitySet="Items" />
-            <End Role="OrderDetails" EntitySet="OrderDetails" />
-          </AssociationSet>
           <AssociationSet Name="FK_dbo_OrderDetails_dbo_Orders_OrderId" Association="Self.FK_dbo_OrderDetails_dbo_Orders_OrderId">
             <End Role="Orders" EntitySet="Orders" />
             <End Role="OrderDetails" EntitySet="OrderDetails" />
           </AssociationSet>
-        </EntityContainer>
-      </Schema>
+          <EntitySet Name="Items" EntityType="PortalDbModel.Item" />
+          <AssociationSet Name="FK_dbo_Carts_dbo_Items_ItemId" Association="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="Cart" EntitySet="Carts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Items_dbo_Catagories_CatagorieId" Association="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId">
+            <End Role="Catagory" EntitySet="Catagories" />
+            <End Role="Item" EntitySet="Items" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Items_Events_EventId" Association="PortalDbModel.FK_Items_Events_EventId">
+            <End Role="Event" EntitySet="Events" />
+            <End Role="Item" EntitySet="Items" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_OrderDetails_dbo_Items_ItemId" Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="OrderDetail" EntitySet="OrderDetails" />
+          </AssociationSet>
+          </EntityContainer>
+        <EntityType Name="Item">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CatagoryID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="160" FixedLength="false" Unicode="true" />
+          <Property Name="Price" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="ItemPictureUrl" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
+          <Property Name="InternalImage" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="EventId" Type="Int32" />
+          <NavigationProperty Name="Carts" Relationship="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId" FromRole="Item" ToRole="Cart" />
+          <NavigationProperty Name="Catagory" Relationship="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId" FromRole="Item" ToRole="Catagory" />
+          <NavigationProperty Name="Event" Relationship="PortalDbModel.FK_Items_Events_EventId" FromRole="Item" ToRole="Event" />
+          <NavigationProperty Name="OrderDetails" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" FromRole="Item" ToRole="OrderDetail" />
+        </EntityType>
+        <Association Name="FK_dbo_Carts_dbo_Items_ItemId">
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="PortalDbModel.Cart" Role="Cart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Cart">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Items_dbo_Catagories_CatagorieId">
+          <End Type="PortalDbModel.Catagory" Role="Catagory" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Catagory">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Item">
+              <PropertyRef Name="CatagoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Items_Events_EventId">
+          <End Type="PortalDbModel.Event" Role="Event" Multiplicity="0..1" />
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Event">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Item">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_OrderDetails_dbo_Items_ItemId">
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="PortalDbModel.OrderDetail" Role="OrderDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="OrderDetail">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -432,19 +431,6 @@
                 <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="OrgId" ColumnName="OrgId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Items">
-            <EntityTypeMapping TypeName="PortalDbModel.Item">
-              <MappingFragment StoreEntitySet="Items">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="CatagorieId" ColumnName="CatagorieId" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Price" ColumnName="Price" />
-                <ScalarProperty Name="ItemPictureUrl" ColumnName="ItemPictureUrl" />
-                <ScalarProperty Name="InternalImage" ColumnName="InternalImage" />
-                <ScalarProperty Name="EventId" ColumnName="EventId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -497,6 +483,19 @@
                 <ScalarProperty Name="Total" ColumnName="Total" />
                 <ScalarProperty Name="Experation" ColumnName="Experation" />
                 <ScalarProperty Name="SaveInfo" ColumnName="SaveInfo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Items">
+            <EntityTypeMapping TypeName="PortalDbModel.Item">
+              <MappingFragment StoreEntitySet="Items">
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="InternalImage" ColumnName="InternalImage" />
+                <ScalarProperty Name="ItemPictureUrl" ColumnName="ItemPictureUrl" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CatagoryID" ColumnName="CatagoryID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

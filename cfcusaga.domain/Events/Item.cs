@@ -17,6 +17,7 @@ namespace cfcusaga.domain.Events
 
         public string Name { get; set; }
 
+        [Display(Name = "Price")]
         public decimal Price { get; set; }
 
         public byte[] InternalImage { get; set; }

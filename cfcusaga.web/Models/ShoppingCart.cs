@@ -4,58 +4,91 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using cfcusaga.data;
+using cfcusaga.domain;
 
 namespace Cfcusaga.Web.Models
 {
-    public partial class ShoppingCart
+    public class ShoppingCart
     {
         //ApplicationDbContext storeDB = new ApplicationDbContext();
         PortalDbContext portalDB = new PortalDbContext();
+        private IShoppingCartService _svc;
         string ShoppingCartId { get; set; }
         public const string CartSessionKey = "CartId";
 
-        public static ShoppingCart GetCart(HttpContextBase context)
+        public static ShoppingCart GetCart(HttpContextBase context, IShoppingCartService svc)
         {
-            var cart = new ShoppingCart();
+            var cart = new ShoppingCart(svc);
             cart.ShoppingCartId = cart.GetCartId(context);
             return cart;
         }
 
         // Helper method to simplify shopping cart calls
-        public static ShoppingCart GetCart(Controller controller)
+        //public static ShoppingCart GetCart(Controller controller)
+        //{
+        //    return GetCart(controller.HttpContext);
+        //}
+
+       
+        public ShoppingCart(IShoppingCartService svc)
         {
-            return GetCart(controller.HttpContext);
+            _svc = svc;
         }
 
-        public int AddToCart(cfcusaga.data.Item item)
+        //public ShoppingCart()
+        //{
+        //}
+
+        public int AddToCart(cfcusaga.domain.Events.Item item)
         {
             // Get the matching cart and item instances
-            var cartItem = portalDB.Carts.SingleOrDefault(
-                c => c.CartId == ShoppingCartId
-                && c.ItemId == item.ID);
+            //var cartItem = portalDB.Carts.SingleOrDefault(
+            //    c => c.CartId == ShoppingCartId
+            //    && c.ItemId == item.Id);
 
-            if (cartItem == null)
+            try
             {
-                // Create a new cart item if no cart item exists
-                cartItem = new cfcusaga.data.Cart
+                var cartItem = _svc.GetCartItem(ShoppingCartId, item.Id);
+
+                if (cartItem == null)
                 {
-                    ItemId = item.ID,
-                    CartId = ShoppingCartId,
-                    Count = 1,
-                    DateCreated = DateTime.Now
-                };
-                portalDB.Carts.Add(cartItem);
-            }
-            else
-            {
-                // If the item does exist in the cart, 
-                // then add one to the quantity
-                cartItem.Count++;
-            }
-            // Save changes
-            portalDB.SaveChanges();
+                    // Create a new cart item if no cart item exists
+                    //cartItem = new cfcusaga.data.Cart
+                    //{
+                    //    ItemId = item.Id,
+                    //    CartId = ShoppingCartId,
+                    //    Count = 1,
+                    //    DateCreated = DateTime.Now
+                    //};
+                    //portalDB.Carts.Add(cartItem);
 
-            return cartItem.Count;
+                    cartItem = new cfcusaga.domain.Events.Cart
+                    {
+                        ItemId = item.Id,
+                        CartId = ShoppingCartId,
+                        Count = 1,
+                        DateCreated = DateTime.Now
+                    };
+                    _svc.AddItemToCart(cartItem);
+
+                }
+                else
+                {
+                    // If the item does exist in the cart, 
+                    // then add one to the quantity
+                    cartItem.Count++;
+                }
+                // Save changes
+                //portalDB.SaveChanges();
+
+                _svc.SaveChanges();
+                return cartItem.Count;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
         public int RemoveFromCart(int id)
@@ -183,6 +216,7 @@ namespace Cfcusaga.Web.Models
                 }
             }
             return context.Session[CartSessionKey].ToString();
+
         }
 
         // When a user has logged in, migrate their shopping cart to

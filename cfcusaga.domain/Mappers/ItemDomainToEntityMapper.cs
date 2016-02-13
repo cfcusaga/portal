@@ -14,7 +14,7 @@ namespace cfcusaga.domain.Mappers
                     opts => opts.MapFrom(src => src.Price))
                 .ForMember(dest => dest.EventId,
                     opts => opts.MapFrom(src => src.EventId))
-                .ForMember(dest => dest.CatagorieId,
+                .ForMember(dest => dest.CatagoryID,
                     opts => opts.MapFrom(src => src.CatagorieId))
                 .ForMember(dest => dest.ItemPictureUrl,
                     opts => opts.MapFrom(src => src.ItemPictureUrl))

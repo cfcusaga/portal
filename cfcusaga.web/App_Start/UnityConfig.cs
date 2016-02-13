@@ -7,6 +7,7 @@ using AutoMapper;
 using AutoMapper.Internal;
 using AutoMapper.Mappers;
 using cfcusaga.data;
+using cfcusaga.domain;
 using cfcusaga.domain.Events;
 using cfcusaga.domain.Mappers;
 using Cfcusaga.Web.Models;
@@ -34,6 +35,7 @@ namespace Cfcusaga.Web
             container.RegisterType<DbContext, ApplicationDbContext>(new HierarchicalLifetimeManager());
 
             container.RegisterType<IEventServices, EventServices>();
+            container.RegisterType<IShoppingCartService, ShoppingCartService>();
 
             //configure/bootstrap the domain layer Automappers. this can be use if not using DI container
             //AutomapperDomainConfiguration.Configure();

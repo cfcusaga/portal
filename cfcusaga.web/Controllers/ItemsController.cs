@@ -90,7 +90,7 @@ namespace Cfcusaga.Web.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.CatagorieId = new SelectList(_db.Catagories, "ID", "Name", item.CatagorieId);
+            ViewBag.CatagorieId = new SelectList(_db.Catagories, "ID", "Name", item.CatagoryID);
             return View(item);
         }
 
@@ -107,7 +107,7 @@ namespace Cfcusaga.Web.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.CatagorieId = new SelectList(_db.Catagories, "ID", "Name", item.CatagorieId);
+            ViewBag.CatagorieId = new SelectList(_db.Catagories, "ID", "Name", item.CatagoryID);
             return View(item);
         }
 

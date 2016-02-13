@@ -2,22 +2,30 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using cfcusaga.data;
+using cfcusaga.domain;
 using Cfcusaga.Web.Models;
 
 namespace Cfcusaga.Web.Controllers
 {
     public class ShoppingCartController : Controller
     {
-
         PortalDbContext storeDB = new PortalDbContext();
+        private IShoppingCartService _svc;
+
+        public ShoppingCartController(IShoppingCartService svc)
+        {
+             _svc = svc;
+        }
+
         //
         // GET: /ShoppingCart/
         public ActionResult Index()
         {
-            var cart = ShoppingCart.GetCart(this.HttpContext);
+            var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
 
             // Set up our ViewModel
             var viewModel = new ShoppingCartViewModel
@@ -31,22 +39,19 @@ namespace Cfcusaga.Web.Controllers
         //
         // GET: /Store/AddToCart/5
         [HttpPost]
-        public ActionResult AddToCart(int id)
+        public async Task<ActionResult> AddToCart(int id)
         {
             // Retrieve the item from the database
-            var addedItem = storeDB.Items
-                .Single(item => item.ID == id);
 
-            // Add it to the shopping cart
-            var cart = ShoppingCart.GetCart(this.HttpContext);
+            var foundItem = await _svc.GetItem(id);
 
-            int count = cart.AddToCart(addedItem);
+            var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
+            int count = cart.AddToCart(foundItem);
 
-            // Display the confirmation message
-            var results = new ShoppingCartRemoveViewModel
+            var results = new ShoppingCartRemoveViewModel()
             {
-                Message = Server.HtmlEncode(addedItem.Name) +
-                    " has been added to your shopping cart.",
+                Message = Server.HtmlEncode(foundItem.Name) +
+                          " has been added to your shopping cart.",
                 CartTotal = cart.GetTotal(),
                 CartCount = cart.GetCount(),
                 ItemCount = count,
@@ -54,8 +59,27 @@ namespace Cfcusaga.Web.Controllers
             };
             return Json(results);
 
+            //        var addedItem = storeDB.Items
+            //.Single(item => item.ID == id);
+            //        // Add it to the shopping cart
+            //        var cart = ShoppingCart.GetCart(this.HttpContext);
+
+            //        int count = cart.AddToCart(addedItem);
+
+            //        // Display the confirmation message
+            //        var results = new ShoppingCartRemoveViewModel
+            //        {
+            //            Message = Server.HtmlEncode(addedItem.Name) +
+            //                " has been added to your shopping cart.",
+            //            CartTotal = cart.GetTotal(),
+            //            CartCount = cart.GetCount(),
+            //            ItemCount = count,
+            //            DeleteId = id
+            //        };
+            //        return Json(results);
+
             // Go back to the main store page for more shopping
-           // return RedirectToAction("Index");
+            // return RedirectToAction("Index");
         }
         //
         // AJAX: /ShoppingCart/RemoveFromCart/5
@@ -63,7 +87,7 @@ namespace Cfcusaga.Web.Controllers
         public ActionResult RemoveFromCart(int id)
         {
             // Remove the item from the cart
-            var cart = ShoppingCart.GetCart(this.HttpContext);
+            var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
 
             // Get the name of the item to display confirmation
 
@@ -91,7 +115,7 @@ namespace Cfcusaga.Web.Controllers
         [ChildActionOnly]
         public ActionResult CartSummary()
         {
-            var cart = ShoppingCart.GetCart(this.HttpContext);
+            var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
 
             ViewData["CartCount"] = cart.GetCount();
             return PartialView("CartSummary");
