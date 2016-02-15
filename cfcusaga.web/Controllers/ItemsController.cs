@@ -45,7 +45,7 @@ namespace Cfcusaga.Web.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            var pageSize = 3;
+            var pageSize = 10;
             var pageNumber = (page ?? 1);
 
             var items = await _svc.GetEventItems(_eventId, sortOrder, searchString,  pageSize, pageNumber);
