@@ -11,6 +11,7 @@ using cfcusaga.domain;
 using cfcusaga.domain.Events;
 using cfcusaga.domain.Mappers;
 using cfcusaga.domain.Orders;
+using Cfcusaga.Web.Controllers;
 using Cfcusaga.Web.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -34,6 +35,7 @@ namespace Cfcusaga.Web
             container.RegisterType<UserManager<ApplicationUser>>(new HierarchicalLifetimeManager());
             container.RegisterType<IUserStore<ApplicationUser>, UserStore<ApplicationUser>>(new HierarchicalLifetimeManager());
             container.RegisterType<DbContext, ApplicationDbContext>(new HierarchicalLifetimeManager());
+            container.RegisterType<AccountController>(new InjectionConstructor());
 
             container.RegisterType<IEventServices, EventServices>();
             container.RegisterType<IShoppingCartService, ShoppingCartService>();
