@@ -1,4 +1,4 @@
-﻿@model Cfcusaga.Web.Models.Order
+﻿@model cfcusaga.domain.Orders.Order
 
 @{
     ViewBag.Title = "Address And Payment";
@@ -13,10 +13,10 @@
         // a selector or jQuery object for the container
         // where you want the card to appear
         container: '.card-wrapper', // *required*
-        numberInput: 'input#number', // optional — default input[name="number"]
-        expiryInput: 'input#expiry', // optional — default input[name="expiry"]
-        cvcInput: 'input#cvc', // optional — default input[name="cvc"]
-        nameInput: 'input#name', // options - defaults input[name="name"]
+        numberInput: 'input#number', // optional — default input[userName="number"]
+        expiryInput: 'input#expiry', // optional — default input[userName="expiry"]
+        cvcInput: 'input#cvc', // optional — default input[userName="cvc"]
+        nameInput: 'input#userName', // options - defaults input[userName="userName"]
 
         width: 200, // optional — default 350px
         formatting: true // optional - default true
@@ -30,7 +30,7 @@
         <div class="form-container active">
             <form action="">
                 <input placeholder="Card number" type="text" name="number">
-                <input placeholder="Full name" type="text" name="name">
+                <input placeholder="Full userName" type="text" name="userName">
                 <input placeholder="MM/YY" type="text" name="expiry">
                 <input placeholder="CVC" type="text" name="cvc">
             </form>
@@ -118,32 +118,7 @@
             </div>
 
             <br>
-            <div class="form-group">
-                @Html.LabelFor(model => model.CreditCard, htmlAttributes: new { @class = "col-lg-2 control-label" })
-                <div class="col-lg-10">
-                    @Html.EditorFor(model => model.CreditCard, new { htmlAttributes = new { @class = "form-control", @placeholder = "Credit Card Number" } })
-                    @Html.ValidationMessageFor(model => model.CreditCard, "", new { @class = "text-danger" })
-                    <span class="help-block">For security the credit card is not stored in our system.</span>
-                </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.Experation, htmlAttributes: new { @class = "col-lg-2 control-label" })
-                <div class="col-lg-10">
-                    @Html.EditorFor(model => model.Experation)
-                    @Html.ValidationMessageFor(model => model.Experation, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="select" class="col-lg-2 control-label">Credit Card Type</label>
-                <div class="col-lg-10">
-                    <select class="form-control" id="select">
-                        @foreach (var ccType in ViewBag.CreditCardTypes)
-                        {
-                            <option>@ccType</option>
-                        }
-                    </select>
-                </div>
-            </div>
+
 
             
             <br>

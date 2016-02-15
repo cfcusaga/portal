@@ -77,7 +77,7 @@ $.extend($.fn, {
 					if ( validator.settings.submitHandler ) {
 						if ( validator.submitButton ) {
 							// insert a hidden input as a replacement for the missing submit button
-							hidden = $("<input type='hidden'/>").attr("name", validator.submitButton.name).val( $(validator.submitButton).val() ).appendTo(validator.currentForm);
+							hidden = $("<input type='hidden'/>").attr("userName", validator.submitButton.name).val( $(validator.submitButton).val() ).appendTo(validator.currentForm);
 						}
 						validator.settings.submitHandler.call( validator, validator.currentForm, event );
 						if ( validator.submitButton ) {
@@ -493,10 +493,10 @@ $.extend($.validator, {
 			.not( this.settings.ignore )
 			.filter(function() {
 				if ( !this.name && validator.settings.debug && window.console ) {
-					console.error( "%o has no name assigned", this);
+					console.error( "%o has no userName assigned", this);
 				}
 
-				// select only the first element for each name, and only those with rules specified
+				// select only the first element for each userName, and only those with rules specified
 				if ( this.name in rulesCache || !validator.objectLength($(this).rules()) ) {
 					return false;
 				}
@@ -539,7 +539,7 @@ $.extend($.validator, {
 				val = $(element).val();
 
 			if ( type === "radio" || type === "checkbox" ) {
-				return $("input[name='" + $(element).attr("name") + "']:checked").val();
+				return $("input[userName='" + $(element).attr("userName") + "']:checked").val();
 			}
 
 			if ( typeof val === "string" ) {
@@ -601,7 +601,7 @@ $.extend($.validator, {
 			return $(element).data("msg-" + method.toLowerCase()) || (element.attributes && $(element).attr("data-msg-" + method.toLowerCase()));
 		},
 
-		// return the custom message for the given element name and validation method
+		// return the custom message for the given element userName and validation method
 		customMessage: function( name, method ) {
 			var m = this.settings.messages[name];
 			return m && (m.constructor === String ? m : m[method]);
@@ -750,7 +750,7 @@ $.extend($.validator, {
 		},
 
 		findByName: function( name ) {
-			return $(this.currentForm).find("[name='" + name + "']");
+			return $(this.currentForm).find("[userName='" + name + "']");
 		},
 
 		getLength: function( value, element ) {

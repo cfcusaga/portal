@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using cfcusaga.data;
@@ -123,21 +124,23 @@ namespace Cfcusaga.Web.Models
 
         public void EmptyCart()
         {
-            var cartItems = portalDB.Carts.Where(
-                cart => cart.CartId == ShoppingCartId);
+            _svc.EmptyCart(ShoppingCartId);
+            //var cartItems = portalDB.Carts.Where(
+            //    cart => cart.CartId == ShoppingCartId);
 
-            foreach (var cartItem in cartItems)
-            {
-                portalDB.Carts.Remove(cartItem);
-            }
-            // Save changes
-            portalDB.SaveChanges();
+            //foreach (var cartItem in cartItems)
+            //{
+            //    portalDB.Carts.Remove(cartItem);
+            //}
+            //// Save changes
+            //portalDB.SaveChanges();
         }
 
-        public List<cfcusaga.data.Cart> GetCartItems()
+        public async Task<List<cfcusaga.domain.Events.Cart>> GetCartItems()
         {
-            return portalDB.Carts.Where(
-                cart => cart.CartId == ShoppingCartId).ToList();
+            return await _svc.GetCartItems(ShoppingCartId);
+            //return portalDB.Carts.Where(
+            //    cart => cart.CartId == ShoppingCartId).ToList();
         }
 
         public int GetCount()
@@ -163,34 +166,36 @@ namespace Cfcusaga.Web.Models
             return total ?? decimal.Zero;
         }
 
-        public cfcusaga.data.Order CreateOrder(cfcusaga.data.Order order)
+        public async Task<cfcusaga.domain.Orders.Order> CreateOrder(cfcusaga.domain.Orders.Order order)
         {
             decimal orderTotal = 0;
-            order.OrderDetails = new List<cfcusaga.data.OrderDetail>();
+            //order.OrderDetails = new List<cfcusaga.data.OrderDetail>();
+            order.OrderDetails = new List<cfcusaga.domain.Orders.OrderDetail>();
 
-            var cartItems = GetCartItems();
+            var cartItems = await  GetCartItems();
             // Iterate over the items in the cart, 
             // adding the order details for each
             foreach (var item in cartItems)
             {
-                var orderDetail = new cfcusaga.data.OrderDetail
+                var orderDetail = new cfcusaga.domain.Orders.OrderDetail
                 {
                     ItemId = item.ItemId,
                     OrderId = order.OrderId,
-                    UnitPrice = item.Item.Price,
+                    UnitPrice = item.ItemPrice,
                     Quantity = item.Count
                 };
                 // Set the order total of the shopping cart
-                orderTotal += (item.Count * item.Item.Price);
+                orderTotal += (item.Count * item.ItemPrice);
                 order.OrderDetails.Add(orderDetail);
-                portalDB.OrderDetails.Add(orderDetail);
-
+                //portalDB.OrderDetails.Add(orderDetail);
+                _svc.AddOrderDetails(orderDetail);
             }
             // Set the order's total to the orderTotal count
             order.Total = orderTotal;
 
             // Save the order
-            portalDB.SaveChanges();
+            //portalDB.SaveChanges();
+            _svc.SaveChanges();
             // Empty the shopping cart
             EmptyCart();
             // Return the OrderId as the confirmation number

@@ -8,13 +8,14 @@ using System.Web.Mvc;
 using cfcusaga.data;
 using cfcusaga.domain;
 using Cfcusaga.Web.Models;
+using Cfcusaga.Web.ViewModels;
 
 namespace Cfcusaga.Web.Controllers
 {
     public class ShoppingCartController : Controller
     {
-        PortalDbContext storeDB = new PortalDbContext();
-        private IShoppingCartService _svc;
+        //PortalDbContext storeDB = new PortalDbContext();
+        private readonly IShoppingCartService _svc;
 
         public ShoppingCartController(IShoppingCartService svc)
         {
@@ -23,14 +24,14 @@ namespace Cfcusaga.Web.Controllers
 
         //
         // GET: /ShoppingCart/
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
 
             // Set up our ViewModel
             var viewModel = new ShoppingCartViewModel
             {
-                CartItems = cart.GetCartItems(),
+                CartItems = await cart.GetCartItems(),
                 CartTotal = cart.GetTotal()
             };
             // Return the view
@@ -84,7 +85,7 @@ namespace Cfcusaga.Web.Controllers
         //
         // AJAX: /ShoppingCart/RemoveFromCart/5
         [HttpPost]
-        public ActionResult RemoveFromCart(int id)
+        public async Task<ActionResult> RemoveFromCart(int id)
         {
             // Remove the item from the cart
             var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
@@ -92,9 +93,10 @@ namespace Cfcusaga.Web.Controllers
             // Get the name of the item to display confirmation
 
             // Get the name of the album to display confirmation
-            string itemName = storeDB.Items
-                .Single(item => item.ID == id).Name;
-
+            //string itemName = storeDB.Items
+            //    .Single(item => item.ID == id).Name;
+            var anItem = await _svc.GetItem(id);
+            string itemName = anItem.Name;
             // Remove from cart
             int itemCount = cart.RemoveFromCart(id);
 

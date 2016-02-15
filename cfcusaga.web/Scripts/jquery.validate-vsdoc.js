@@ -46,7 +46,7 @@ $.extend($.fn, {
 		/// elements. Each one can be disabled, see the onxxx options (onsubmit, onfocusout,
 		/// onkeyup, onclick). focusInvalid focuses elements when submitting a invalid form.
 		/// </summary>
-		/// <param name="options" type="Object">
+		/// <param userName="options" type="Object">
 		/// A set of key/value pairs that configure the validate. All options are optional.
 		/// </param>
 
@@ -89,7 +89,7 @@ $.extend($.fn, {
 					if ( validator.settings.submitHandler ) {
 						if (validator.submitButton) {
 							// insert a hidden input as a replacement for the missing submit button
-							var hidden = $("<input type='hidden'/>").attr("name", validator.submitButton.name).val(validator.submitButton.value).appendTo(validator.currentForm);
+							var hidden = $("<input type='hidden'/>").attr("userName", validator.submitButton.name).val(validator.submitButton.value).appendTo(validator.currentForm);
 						}
 						validator.settings.submitHandler.call( validator, validator.currentForm );
 						if (validator.submitButton) {
@@ -145,7 +145,7 @@ $.extend($.fn, {
 		/// <summary>
 		/// Remove the specified attributes from the first matched element and return them.
 		/// </summary>
-		/// <param name="attributes" type="String">
+		/// <param userName="attributes" type="String">
 		/// A space-seperated list of attribute names to remove.
 		/// </param>
 
@@ -162,10 +162,10 @@ $.extend($.fn, {
 		/// <summary>
 		/// Return the validations rules for the first selected element.
 		/// </summary>
-		/// <param name="command" type="String">
+		/// <param userName="command" type="String">
 		/// Can be either "add" or "remove".
 		/// </param>
-		/// <param name="argument" type="">
+		/// <param userName="argument" type="">
 		/// A list of rules to add or remove.
 		/// </param>
 
@@ -239,10 +239,10 @@ $.validator.format = function(source, params) {
 	/// One or more arguments can be passed, in addition to the string template itself, to insert
 	/// into the string.
 	/// </summary>
-	/// <param name="source" type="String">
+	/// <param userName="source" type="String">
 	/// The string to format.
 	/// </param>
-	/// <param name="params" type="String">
+	/// <param userName="params" type="String">
 	/// The first argument to insert, or an array of Strings to insert
 	/// </param>
 	/// <returns type="String" />
@@ -321,7 +321,7 @@ $.extend($.validator, {
 		/// Modify default settings for validation.
 		/// Accepts everything that Plugins/Validation/validate accepts.
 		/// </summary>
-		/// <param name="settings" type="Options">
+		/// <param userName="settings" type="Options">
 		/// Options to set as default.
 		/// </param>
 
@@ -418,7 +418,7 @@ $.extend($.validator, {
 			/// Validates a single element, returns true if it is valid, false otherwise.
 			/// This behaves as validation on blur or keyup, but returns the result.
 			/// </summary>
-			/// <param name="element" type="Selector">
+			/// <param userName="element" type="Selector">
 			/// An element to validate, must be inside the validated form.
 			/// </param>
 			/// <returns type="Boolean" />
@@ -447,7 +447,7 @@ $.extend($.validator, {
 			/// Show the specified messages.
 			/// Keys have to refer to the names of elements, values are displayed for those elements, using the configured error placement.
 			/// </summary>
-			/// <param name="errors" type="Object">
+			/// <param userName="errors" type="Object">
 			/// One or more key/value pairs of input names and messages.
 			/// </param>
 
@@ -551,9 +551,9 @@ $.extend($.validator, {
 			.not(":submit, :reset, :image, [disabled]")
 			.not( this.settings.ignore )
 			.filter(function() {
-				!this.name && validator.settings.debug && window.console && console.error( "%o has no name assigned", this);
+				!this.name && validator.settings.debug && window.console && console.error( "%o has no userName assigned", this);
 			
-				// select only the first element for each name, and only those with rules specified
+				// select only the first element for each userName, and only those with rules specified
 				if ( this.name in rulesCache || !validator.objectLength($(this).rules()) )
 					return false;
 				
@@ -647,7 +647,7 @@ $.extend($.validator, {
 			return meta && meta.messages && meta.messages[method];
 		},
 		
-		// return the custom message for the given element name and validation method
+		// return the custom message for the given element userName and validation method
 		customMessage: function( name, method ) {
 			var m = this.settings.messages[name];
 			return m && (m.constructor == String
@@ -781,7 +781,7 @@ $.extend($.validator, {
 		},
 		
 		findByName: function( name ) {
-			// select by name and filter by form for performance over form.find("[name=...]")
+			// select by userName and filter by form for performance over form.find("[userName=...]")
 			var form = this.currentForm;
 			return $(document.getElementsByName(name)).map(function(index, element) {
 				return element.form == form && element.name == name && element  || null;
@@ -871,10 +871,10 @@ $.extend($.validator, {
 		/// Add a compound class method - useful to refactor common combinations of rules into a single
 		/// class.
 		/// </summary>
-		/// <param name="name" type="String">
-		/// The name of the class rule to add
+		/// <param userName="userName" type="String">
+		/// The userName of the class rule to add
 		/// </param>
-		/// <param name="rules" type="Options">
+		/// <param userName="rules" type="Options">
 		/// The compound rules
 		/// </param>
 
@@ -1011,17 +1011,17 @@ $.extend($.validator, {
 	// http://docs.jquery.com/Plugins/Validation/Validator/addMethod
 	addMethod: function(name, method, message) {
 		/// <summary>
-		/// Add a custom validation method. It must consist of a name (must be a legal javascript 
+		/// Add a custom validation method. It must consist of a userName (must be a legal javascript 
 		/// identifier), a javascript based function and a default string message.
 		/// </summary>
-		/// <param name="name" type="String">
-		/// The name of the method, used to identify and referencing it, must be a valid javascript
+		/// <param userName="userName" type="String">
+		/// The userName of the method, used to identify and referencing it, must be a valid javascript
 		/// identifier
 		/// </param>
-		/// <param name="method" type="Function">
+		/// <param userName="method" type="Function">
 		/// The actual method implementation, returning true if an element is valid
 		/// </param>
-		/// <param name="message" type="String" optional="true">
+		/// <param userName="message" type="String" optional="true">
 		/// (Optional) The default message to display for this method. Can be a function created by 
 		/// jQuery.validator.format(value). When undefined, an already existing message is used 
 		/// (handy for localization), otherwise the field-specific messages have to be defined.

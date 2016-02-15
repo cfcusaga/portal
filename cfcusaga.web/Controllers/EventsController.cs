@@ -6,7 +6,7 @@ using cfcusaga.domain.Events;
 
 namespace  Cfcusaga.Web.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class EventsController : Controller
     {
         private const string EventIdSessionKey = "EventId";

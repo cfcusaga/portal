@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
-using cfcusaga.data;
+using System.Threading.Tasks;
+using Cart = cfcusaga.domain.Events.Cart;
 
-namespace Cfcusaga.Web.ViewModel
+namespace Cfcusaga.Web.ViewModels
 {
     public class ShoppingCartViewModel
     {

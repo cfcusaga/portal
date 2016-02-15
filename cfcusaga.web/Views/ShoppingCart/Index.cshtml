@@ -1,4 +1,4 @@
-﻿@model Cfcusaga.Web.ViewModel.ShoppingCartViewModel
+﻿@model Cfcusaga.Web.ViewModels.ShoppingCartViewModel
 @{
     ViewBag.Title = "Shopping Cart";
 }
@@ -64,10 +64,10 @@
                     {
                         <tr id="row-@item.ItemId" >
                             <td>
-                                @Html.ActionLink(item.Item.Name, "Details", "Store", new { id = item.ID }, null)
+                                @Html.ActionLink(item.ItemName, "Details", "Store", new { id = item.ID }, null)
                             </td>
                             <td>
-                                @item.Item.Price
+                                @item.ItemPrice
                             </td>
                             <td id="item-count-@item.ItemId">
                                 @item.Count

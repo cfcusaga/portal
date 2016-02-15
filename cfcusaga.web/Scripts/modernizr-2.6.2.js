@@ -375,7 +375,7 @@ window.Modernizr = (function( window, document, undefined ) {
             var item = obj[props[i]];
             if ( item !== undefined) {
 
-                // return the property name as a string
+                // return the property userName as a string
                 if (elem === false) return props[i];
 
                 // let's bind a function
@@ -528,7 +528,7 @@ window.Modernizr = (function( window, document, undefined ) {
 
     // Per 1.6:
     // This used to be Modernizr.historymanagement but the longer
-    // name has been deprecated in favor of a shorter and property-matching one.
+    // userName has been deprecated in favor of a shorter and property-matching one.
     // The old API is still available in 1.6, but as of 2.0 will throw a warning,
     // and in the first release thereafter disappear entirely.
     tests['history'] = function() {
@@ -1125,7 +1125,7 @@ window.Modernizr = (function( window, document, undefined ) {
       /**
        * returns a shived element for the given nodeName and document
        * @memberOf html5
-       * @param {String} nodeName name of the element
+       * @param {String} nodeName userName of the element
        * @param {Document} ownerDocument The context document.
        * @returns {Object} The shived element.
        */
@@ -1150,7 +1150,7 @@ window.Modernizr = (function( window, document, undefined ) {
         }
 
         // Avoid adding some elements to fragments in IE < 9 because
-        // * Attributes like `name` or `type` cannot be set/changed once an element
+        // * Attributes like `userName` or `type` cannot be set/changed once an element
         //   is inserted into a document/fragment
         // * Link elements with `src` attributes that are inaccessible, as with
         //   a 403 response, will cause the tab/window to crash
@@ -1373,7 +1373,7 @@ window.Modernizr = (function( window, document, undefined ) {
 
 
     /*>>prefixed*/
-    // Modernizr.prefixed() returns the prefixed or nonprefixed property name variant of your input
+    // Modernizr.prefixed() returns the prefixed or nonprefixed property userName variant of your input
     // Modernizr.prefixed('boxSizing') // 'MozBoxSizing'
 
     // Properties must be passed as dom-style camelcase, rather than `box-sizing` hypentated style.

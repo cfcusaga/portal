@@ -33,7 +33,6 @@ namespace cfcusaga.data
         public string Phone { get; set; }
         public string Email { get; set; }
         public decimal Total { get; set; }
-        public System.DateTime Experation { get; set; }
         public bool SaveInfo { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

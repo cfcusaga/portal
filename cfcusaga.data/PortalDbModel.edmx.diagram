@@ -10,13 +10,13 @@
         <EntityTypeShape EntityType="PortalDbModel.Event" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="PortalDbModel.Member" Width="1.5" PointX="5.75" PointY="7.125" IsExpanded="true" />
         <EntityTypeShape EntityType="PortalDbModel.OrderDetail" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="PortalDbModel.Order" Width="1.5" PointX="3" PointY="8" IsExpanded="true" />
-        <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" ManuallyRouted="false" />
         <EntityTypeShape EntityType="PortalDbModel.Item" Width="1.5" PointX="3" PointY="1.75" />
         <AssociationConnector Association="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId" />
         <AssociationConnector Association="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId" />
         <AssociationConnector Association="PortalDbModel.FK_Items_Events_EventId" />
         <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" />
+        <EntityTypeShape EntityType="PortalDbModel.Order" Width="1.5" PointX="0.75" PointY="7" />
+        <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

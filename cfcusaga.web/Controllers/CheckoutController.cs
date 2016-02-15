@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using cfcusaga.data;
 using cfcusaga.domain;
 using  Cfcusaga.Web.Configuration;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using RestSharp;
-using Order = cfcusaga.data.Order;
 using Cfcusaga.Web.Models;
 
 namespace  Cfcusaga.Web.Controllers
@@ -18,7 +15,7 @@ namespace  Cfcusaga.Web.Controllers
     public class CheckoutController : Controller
     {
         private readonly IShoppingCartService _svc;
-        PortalDbContext storeDB = new PortalDbContext();
+        //PortalDbContext storeDB = new PortalDbContext();
         AppConfigurations appConfig = new AppConfigurations();
 
         public List<String> CreditCardTypes { get { return appConfig.CreditCardType;} }
@@ -30,10 +27,23 @@ namespace  Cfcusaga.Web.Controllers
 
 
         // GET: /Checkout/AddressAndPayment
+        public ActionResult AddressAndPaymentWithCard()
+        {
+            ViewBag.CreditCardTypes = CreditCardTypes;
+            //var previousOrder = storeDB.Orders.FirstOrDefault(x => x.Username == User.Identity.Name);
+            var previousOrder = _svc.GetOrderByIdentity(User.Identity.Name);
+
+            if (previousOrder != null)
+                return View(previousOrder);
+            else
+                return View();
+        }
+
         public ActionResult AddressAndPayment()
         {
             ViewBag.CreditCardTypes = CreditCardTypes;
-            var previousOrder = storeDB.Orders.FirstOrDefault(x => x.Username == User.Identity.Name);
+            //var previousOrder = storeDB.Orders.FirstOrDefault(x => x.Username == User.Identity.Name);
+            var previousOrder = _svc.GetOrderByIdentity(User.Identity.Name);
 
             if (previousOrder != null)
                 return View(previousOrder);
@@ -46,10 +56,10 @@ namespace  Cfcusaga.Web.Controllers
         [HttpPost]
         public async Task<ActionResult> AddressAndPayment(FormCollection values)
         {
-            ViewBag.CreditCardTypes = CreditCardTypes;
-            string result =  values[9];
+            //ViewBag.CreditCardTypes = CreditCardTypes;
+            //string result =  values[9];
             
-            var order = new Order();
+            var order = new cfcusaga.domain.Orders.Order();
             TryUpdateModel(order);
 
             //TODO: Need to store this?
@@ -64,7 +74,6 @@ namespace  Cfcusaga.Web.Controllers
 
                     if (order.SaveInfo && !order.Username.Equals("guest@guest.com"))
                     {
-                        
                         var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
                         var store = new UserStore<ApplicationUser>(new ApplicationDbContext());
                         var ctx = store.Context;
@@ -83,16 +92,20 @@ namespace  Cfcusaga.Web.Controllers
                         //var result = await UserManager.UpdateAsync(currentUser);
                         await ctx.SaveChangesAsync();
 
-                        await storeDB.SaveChangesAsync();
+                        //await storeDB.SaveChangesAsync();
+                        await _svc.SaveChangesAsync();
                     }
                     
 
                     //Save Order
-                    storeDB.Orders.Add(order);
-                    await storeDB.SaveChangesAsync();
+                    //storeDB.Orders.Add(order);
+                    _svc.AddOrder(order);
+                    //await storeDB.SaveChangesAsync();
+                    //await _svc.SaveChangesAsync();
                     //Process the order
                     var cart = ShoppingCart.GetCart(this.HttpContext,_svc);
-                    order = cart.CreateOrder(order);
+                    //order = cart.CreateOrder(order);
+                    order = await cart.CreateOrder(order);
 
 
 
@@ -103,7 +116,7 @@ namespace  Cfcusaga.Web.Controllers
                         new { id = order.OrderId });
                 
             }
-            catch
+            catch (Exception ex)
             {
                 //Invalid - redisplay with errors
                 return View(order);
@@ -115,9 +128,10 @@ namespace  Cfcusaga.Web.Controllers
         public ActionResult Complete(int id)
         {
             // Validate customer owns this order
-            bool isValid = storeDB.Orders.Any(
-                o => o.OrderId == id &&
-                o.Username == User.Identity.Name);
+            //bool isValid = storeDB.Orders.Any(
+            //    o => o.OrderId == id &&
+            //    o.Username == User.Identity.Name);
+            bool isValid = _svc.IsValidOrder(id, User.Identity.Name);
 
             if (isValid)
             {
@@ -134,6 +148,7 @@ namespace  Cfcusaga.Web.Controllers
             RestClient client = new RestClient();
             //fix this we have this up top too
             AppConfigurations appConfig = new AppConfigurations();
+            // TODO: this is free emai service
             client.BaseUrl = "https://api.mailgun.net/v2";
             client.Authenticator =
                    new HttpBasicAuthenticator("api",

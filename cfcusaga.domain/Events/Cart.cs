@@ -13,6 +13,8 @@ namespace cfcusaga.domain.Events
         public int ItemId { get; set; }
         public int Count { get; set; }
         public System.DateTime DateCreated { get; set; }
+        public decimal ItemPrice { get; set; }
+        public string ItemName { get; set; }
 
         //public virtual domain.Events.Item Item { get; set; }
     }

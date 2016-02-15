@@ -20,7 +20,7 @@ namespace cfcusaga.data
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
     
-        public virtual Order Order { get; set; }
         public virtual Item Item { get; set; }
+        public virtual Order Order { get; set; }
     }
 }

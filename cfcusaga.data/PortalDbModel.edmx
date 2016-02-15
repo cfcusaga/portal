@@ -93,7 +93,6 @@
           <Property Name="Phone" Type="nvarchar" MaxLength="24" Nullable="false" />
           <Property Name="Email" Type="nvarchar(max)" />
           <Property Name="Total" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="Experation" Type="datetime" Nullable="false" />
           <Property Name="SaveInfo" Type="bit" Nullable="false" />
         </EntityType>
         <Association Name="FK_dbo_Carts_dbo_Items_ItemId">
@@ -258,55 +257,15 @@
           <Property Name="ItemId" Type="Int32" Nullable="false" />
           <Property Name="Quantity" Type="Int32" Nullable="false" />
           <Property Name="UnitPrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
-          <NavigationProperty Name="Order" Relationship="Self.FK_dbo_OrderDetails_dbo_Orders_OrderId" FromRole="OrderDetails" ToRole="Orders" />
           <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" FromRole="OrderDetail" ToRole="Item" />
+          <NavigationProperty Name="Order" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" FromRole="OrderDetail" ToRole="Order" />
         </EntityType>
-        <EntityType Name="Order">
-          <Key>
-            <PropertyRef Name="OrderId" />
-          </Key>
-          <Property Name="OrderId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="OrderDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Username" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="FirstName" Type="String" MaxLength="160" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="LastName" Type="String" MaxLength="160" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Address" Type="String" MaxLength="70" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="City" Type="String" MaxLength="40" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="State" Type="String" MaxLength="40" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PostalCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Country" Type="String" MaxLength="40" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Phone" Type="String" MaxLength="24" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Total" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="Experation" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="SaveInfo" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="OrderDetails" Relationship="Self.FK_dbo_OrderDetails_dbo_Orders_OrderId" FromRole="Orders" ToRole="OrderDetails" />
-        </EntityType>
-        <Association Name="FK_dbo_OrderDetails_dbo_Orders_OrderId">
-          <End Role="Orders" Type="Self.Order" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="OrderDetails" Type="Self.OrderDetail" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Orders">
-              <PropertyRef Name="OrderId" />
-            </Principal>
-            <Dependent Role="OrderDetails">
-              <PropertyRef Name="OrderId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="PortalDbContext" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Carts" EntityType="Self.Cart" />
           <EntitySet Name="Catagories" EntityType="Self.Catagory" />
           <EntitySet Name="Events" EntityType="Self.Event" />
           <EntitySet Name="Members" EntityType="Self.Member" />
           <EntitySet Name="OrderDetails" EntityType="Self.OrderDetail" />
-          <EntitySet Name="Orders" EntityType="Self.Order" />
-          <AssociationSet Name="FK_dbo_OrderDetails_dbo_Orders_OrderId" Association="Self.FK_dbo_OrderDetails_dbo_Orders_OrderId">
-            <End Role="Orders" EntitySet="Orders" />
-            <End Role="OrderDetails" EntitySet="OrderDetails" />
-          </AssociationSet>
           <EntitySet Name="Items" EntityType="PortalDbModel.Item" />
           <AssociationSet Name="FK_dbo_Carts_dbo_Items_ItemId" Association="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId">
             <End Role="Item" EntitySet="Items" />
@@ -322,6 +281,11 @@
           </AssociationSet>
           <AssociationSet Name="FK_dbo_OrderDetails_dbo_Items_ItemId" Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId">
             <End Role="Item" EntitySet="Items" />
+            <End Role="OrderDetail" EntitySet="OrderDetails" />
+          </AssociationSet>
+          <EntitySet Name="Orders" EntityType="PortalDbModel.Order" />
+          <AssociationSet Name="FK_dbo_OrderDetails_dbo_Orders_OrderId" Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId">
+            <End Role="Order" EntitySet="Orders" />
             <End Role="OrderDetail" EntitySet="OrderDetails" />
           </AssociationSet>
           </EntityContainer>
@@ -395,6 +359,40 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Order">
+          <Key>
+            <PropertyRef Name="OrderId" />
+          </Key>
+          <Property Name="OrderId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Username" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="160" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="160" FixedLength="false" Unicode="true" />
+          <Property Name="Address" Type="String" Nullable="false" MaxLength="70" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="State" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="PostalCode" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Country" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="Phone" Type="String" Nullable="false" MaxLength="24" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Total" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="SaveInfo" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="OrderDetails" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" FromRole="Order" ToRole="OrderDetail" />
+        </EntityType>
+        <Association Name="FK_dbo_OrderDetails_dbo_Orders_OrderId">
+          <End Type="PortalDbModel.Order" Role="Order" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="PortalDbModel.OrderDetail" Role="OrderDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="OrderDetail">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -465,27 +463,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Orders">
-            <EntityTypeMapping TypeName="PortalDbModel.Order">
-              <MappingFragment StoreEntitySet="Orders">
-                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
-                <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="Address" ColumnName="Address" />
-                <ScalarProperty Name="City" ColumnName="City" />
-                <ScalarProperty Name="State" ColumnName="State" />
-                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
-                <ScalarProperty Name="Country" ColumnName="Country" />
-                <ScalarProperty Name="Phone" ColumnName="Phone" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Total" ColumnName="Total" />
-                <ScalarProperty Name="Experation" ColumnName="Experation" />
-                <ScalarProperty Name="SaveInfo" ColumnName="SaveInfo" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Items">
             <EntityTypeMapping TypeName="PortalDbModel.Item">
               <MappingFragment StoreEntitySet="Items">
@@ -496,6 +473,26 @@
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="CatagoryID" ColumnName="CatagoryID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Orders">
+            <EntityTypeMapping TypeName="PortalDbModel.Order">
+              <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="SaveInfo" ColumnName="SaveInfo" />
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
