@@ -1,4 +1,4 @@
-﻿@model Cfcusaga.Web.Models.Item
+﻿@model cfcusaga.domain.Events.Item
 
 @{
     ViewBag.Title = "Edit";
@@ -15,7 +15,7 @@
         <h4>Item</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.ID)
+        @Html.HiddenFor(model => model.Id)
         <div class="form-group">
             @Html.LabelFor(model => model.CatagorieId, "CatagorieId", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">

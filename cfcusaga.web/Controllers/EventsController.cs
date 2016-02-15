@@ -1,9 +1,7 @@
-﻿using System;
-using System.Data.Entity;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
-using cfcusaga.data;
 using cfcusaga.domain.Events;
 
 namespace  Cfcusaga.Web.Controllers
@@ -11,8 +9,25 @@ namespace  Cfcusaga.Web.Controllers
     [Authorize(Roles = "Admin")]
     public class EventsController : Controller
     {
+        private const string EventIdSessionKey = "EventId";
+
+        public static int? GetSessionEventId(HttpContextBase context)
+        {
+            if (context.Session != null)
+            {
+                var o = context.Session[EventIdSessionKey];
+                if (o != null) return int.Parse(o.ToString());
+            }
+            return null;
+        }
+
+        public static void SetSessionEventId(HttpContextBase httpContext, int id)
+        {
+            var httpSessionStateBase = httpContext.Session;
+            if (httpSessionStateBase != null) httpSessionStateBase[EventIdSessionKey] = id.ToString();
+        }
+
         private readonly IEventServices _svc;
-        //private PortalDbContext _db = new PortalDbContext();
 
         public EventsController(IEventServices svc)
         {
@@ -38,14 +53,11 @@ namespace  Cfcusaga.Web.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            //return View(_svc.ToPagedList());
             int pageSize = 10;
             int pageNumber = (page ?? 1);
-            //return View(await _db.Events.ToListAsync());
             return View(await _svc.GetOpenEvents(sortOrder, searchString, pageSize, pageNumber));
         }
 
-        // GET: Catagories/Details/5
         public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
@@ -53,7 +65,6 @@ namespace  Cfcusaga.Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            //var anEvent = await _db.Events.FindAsync(id);
             var anEvent = await _svc.GetEventDetails(id);
             if (anEvent == null)
             {
@@ -62,7 +73,6 @@ namespace  Cfcusaga.Web.Controllers
             return View(anEvent);
         }
 
-        // GET: Catagories/Create
          [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
@@ -86,22 +96,6 @@ namespace  Cfcusaga.Web.Controllers
             return View(newEvent);
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //[Authorize(Roles = "Admin")]
-        //public async Task<ActionResult> Create([Bind(Include = "ID,Name")] cfcusaga.data.Event anEvent)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _db.Events.Add(anEvent);
-        //        await _db.SaveChangesAsync();
-        //        return RedirectToAction("Index");
-        //    }
-
-        //    return View(anEvent);
-        //}
-
-
         // GET: Catagories/Edit/5
         public async Task<ActionResult> Edit(int? id)
         {
@@ -109,7 +103,6 @@ namespace  Cfcusaga.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            //var anEvent = await _db.Events.FindAsync(id);
             var anEvent = await _svc.GetEventDetails(id);
             if (anEvent == null)
             {
@@ -127,9 +120,7 @@ namespace  Cfcusaga.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var updatedEvent = await _svc.Update(anEvent);
-                //_db.Entry(anEvent).State = EntityState.Modified;
-                //await _db.SaveChangesAsync();
+                var updatedEvent = await _svc.UpdateEvent(anEvent);
                 return RedirectToAction("Index");
             }
             return View(anEvent);
@@ -142,7 +133,6 @@ namespace  Cfcusaga.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            //var anEvent = await _db.Events.FindAsync(id);
             var anEvent = await _svc.GetEventDetails(id);
             if (anEvent == null)
             {
@@ -156,9 +146,6 @@ namespace  Cfcusaga.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            //var catagorie = await _db.Events.FindAsync(id);
-            //_db.Events.Remove(catagorie);
-            //await _db.SaveChangesAsync();
             await _svc.DeleteEvent(id);
 
             return RedirectToAction("Index");
@@ -174,9 +161,11 @@ namespace  Cfcusaga.Web.Controllers
         //}
         public ActionResult EventItems(int id)
         {
-            // return RedirectToAction("Index", "Items");
-            return RedirectToAction("Index", "Items");
-            //return View(await _svc.GetEventItems(id));
+            //SetSessionEventId(this.HttpContext, id);
+            return RedirectToAction("Register", "Items", new {eventId = id});
         }
+
+
+
     }
 }

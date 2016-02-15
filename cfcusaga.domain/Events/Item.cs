@@ -15,6 +15,8 @@ namespace cfcusaga.domain.Events
 
         public int CatagorieId { get; set; }
 
+        [Required(ErrorMessage = "An Item Name is required")]
+        [StringLength(160)]
         public string Name { get; set; }
 
         [Display(Name = "Price")]
