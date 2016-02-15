@@ -10,6 +10,7 @@ using cfcusaga.data;
 using cfcusaga.domain;
 using cfcusaga.domain.Events;
 using cfcusaga.domain.Mappers;
+using cfcusaga.domain.Orders;
 using Cfcusaga.Web.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;

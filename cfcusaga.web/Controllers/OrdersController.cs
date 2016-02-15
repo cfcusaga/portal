@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using cfcusaga.data;
-using PagedList.Mvc;
 using PagedList;
-using Cfcusaga.Web.Models;
-using Order = Cfcusaga.Web.Models.Order;
 
 namespace Cfcusaga.Web.Controllers
 {

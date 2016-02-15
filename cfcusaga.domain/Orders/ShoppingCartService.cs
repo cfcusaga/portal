@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using AutoMapper;
 using cfcusaga.data;
 using Item = cfcusaga.domain.Events.Item;
-using Cart = cfcusaga.domain.Events.Cart;
-using Order = cfcusaga.domain.Orders.Order;
-using OrderDetail = cfcusaga.domain.Orders.OrderDetail;
 
-namespace cfcusaga.domain
+namespace cfcusaga.domain.Orders
 {
     public interface IShoppingCartService
     {
@@ -24,11 +19,16 @@ namespace cfcusaga.domain
         //ShoppingCart GetCart(HttpContextBase httpContext);
         Order GetOrderByIdentity(string name);
         Task SaveChangesAsync();
-        void AddOrder(Order order);
+        Task AddOrder(Order order);
         void AddOrderDetails(OrderDetail detail);
         void EmptyCart(string shoppingCartId);
         Task<List<Cart>> GetCartItems(string shoppingCartId);
         bool IsValidOrder(int id, string userName);
+        //object GetCartItem(int id);
+        int RemoveFromCart(string shoppingCartId, int id);
+        int? GetCount(string shoppingCartId);
+        decimal? GetTotal(string shoppingCartId);
+        void MigrateCart(string userName, string shoppingCartId);
     }
 
     public class ShoppingCartService : IShoppingCartService
@@ -92,7 +92,7 @@ namespace cfcusaga.domain
             return _db.SaveChangesAsync();
         }
 
-        public void AddOrder(Order order)
+        public async Task AddOrder(Order order)
         {
             var entity = new data.Order
             {
@@ -111,7 +111,7 @@ namespace cfcusaga.domain
                 Username = order.Username
             };
             _db.Orders.Add(entity);
-            _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
             order.OrderId = entity.OrderId;
         }
 
@@ -170,7 +170,7 @@ namespace cfcusaga.domain
             return await (from c in _db.Carts
                 join i in _db.Items on c.ItemId equals i.ID
                 where c.CartId == shoppingCartId
-                select new domain.Events.Cart()
+                select new Cart()
                 {
                     CartId = c.CartId,
                     ID = c.ID,
@@ -187,6 +187,65 @@ namespace cfcusaga.domain
             return _db.Orders.Any(
                 o => o.OrderId == id &&
                 o.Username == userName);
+        }
+
+        public int RemoveFromCart(string shoppingCartId, int id)
+        {
+            var cartItem = _db.Carts
+            .SingleOrDefault(
+            c => c.CartId == shoppingCartId
+            && c.ItemId == id);
+
+            int itemCount = 0;
+
+            if (cartItem != null)
+            {
+                if (cartItem.Count > 1)
+                {
+                    cartItem.Count--;
+                    itemCount = cartItem.Count;
+                }
+                else
+                {
+                    _db.Carts.Remove(cartItem);
+                }
+                // Save changes
+                _db.SaveChanges();
+            }
+            return itemCount;
+        }
+
+        public int? GetCount(string shoppingCartId)
+        {
+            // Get the count of each item in the cart and sum them up
+            int? count = (from cartItems in _db.Carts
+                          where cartItems.CartId == shoppingCartId
+                          select (int?)cartItems.Count).Sum();
+            return count;
+        }
+
+        public decimal? GetTotal(string shoppingCartId)
+        {
+            // Multiply item price by count of that item to get 
+            // the current price for each of those items in the cart
+            // sum all item price totals to get the cart total
+            decimal? total = (from cartItems in _db.Carts
+                              where cartItems.CartId == shoppingCartId
+                              select (int?)cartItems.Count *
+                              cartItems.Item.Price).Sum();
+            return total;
+        }
+
+        public void MigrateCart(string userName, string shoppingCartId)
+        {
+            var shoppingCart = _db.Carts.Where(
+                c => c.CartId == shoppingCartId);
+
+            foreach (cfcusaga.data.Cart item in shoppingCart)
+            {
+                item.CartId = userName;
+            }
+            _db.SaveChanges();
         }
 
         public Cart GetCart(HttpContextBase httpContext)

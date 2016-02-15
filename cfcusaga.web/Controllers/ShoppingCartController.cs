@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using cfcusaga.data;
 using cfcusaga.domain;
+using cfcusaga.domain.Orders;
 using Cfcusaga.Web.Models;
 using Cfcusaga.Web.ViewModels;
 
@@ -14,7 +15,6 @@ namespace Cfcusaga.Web.Controllers
 {
     public class ShoppingCartController : Controller
     {
-        //PortalDbContext storeDB = new PortalDbContext();
         private readonly IShoppingCartService _svc;
 
         public ShoppingCartController(IShoppingCartService svc)
@@ -59,28 +59,6 @@ namespace Cfcusaga.Web.Controllers
                 DeleteId = id
             };
             return Json(results);
-
-            //        var addedItem = storeDB.Items
-            //.Single(item => item.ID == id);
-            //        // Add it to the shopping cart
-            //        var cart = ShoppingCart.GetCart(this.HttpContext);
-
-            //        int count = cart.AddToCart(addedItem);
-
-            //        // Display the confirmation message
-            //        var results = new ShoppingCartRemoveViewModel
-            //        {
-            //            Message = Server.HtmlEncode(addedItem.Name) +
-            //                " has been added to your shopping cart.",
-            //            CartTotal = cart.GetTotal(),
-            //            CartCount = cart.GetCount(),
-            //            ItemCount = count,
-            //            DeleteId = id
-            //        };
-            //        return Json(results);
-
-            // Go back to the main store page for more shopping
-            // return RedirectToAction("Index");
         }
         //
         // AJAX: /ShoppingCart/RemoveFromCart/5

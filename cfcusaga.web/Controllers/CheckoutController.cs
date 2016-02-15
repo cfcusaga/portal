@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using cfcusaga.domain;
+using cfcusaga.domain.Orders;
 using  Cfcusaga.Web.Configuration;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -15,7 +15,6 @@ namespace  Cfcusaga.Web.Controllers
     public class CheckoutController : Controller
     {
         private readonly IShoppingCartService _svc;
-        //PortalDbContext storeDB = new PortalDbContext();
         AppConfigurations appConfig = new AppConfigurations();
 
         public List<String> CreditCardTypes { get { return appConfig.CreditCardType;} }
@@ -30,7 +29,6 @@ namespace  Cfcusaga.Web.Controllers
         public ActionResult AddressAndPaymentWithCard()
         {
             ViewBag.CreditCardTypes = CreditCardTypes;
-            //var previousOrder = storeDB.Orders.FirstOrDefault(x => x.Username == User.Identity.Name);
             var previousOrder = _svc.GetOrderByIdentity(User.Identity.Name);
 
             if (previousOrder != null)
@@ -95,19 +93,15 @@ namespace  Cfcusaga.Web.Controllers
                         //await storeDB.SaveChangesAsync();
                         await _svc.SaveChangesAsync();
                     }
-                    
 
                     //Save Order
-                    //storeDB.Orders.Add(order);
-                    _svc.AddOrder(order);
-                    //await storeDB.SaveChangesAsync();
-                    //await _svc.SaveChangesAsync();
+                    await _svc.AddOrder(order);
+
                     //Process the order
                     var cart = ShoppingCart.GetCart(this.HttpContext,_svc);
+
                     //order = cart.CreateOrder(order);
                     order = await cart.CreateOrder(order);
-
-
 
                     //CheckoutController.SendOrderMessage(order.FirstName, "New Order: " + order.OrderId,order.ToString(order), appConfig.OrderEmail);
                     CheckoutController.SendOrderMessage(order.FirstName, "New Order: " + order.OrderId,order.ToString(), appConfig.OrderEmail);
@@ -128,9 +122,6 @@ namespace  Cfcusaga.Web.Controllers
         public ActionResult Complete(int id)
         {
             // Validate customer owns this order
-            //bool isValid = storeDB.Orders.Any(
-            //    o => o.OrderId == id &&
-            //    o.Username == User.Identity.Name);
             bool isValid = _svc.IsValidOrder(id, User.Identity.Name);
 
             if (isValid)

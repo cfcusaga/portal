@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
 using cfcusaga.data;
-using cfcusaga.domain;
+using cfcusaga.domain.Orders;
 
 namespace Cfcusaga.Web.Models
 {
     public class ShoppingCart
     {
-        //ApplicationDbContext storeDB = new ApplicationDbContext();
-        PortalDbContext portalDB = new PortalDbContext();
+        
         private IShoppingCartService _svc;
         string ShoppingCartId { get; set; }
         public const string CartSessionKey = "CartId";
@@ -23,29 +21,16 @@ namespace Cfcusaga.Web.Models
             cart.ShoppingCartId = cart.GetCartId(context);
             return cart;
         }
-
-        // Helper method to simplify shopping cart calls
-        //public static ShoppingCart GetCart(Controller controller)
-        //{
-        //    return GetCart(controller.HttpContext);
-        //}
-
        
         public ShoppingCart(IShoppingCartService svc)
         {
             _svc = svc;
         }
 
-        //public ShoppingCart()
-        //{
-        //}
+
 
         public int AddToCart(cfcusaga.domain.Events.Item item)
         {
-            // Get the matching cart and item instances
-            //var cartItem = portalDB.Carts.SingleOrDefault(
-            //    c => c.CartId == ShoppingCartId
-            //    && c.ItemId == item.Id);
 
             try
             {
@@ -53,17 +38,8 @@ namespace Cfcusaga.Web.Models
 
                 if (cartItem == null)
                 {
-                    // Create a new cart item if no cart item exists
-                    //cartItem = new cfcusaga.data.Cart
-                    //{
-                    //    ItemId = item.Id,
-                    //    CartId = ShoppingCartId,
-                    //    Count = 1,
-                    //    DateCreated = DateTime.Now
-                    //};
-                    //portalDB.Carts.Add(cartItem);
 
-                    cartItem = new cfcusaga.domain.Events.Cart
+                    cartItem = new cfcusaga.domain.Orders.Cart
                     {
                         ItemId = item.Id,
                         CartId = ShoppingCartId,
@@ -79,8 +55,6 @@ namespace Cfcusaga.Web.Models
                     // then add one to the quantity
                     cartItem.Count++;
                 }
-                // Save changes
-                //portalDB.SaveChanges();
 
                 _svc.SaveChanges();
                 return cartItem.Count;
@@ -94,82 +68,34 @@ namespace Cfcusaga.Web.Models
 
         public int RemoveFromCart(int id)
         {
-
-
-            // Get the cart
-
-            var cartItem = portalDB.Carts.Single(
-                cart => cart.CartId == ShoppingCartId
-                && cart.ItemId == id);
-
-
-            int itemCount = 0;
-
-            if (cartItem != null)
-            {
-                if (cartItem.Count > 1)
-                {
-                    cartItem.Count--;
-                    itemCount = cartItem.Count;
-                }
-                else
-                {
-                    portalDB.Carts.Remove(cartItem);
-                }
-                // Save changes
-                portalDB.SaveChanges();
-            }
-            return itemCount;
+            return _svc.RemoveFromCart(ShoppingCartId, id);
         }
 
         public void EmptyCart()
         {
             _svc.EmptyCart(ShoppingCartId);
-            //var cartItems = portalDB.Carts.Where(
-            //    cart => cart.CartId == ShoppingCartId);
-
-            //foreach (var cartItem in cartItems)
-            //{
-            //    portalDB.Carts.Remove(cartItem);
-            //}
-            //// Save changes
-            //portalDB.SaveChanges();
         }
 
-        public async Task<List<cfcusaga.domain.Events.Cart>> GetCartItems()
+        public async Task<List<cfcusaga.domain.Orders.Cart>> GetCartItems()
         {
             return await _svc.GetCartItems(ShoppingCartId);
-            //return portalDB.Carts.Where(
-            //    cart => cart.CartId == ShoppingCartId).ToList();
         }
 
         public int GetCount()
         {
-            // Get the count of each item in the cart and sum them up
-            int? count = (from cartItems in portalDB.Carts
-                          where cartItems.CartId == ShoppingCartId
-                          select (int?)cartItems.Count).Sum();
-            // Return 0 if all entries are null
+            int? count = _svc.GetCount(ShoppingCartId);
             return count ?? 0;
         }
 
         public decimal GetTotal()
         {
-            // Multiply item price by count of that item to get 
-            // the current price for each of those items in the cart
-            // sum all item price totals to get the cart total
-            decimal? total = (from cartItems in portalDB.Carts
-                              where cartItems.CartId == ShoppingCartId
-                              select (int?)cartItems.Count *
-                              cartItems.Item.Price).Sum();
-
+            decimal? total = _svc.GetTotal(ShoppingCartId);
             return total ?? decimal.Zero;
         }
 
         public async Task<cfcusaga.domain.Orders.Order> CreateOrder(cfcusaga.domain.Orders.Order order)
         {
             decimal orderTotal = 0;
-            //order.OrderDetails = new List<cfcusaga.data.OrderDetail>();
             order.OrderDetails = new List<cfcusaga.domain.Orders.OrderDetail>();
 
             var cartItems = await  GetCartItems();
@@ -187,14 +113,11 @@ namespace Cfcusaga.Web.Models
                 // Set the order total of the shopping cart
                 orderTotal += (item.Count * item.ItemPrice);
                 order.OrderDetails.Add(orderDetail);
-                //portalDB.OrderDetails.Add(orderDetail);
                 _svc.AddOrderDetails(orderDetail);
             }
             // Set the order's total to the orderTotal count
             order.Total = orderTotal;
 
-            // Save the order
-            //portalDB.SaveChanges();
             _svc.SaveChanges();
             // Empty the shopping cart
             EmptyCart();
@@ -228,14 +151,8 @@ namespace Cfcusaga.Web.Models
         // be associated with their username
         public void MigrateCart(string userName)
         {
-            var shoppingCart = portalDB.Carts.Where(
-                c => c.CartId == ShoppingCartId);
+            _svc.MigrateCart(userName, ShoppingCartId);
 
-            foreach (cfcusaga.data.Cart item in shoppingCart)
-            {
-                item.CartId = userName;
-            }
-            portalDB.SaveChanges();
         }
     }
 }
