@@ -55,7 +55,7 @@ namespace Cfcusaga.Web.Controllers
                     break;
             }
 
-            int pageSize = 3;
+            int pageSize = 20;
             int pageNumber = (page ?? 1);
             return View(orders.ToPagedList(pageNumber, pageSize));
 
