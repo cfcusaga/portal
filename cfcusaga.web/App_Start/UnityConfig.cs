@@ -36,6 +36,8 @@ namespace Cfcusaga.Web
             container.RegisterType<IUserStore<ApplicationUser>, UserStore<ApplicationUser>>(new HierarchicalLifetimeManager());
             container.RegisterType<DbContext, ApplicationDbContext>(new HierarchicalLifetimeManager());
             container.RegisterType<AccountController>(new InjectionConstructor());
+            container.RegisterType<RolesAdminController>(new InjectionConstructor());
+            container.RegisterType<UsersAdminController>(new InjectionConstructor());
 
             container.RegisterType<IEventServices, EventServices>();
             container.RegisterType<IShoppingCartService, ShoppingCartService>();
