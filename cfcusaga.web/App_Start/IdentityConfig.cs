@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
-using  Cfcusaga.Web.Configuration;
+using Cfcusaga.Web.Configuration;
 using Cfcusaga.Web.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -13,6 +13,8 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using RestSharp;
+using System.Net.Mail;
+using System.Net;
 
 namespace  Cfcusaga.Web
 {
@@ -147,7 +149,8 @@ namespace  Cfcusaga.Web
         {
 
 
-            EmailService.SendRegistrationMessage(message);
+            //EmailService.SendRegistrationMessage(message);
+            EmailService.SendRegistrationMessage_SendGrid(message);
             // Plug in your email service here to send an email.
             return Task.FromResult(0);
         }
@@ -171,6 +174,27 @@ namespace  Cfcusaga.Web
             request.Method = Method.POST;
             IRestResponse executor = client.Execute(request);
             return executor as RestResponse;
+        }
+
+        //TODO
+        public static async Task SendRegistrationMessage_SendGrid(IdentityMessage message)
+        {
+            var myMessage = new SendGrid.SendGridMessage();
+            myMessage.AddTo(message.Destination);
+            myMessage.From = new MailAddress("kidsforchrist.ga@gmail.com", "CFC Kids For Christ - GA");
+            myMessage.Subject = message.Subject;//"Sending with SendGrid is Fun";
+            //myMessage.Text = body;
+            myMessage.Html = message.Body;
+
+            var credentials = new NetworkCredential("azure_adb1c1f9b5383a3339cebd125489d765@azure.com", "sndgrdpswd1");
+            //// Create an Web transport for sending email.
+            var transportWeb = new SendGrid.Web(credentials);
+
+            //string apikey = Environment.GetEnvironmentVariable("SENDGRID_APIKEY");
+            // Create a Web transport for sending email.
+            //var transportWeb = new SendGrid.Web(apikey);
+            await transportWeb.DeliverAsync(myMessage);
+            //transportWeb.DeliverAsync(myMessage);
         }
     }
 

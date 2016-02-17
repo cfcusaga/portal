@@ -14,7 +14,7 @@ using  Cfcusaga.Web;
 
 namespace Cfcusaga.Web.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "SuperUser")]
     public class UsersAdminController : Controller
     {
         public UsersAdminController()

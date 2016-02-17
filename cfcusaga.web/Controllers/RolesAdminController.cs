@@ -12,7 +12,7 @@ using  Cfcusaga.Web;
 
 namespace Cfcusaga.Web.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "SuperUser")]
     public class RolesAdminController : Controller
     {
         public RolesAdminController()

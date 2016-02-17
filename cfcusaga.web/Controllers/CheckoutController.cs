@@ -106,7 +106,7 @@ namespace  Cfcusaga.Web.Controllers
                     order = await cart.CreateOrder(order);
 
                     //CheckoutController.SendOrderMessage(order.FirstName, "New Order: " + order.OrderId,order.ToString(order), appConfig.OrderEmail);
-                    CheckoutController.SendOrderMessage(order.FirstName, "New Order: " + order.OrderId,order.ToString(), appConfig.OrderEmail);
+                    CheckoutController.SendOrderMessage_SendGrid(order.FirstName, "New Order: " + order.OrderId,order.ToString(), appConfig.OrderEmail);
 
                     return RedirectToAction("Complete",
                         new { id = order.OrderId });

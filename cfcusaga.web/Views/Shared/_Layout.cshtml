@@ -32,10 +32,14 @@
                                             <li>@Html.ActionLink("Events", "Index", "Events")</li>
                                             <li>@Html.ActionLink("Catagorie", "Index", "Catagories")</li>
                                             <li>@Html.ActionLink("Analytics", "Index", "Analytics")</li>
-                                            <li class="divider"></li>
-                                            <li class="dropdown-header">Roles Admin</li>
-                                            <li>@Html.ActionLink("RolesAdmin", "Index", "RolesAdmin")</li>
-                                            <li>@Html.ActionLink("UsersAdmin", "Index", "UsersAdmin")</li>
+                                            @if (Request.IsAuthenticated && User.IsInRole("SuperUser"))
+                                            {
+                                                <li class="divider"></li>
+                                                <li class="dropdown-header">Roles Admin</li>
+                                                <li>@Html.ActionLink("RolesAdmin", "Index", "RolesAdmin")</li>
+                                                <li>@Html.ActionLink("UsersAdmin", "Index", "UsersAdmin")</li>
+                                            }
+
                                         </ul>
                                     </li>
                                 }
