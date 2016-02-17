@@ -23,7 +23,7 @@
                         <div class="navbar-collapse collapse">
                             <ul class="nav navbar-nav">
                                 <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                                @if (Request.IsAuthenticated && User.IsInRole("Admin"))
+                                @if (Request.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperUser")))
                                 {
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin Area <b class="caret"></b></a>

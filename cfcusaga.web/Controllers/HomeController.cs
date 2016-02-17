@@ -9,7 +9,8 @@ namespace  Cfcusaga.Web.Controllers {
 
         
         public ActionResult About() {
-            ViewBag.Message = "Your app description page.";
+            //ViewBag.Message = "Your app description page.";
+            ViewBag.Message = "CFC USA-GA Events and Membership Portal";//"CFC USA-GAhttp://couplesforchristusa.org/sea/ga/";
 
             return View();
         }
