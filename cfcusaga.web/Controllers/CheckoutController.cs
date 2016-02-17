@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using cfcusaga.domain.Orders;
@@ -156,5 +158,45 @@ namespace  Cfcusaga.Web.Controllers
             IRestResponse executor = client.Execute(request);
             return executor as RestResponse;
         }
+
+        private static async void SendOrderMessage_SendGrid(String toName, String subject, String body, String destination)
+        {
+            var myMessage = new SendGrid.SendGridMessage();
+            myMessage.AddTo(toName);
+            myMessage.From = new MailAddress("kidsforchrist.ga@gmail.com", "CFC Kids For Christ - GA");
+            myMessage.Subject = subject;//"Sending with SendGrid is Fun";
+            //myMessage.Text = body;
+            myMessage.Html = body;
+
+            var credentials = new NetworkCredential("azure_adb1c1f9b5383a3339cebd125489d765@azure.com", "sndgrdpswd1");
+
+            // Create an Web transport for sending email.
+            var transportWeb = new SendGrid.Web(credentials);
+
+            //var transportWeb = new SendGrid.Web("SENDGRID_APIKEY");
+            await transportWeb.DeliverAsync(myMessage);
+            //transportWeb.Deliver(myMessage);//.Wait();
+
+            //RestClient client = new RestClient();
+            ////fix this we have this up top too
+            //AppConfigurations appConfig = new AppConfigurations();
+            //// TODO: this is free emai service
+            //client.BaseUrl = "https://api.mailgun.net/v2";
+            //client.Authenticator =
+            //       new HttpBasicAuthenticator("api",
+            //                                  appConfig.EmailApiKey);
+            //RestRequest request = new RestRequest();
+            //request.AddParameter("domain",
+            //                    appConfig.DomainForApiKey, ParameterType.UrlSegment);
+            //request.Resource = "{domain}/messages";
+            //request.AddParameter("from", appConfig.FromName + " <" + appConfig.FromEmail + ">");
+            //request.AddParameter("to", toName + " <" + destination + ">");
+            //request.AddParameter("subject", subject);
+            //request.AddParameter("html", body);
+            //request.Method = Method.POST;
+            //IRestResponse executor = client.Execute(request);
+            //return executor as RestResponse;
+        }
+
     }
 }
