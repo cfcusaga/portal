@@ -82,9 +82,6 @@
 <table class="table">
     <tr>
         <th>
-            Event
-        </th>
-        <th>
             @Html.ActionLink("Item Name", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
@@ -99,9 +96,6 @@
     @foreach (var item in Model)
     {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.EventName)
-            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
