@@ -12,21 +12,18 @@ namespace cfcusaga.data
     using System;
     using System.Collections.Generic;
     
-    public partial class Cart
+    public partial class RelationToMemberType
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Cart()
+        public RelationToMemberType()
         {
             this.CartItemRegistrations = new HashSet<CartItemRegistration>();
         }
     
-        public int ID { get; set; }
-        public string CartId { get; set; }
-        public int ItemId { get; set; }
-        public int Count { get; set; }
-        public System.DateTime DateCreated { get; set; }
+        public short Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
     
-        public virtual Item Item { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CartItemRegistration> CartItemRegistrations { get; set; }
     }

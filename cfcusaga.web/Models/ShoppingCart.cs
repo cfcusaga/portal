@@ -12,7 +12,7 @@ namespace Cfcusaga.Web.Models
     {
         
         private IShoppingCartService _svc;
-        string ShoppingCartId { get; set; }
+        public string ShoppingCartId { get; set; }
         public const string CartSessionKey = "CartId";
 
         public static ShoppingCart GetCart(HttpContextBase context, IShoppingCartService svc)
@@ -34,30 +34,89 @@ namespace Cfcusaga.Web.Models
 
             try
             {
-                var cartItem = _svc.GetCartItem(ShoppingCartId, item.Id);
+                //var cartItem = _svc.GetCartItem(ShoppingCartId, item.Id);
 
-                if (cartItem == null)
+                //if (cartItem == null)
+                //{
+
+                //    cartItem = new cfcusaga.domain.Orders.Cart
+                //    {
+                //        ItemId = item.Id,
+                //        CartId = ShoppingCartId,
+                //        Count = 1,
+                //        DateCreated = DateTime.Now
+                //    };
+                //    _svc.AddItemToCart(cartItem);
+                //    //_svc.SaveChanges();
+                //}
+                //else
+                //{
+                //    // If the item does exist in the cart, 
+                //    // then add one to the quantity
+                //    cartItem.Count++;
+                //    _svc.AddCountToItem(ShoppingCartId, item.Id);
+                //}
+
+                var cartItem = new cfcusaga.domain.Orders.Cart
                 {
+                    ItemId = item.Id,
+                    CartId = ShoppingCartId,
+                    Count = 1,
+                    DateCreated = DateTime.Now
+                };
+                _svc.AddItemToCart(cartItem);
 
-                    cartItem = new cfcusaga.domain.Orders.Cart
-                    {
-                        ItemId = item.Id,
-                        CartId = ShoppingCartId,
-                        Count = 1,
-                        DateCreated = DateTime.Now
-                    };
-                    _svc.AddItemToCart(cartItem);
-
-                }
-                else
-                {
-                    // If the item does exist in the cart, 
-                    // then add one to the quantity
-                    cartItem.Count++;
-                }
-
-                _svc.SaveChanges();
+                //_svc.SaveChanges();
                 return cartItem.Count;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
+
+        public cfcusaga.domain.Orders.Cart AddToCart(cfcusaga.domain.Events.Item item, out int count)
+        {
+
+            try
+            {
+                //var cartItem = _svc.GetCartItem(ShoppingCartId, item.Id);
+
+                //if (cartItem == null)
+                //{
+
+                //    cartItem = new cfcusaga.domain.Orders.Cart
+                //    {
+                //        ItemId = item.Id,
+                //        CartId = ShoppingCartId,
+                //        Count = 1,
+                //        DateCreated = DateTime.Now
+                //    };
+                //    _svc.AddItemToCart(cartItem);
+                    
+
+                //}
+                //else
+                //{
+                //    // If the item does exist in the cart, 
+                //    // then add one to the quantity
+                //    cartItem.Count++;
+                //    _svc.AddCountToItem(ShoppingCartId, item.Id);
+                //}
+                var cartItem = new cfcusaga.domain.Orders.Cart
+                {
+                    ItemId = item.Id,
+                    CartId = ShoppingCartId,
+                    Count = 1,
+                    DateCreated = DateTime.Now
+                };
+                _svc.AddItemToCart(cartItem);
+
+                int id = cartItem.Id;
+                count = cartItem.Count;
+                return cartItem;
             }
             catch (Exception ex)
             {

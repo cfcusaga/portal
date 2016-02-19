@@ -39,7 +39,7 @@
     {
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">Order Summary</h3>
+                <h3 class="panel-title">Registration Summary</h3>
             </div>
             <div class="panel-body">
 
@@ -47,24 +47,24 @@
                 </div>
                 <table class="table table-striped table-hover ">
                     <thead>
-                        <tr>
-                            <th>
-                                Item Name
-                            </th>
-                            <th>
-                                Price (each)
-                            </th>
-                            <th>
-                                Quantity
-                            </th>
-                            <th></th>
-                        </tr>
+                    <tr>
+                        <th>
+                            Item Name
+                        </th>
+                        <th>
+                            Price (each)
+                        </th>
+                        <th>
+                            Quantity
+                        </th>
+                        <th></th>
+                    </tr>
                     </thead>
                     @foreach (var item in Model.CartItems)
                     {
-                        <tr id="row-@item.ItemId" >
+                        <tr id="row-@item.ItemId">
                             <td>
-                                @Html.ActionLink(item.ItemName, "Details", "Store", new { id = item.ID }, null)
+                                @Html.ActionLink(item.ItemName, "Details", "Store", new {id = item.Id}, null)
                             </td>
                             <td>
                                 @item.ItemPrice
@@ -74,7 +74,7 @@
                             </td>
                             <td>
                                 <a href="#" class="RemoveLink"
-                                   data-id="@item.ItemId">
+                                   data-id="@item.Id">
                                     Remove
                                     from cart
                                 </a>
@@ -97,12 +97,16 @@
                 </button>
             </div>
         </div>
+        <p>
+            @Html.ActionLink("Back to Registration", "Index", new { controller = "Items" })
+            @*@Html.ActionLink("Download", "Download", new { controller = "Home", Id = topic.TopicId });*@
+        </p>
     }
     else
     {
         <div>
             <p>
-                There are no items in your cart currently. Please shop for something and add items..
+                There are no items in your cart currently. Please select an event and register..
             </p>
         </div>
     }

@@ -55,6 +55,9 @@
     <Compile Include="Cart.cs">
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="CartItemRegistration.cs">
+      <DependentUpon>PortalDbModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Catagory.cs">
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>
@@ -89,6 +92,9 @@
       <DependentUpon>PortalDbModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RelationToMemberType.cs">
+      <DependentUpon>PortalDbModel.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />

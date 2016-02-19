@@ -25,6 +25,7 @@ namespace cfcusaga.domain.Events
         Task UpdateEventItemAsync(Item item);
         //Task<Item> FindEventItemAsync(int? id);
         Task DeleteEventItem(int id);
+        IEnumerable GetRelationToMemberTypes();
     }
 
     public class EventServices : IEventServices
@@ -185,6 +186,11 @@ namespace cfcusaga.domain.Events
             var item = await _db.Items.FindAsync(id);
             _db.Items.Remove(item);
             await _db.SaveChangesAsync();
+        }
+
+        public IEnumerable GetRelationToMemberTypes()
+        {
+            return _db.RelationToMemberTypes;
         }
 
         public async Task<IPagedList<Item>> GetEventItems(int? eventId, string sortOrder, string searchString, int pageSize, int pageNumber)

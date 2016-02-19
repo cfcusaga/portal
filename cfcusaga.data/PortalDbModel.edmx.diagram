@@ -17,6 +17,10 @@
         <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" />
         <EntityTypeShape EntityType="PortalDbModel.Order" Width="1.5" PointX="0.75" PointY="7" />
         <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" />
+        <EntityTypeShape EntityType="PortalDbModel.CartItemRegistration" Width="1.5" PointX="7.5" PointY="2.5" />
+        <EntityTypeShape EntityType="PortalDbModel.RelationToMemberType" Width="1.5" PointX="5.25" PointY="12.25" />
+        <AssociationConnector Association="PortalDbModel.FK_CartItemRegistrations_Carts" />
+        <AssociationConnector Association="PortalDbModel.FK_CartItemRegistrations_RelationToMemberType" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

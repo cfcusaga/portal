@@ -73,15 +73,17 @@ namespace Cfcusaga.Web.Controllers
             // Get the name of the album to display confirmation
             //string itemName = storeDB.Items
             //    .Single(item => item.ID == id).Name;
-            var anItem = await _svc.GetItem(id);
-            string itemName = anItem.Name;
+            //var anItem = await _svc.GetItem(id);
+            var anItem = _svc.GetCartItem(cart.ShoppingCartId, id);
+
+            string itemName = anItem.ItemName;
             // Remove from cart
             int itemCount = cart.RemoveFromCart(id);
 
             // Display the confirmation message
             var results = new ShoppingCartRemoveViewModel
             {
-                Message = "One (1) "+ Server.HtmlEncode(itemName) +
+                Message = "One (1) " + Server.HtmlEncode(itemName) +
                     " has been removed from your shopping cart.",
                 CartTotal = cart.GetTotal(),
                 CartCount = cart.GetCount(),
@@ -90,6 +92,37 @@ namespace Cfcusaga.Web.Controllers
             };
             return Json(results);
         }
+
+
+
+        //[HttpPost]
+        //public async Task<ActionResult> RemoveFromCart(int id)
+        //{
+        //    // Remove the item from the cart
+        //    var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
+
+        //    // Get the name of the item to display confirmation
+
+        //    // Get the name of the album to display confirmation
+        //    //string itemName = storeDB.Items
+        //    //    .Single(item => item.ID == id).Name;
+        //    var anItem = await _svc.GetItem(id);
+        //    string itemName = anItem.Name;
+        //    // Remove from cart
+        //    int itemCount = cart.RemoveFromCart(id);
+
+        //    // Display the confirmation message
+        //    var results = new ShoppingCartRemoveViewModel
+        //    {
+        //        Message = "One (1) "+ Server.HtmlEncode(itemName) +
+        //            " has been removed from your shopping cart.",
+        //        CartTotal = cart.GetTotal(),
+        //        CartCount = cart.GetCount(),
+        //        ItemCount = itemCount,
+        //        DeleteId = id
+        //    };
+        //    return Json(results);
+        //}
         //
         // GET: /ShoppingCart/CartSummary
         [ChildActionOnly]

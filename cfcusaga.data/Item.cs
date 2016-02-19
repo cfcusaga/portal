@@ -28,6 +28,9 @@ namespace cfcusaga.data
         public string ItemPictureUrl { get; set; }
         public byte[] InternalImage { get; set; }
         public Nullable<int> EventId { get; set; }
+        public Nullable<bool> IsRequireRegistrationInfo { get; set; }
+        public Nullable<bool> IsRequireParentWaiver { get; set; }
+        public Nullable<bool> IsRequireBirthDateInfo { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Cart> Carts { get; set; }

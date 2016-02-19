@@ -149,8 +149,8 @@ namespace  Cfcusaga.Web
         {
 
 
-            //EmailService.SendRegistrationMessage(message);
-            EmailService.SendRegistrationMessage_SendGrid(message);
+            EmailService.SendRegistrationMessage(message);
+            //EmailService.SendRegistrationMessage_SendGrid(message);
             // Plug in your email service here to send an email.
             return Task.FromResult(0);
         }
@@ -177,25 +177,25 @@ namespace  Cfcusaga.Web
         }
 
         //TODO
-        public static async Task SendRegistrationMessage_SendGrid(IdentityMessage message)
-        {
-            var myMessage = new SendGrid.SendGridMessage();
-            myMessage.AddTo(message.Destination);
-            myMessage.From = new MailAddress("kidsforchrist.ga@gmail.com", "CFC Kids For Christ - GA");
-            myMessage.Subject = message.Subject;//"Sending with SendGrid is Fun";
-            //myMessage.Text = body;
-            myMessage.Html = message.Body;
+        //public static async Task SendRegistrationMessage_SendGrid(IdentityMessage message)
+        //{
+        //    var myMessage = new SendGrid.SendGridMessage();
+        //    myMessage.AddTo(message.Destination);
+        //    myMessage.From = new MailAddress("kidsforchrist.ga@gmail.com", "CFC Kids For Christ - GA");
+        //    myMessage.Subject = message.Subject;//"Sending with SendGrid is Fun";
+        //    //myMessage.Text = body;
+        //    myMessage.Html = message.Body;
 
-            var credentials = new NetworkCredential("azure_adb1c1f9b5383a3339cebd125489d765@azure.com", "sndgrdpswd1");
-            //// Create an Web transport for sending email.
-            var transportWeb = new SendGrid.Web(credentials);
+        //    var credentials = new NetworkCredential("azure_adb1c1f9b5383a3339cebd125489d765@azure.com", "sndgrdpswd1");
+        //    //// Create an Web transport for sending email.
+        //    var transportWeb = new SendGrid.Web(credentials);
 
-            //string apikey = Environment.GetEnvironmentVariable("SENDGRID_APIKEY");
-            // Create a Web transport for sending email.
-            //var transportWeb = new SendGrid.Web(apikey);
-            await transportWeb.DeliverAsync(myMessage);
-            //transportWeb.DeliverAsync(myMessage);
-        }
+        //    //string apikey = Environment.GetEnvironmentVariable("SENDGRID_APIKEY");
+        //    // Create a Web transport for sending email.
+        //    //var transportWeb = new SendGrid.Web(apikey);
+        //    await transportWeb.DeliverAsync(myMessage);
+        //    //transportWeb.DeliverAsync(myMessage);
+        //}
     }
 
     public class SmsService : IIdentityMessageService

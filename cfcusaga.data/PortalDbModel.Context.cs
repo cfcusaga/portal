@@ -32,5 +32,7 @@ namespace cfcusaga.data
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<Item> Items { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<CartItemRegistration> CartItemRegistrations { get; set; }
+        public virtual DbSet<RelationToMemberType> RelationToMemberTypes { get; set; }
     }
 }

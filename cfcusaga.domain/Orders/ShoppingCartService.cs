@@ -29,6 +29,7 @@ namespace cfcusaga.domain.Orders
         int? GetCount(string shoppingCartId);
         decimal? GetTotal(string shoppingCartId);
         void MigrateCart(string userName, string shoppingCartId);
+        void AddCountToItem(string shoppingCartId, int id);
     }
 
     public class ShoppingCartService : IShoppingCartService
@@ -44,18 +45,18 @@ namespace cfcusaga.domain.Orders
         {
             try
             {
-                var dbItem = await _db.Items.FirstOrDefaultAsync(c => c.ID == id);
-                if (dbItem == null) return null;
+                var entitity = await _db.Items.FirstOrDefaultAsync(c => c.ID == id);
+                if (entitity == null) return null;
                 var item = new Item()
                 {
-                    ItemPictureUrl = dbItem.ItemPictureUrl,
-                    Name = dbItem.Name,
-                    Id = dbItem.ID,
-                    EventId = dbItem.EventId ?? 0,
-                    CatagorieId = dbItem.CatagoryID,
-                    Price = dbItem.Price,
-                    InternalImage = dbItem.InternalImage,
-                    EventName = dbItem.Event.Name
+                    ItemPictureUrl = entitity.ItemPictureUrl,
+                    Name = entitity.Name,
+                    Id = entitity.ID,
+                    EventId = entitity.EventId ?? 0,
+                    CatagorieId = entitity.CatagoryID,
+                    Price = entitity.Price,
+                    InternalImage = entitity.InternalImage,
+                    EventName = entitity.Event.Name
                 };
                 return item;
             }
@@ -173,7 +174,7 @@ namespace cfcusaga.domain.Orders
                 select new Cart()
                 {
                     CartId = c.CartId,
-                    ID = c.ID,
+                    Id = c.ID,
                     DateCreated = c.DateCreated,
                     ItemId = c.ItemId,
                     ItemName = i.Name,
@@ -191,28 +192,50 @@ namespace cfcusaga.domain.Orders
 
         public int RemoveFromCart(string shoppingCartId, int id)
         {
-            var cartItem = _db.Carts
-            .SingleOrDefault(
-            c => c.CartId == shoppingCartId
-            && c.ItemId == id);
-
-            int itemCount = 0;
-
-            if (cartItem != null)
+            try
             {
-                if (cartItem.Count > 1)
+
+                var itemRegistratin = _db.CartItemRegistrations.FirstOrDefault(c => c.CartID == id);
+
+                if (itemRegistratin != null)
                 {
-                    cartItem.Count--;
-                    itemCount = cartItem.Count;
+                    _db.CartItemRegistrations.Remove(itemRegistratin);
                 }
-                else
+
+
+
+                var cartItem = _db.Carts
+                    .FirstOrDefault(
+                        c => c.CartId == shoppingCartId
+                             && c.ID == id);
+
+                int itemCount = 0;
+
+                if (cartItem != null)
                 {
-                    _db.Carts.Remove(cartItem);
+                    if (cartItem.Count > 1)
+                    {
+                        cartItem.Count--;
+                        itemCount = cartItem.Count;
+                    }
+                    else
+                    {
+                        _db.Carts.Remove(cartItem);
+                    }
+                    // Save changes
+                    _db.SaveChanges();
                 }
-                // Save changes
+                return itemCount;
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.Message;
+                throw;
+            }
+            finally
+            {
                 _db.SaveChanges();
             }
-            return itemCount;
         }
 
         public int? GetCount(string shoppingCartId)
@@ -248,10 +271,20 @@ namespace cfcusaga.domain.Orders
             _db.SaveChanges();
         }
 
-        public Cart GetCart(HttpContextBase httpContext)
+        public  void AddCountToItem(string shoppingCartId, int id)
         {
-            throw new NotImplementedException();
+            var aCart = _db.Carts.SingleOrDefault(
+                        c => c.CartId == shoppingCartId
+                        && c.ItemId == id);
+            if (aCart != null) aCart.Count++;
+             _db.SaveChanges();
         }
+
+
+        //public Cart GetCart(HttpContextBase httpContext)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public Cart GetCartItem(string shoppingCartId, int id)
         {
@@ -260,7 +293,7 @@ namespace cfcusaga.domain.Orders
                 var aCart = _db.Carts
             .Select(c => new Cart()
             {
-                ID = c.ID,
+                Id = c.ID,
                 CartId = c.CartId,
                 DateCreated = c.DateCreated,
                 ItemId = c.ItemId,
@@ -268,7 +301,7 @@ namespace cfcusaga.domain.Orders
             })
             .SingleOrDefault(
             c => c.CartId == shoppingCartId
-            && c.ItemId == id);
+            && c.Id == id);
 
                 return aCart;
             }
@@ -281,15 +314,15 @@ namespace cfcusaga.domain.Orders
 
         public void AddItemToCart(Cart cartItem)
         {
-            var item = _db.Set<data.Cart>().Create();
+            var entity = _db.Set<data.Cart>().Create();
 
-            item.CartId = cartItem.CartId;
-            item.Count = cartItem.Count;
-            item.DateCreated = DateTime.Now.ToUniversalTime();
-            item.ID = cartItem.ID;
-            item.ItemId = cartItem.ItemId;
-            //Mapper.Map(cartItem, item);
-            _db.Carts.Add(item);
+            entity.CartId = cartItem.CartId;
+            entity.Count = cartItem.Count;
+            entity.DateCreated = DateTime.Now.ToUniversalTime();
+            entity.ItemId = cartItem.ItemId;
+            _db.Carts.Add(entity);
+            _db.SaveChanges();
+            cartItem.Id = entity.ID;
         }
 
         public void SaveChanges()
