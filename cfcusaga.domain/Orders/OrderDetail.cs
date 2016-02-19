@@ -11,5 +11,7 @@ namespace cfcusaga.domain.Orders
         public decimal UnitPrice { get; set; }
         public virtual Item Item { get; set; }
         public virtual Order Order { get; set; }
+        public int CartId { get; set; }
+        public string RegistrationDetail { get; set; }
     }
 }

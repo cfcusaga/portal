@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web;
 using cfcusaga.data;
 using cfcusaga.domain.Orders;
+using Cfcusaga.Web.Extensions;
 
 namespace Cfcusaga.Web.Models
 {
@@ -154,34 +155,49 @@ namespace Cfcusaga.Web.Models
 
         public async Task<cfcusaga.domain.Orders.Order> CreateOrder(cfcusaga.domain.Orders.Order order)
         {
-            decimal orderTotal = 0;
-            order.OrderDetails = new List<cfcusaga.domain.Orders.OrderDetail>();
-
-            var cartItems = await  GetCartItems();
-            // Iterate over the items in the cart, 
-            // adding the order details for each
-            foreach (var item in cartItems)
+            try
             {
-                var orderDetail = new cfcusaga.domain.Orders.OrderDetail
-                {
-                    ItemId = item.ItemId,
-                    OrderId = order.OrderId,
-                    UnitPrice = item.ItemPrice,
-                    Quantity = item.Count
-                };
-                // Set the order total of the shopping cart
-                orderTotal += (item.Count * item.ItemPrice);
-                order.OrderDetails.Add(orderDetail);
-                _svc.AddOrderDetails(orderDetail);
-            }
-            // Set the order's total to the orderTotal count
-            order.Total = orderTotal;
+                decimal orderTotal = 0;
+                order.OrderDetails = new List<cfcusaga.domain.Orders.OrderDetail>();
 
-            _svc.SaveChanges();
-            // Empty the shopping cart
-            EmptyCart();
-            // Return the OrderId as the confirmation number
-            return order;
+                var cartItems = await GetCartItems();
+                // Iterate over the items in the cart, 
+                // adding the order details for each
+                foreach (var item in cartItems)
+                {
+                    var js = item.ToJson();
+                    var orderDetail = new cfcusaga.domain.Orders.OrderDetail
+                    {
+                        ItemId = item.ItemId,
+                        OrderId = order.OrderId,
+                        UnitPrice = item.ItemPrice,
+                        Quantity = item.Count,
+                        CartId = item.Id,
+                        RegistrationDetail = js
+                    };
+                    // Set the order total of the shopping cart
+                    orderTotal += (item.Count * item.ItemPrice);
+                    order.OrderDetails.Add(orderDetail);
+                    _svc.AddOrderDetails(orderDetail);
+                    // _svc.RemoveItemRegistration(item.Id);
+                }
+                // Set the order's total to the orderTotal count
+                order.Total = orderTotal;
+
+                //TODO: Clean the 
+                //order.OrderDetails
+
+                _svc.SaveChanges();
+                // Empty the shopping cart
+                EmptyCart();
+                // Return the OrderId as the confirmation number
+                return order;
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.Message;
+                throw;
+            }
         }
 
         // We're using HttpContextBase to allow access to cookies.

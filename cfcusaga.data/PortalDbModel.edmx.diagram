@@ -9,7 +9,6 @@
         <EntityTypeShape EntityType="PortalDbModel.Catagory" Width="1.5" PointX="0.75" PointY="4.375" IsExpanded="true" />
         <EntityTypeShape EntityType="PortalDbModel.Event" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="PortalDbModel.Member" Width="1.5" PointX="5.75" PointY="7.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="PortalDbModel.OrderDetail" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="PortalDbModel.CartItemRegistration" Width="1.5" PointX="7.5" PointY="2.5" />
         <EntityTypeShape EntityType="PortalDbModel.RelationToMemberType" Width="1.5" PointX="5.25" PointY="12.25" />
         <AssociationConnector Association="PortalDbModel.FK_CartItemRegistrations_Carts" />
@@ -18,8 +17,9 @@
         <AssociationConnector Association="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId" />
         <AssociationConnector Association="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId" />
         <AssociationConnector Association="PortalDbModel.FK_Items_Events_EventId" />
-        <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" />
         <EntityTypeShape EntityType="PortalDbModel.Order" Width="1.5" PointX="0.75" PointY="8" />
+        <EntityTypeShape EntityType="PortalDbModel.OrderDetail" Width="1.5" PointX="8.25" PointY="7.5" />
+        <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" />
         <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" />
         </Diagram>
     </edmx:Diagrams>

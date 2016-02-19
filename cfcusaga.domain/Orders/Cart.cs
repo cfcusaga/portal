@@ -1,4 +1,7 @@
-﻿namespace cfcusaga.domain.Orders
+﻿using System;
+using cfcusaga.data;
+
+namespace cfcusaga.domain.Orders
 {
     public class Cart
     {
@@ -10,6 +13,17 @@
         public decimal ItemPrice { get; set; }
         public string ItemName { get; set; }
 
-        //public virtual domain.Events.Item Item { get; set; }
+        public virtual domain.Orders.ItemRegistration ItemRegistration { get; set; }
+
+
+        // TODO
+        public string Lastname { get; set; }
+        public string Firstname { get; set; }
+        public DateTime? BirthDate { get; internal set; }
+        public string Gender { get; set; }
+        public short RelationToMemberTypeId { get; set; }
+        public int? MemberId { get; set; }
+        public string Notes { get; set; }
+        public string Allergies { get; set; }
     }
 }

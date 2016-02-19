@@ -30,6 +30,7 @@ namespace cfcusaga.domain.Orders
         decimal? GetTotal(string shoppingCartId);
         void MigrateCart(string userName, string shoppingCartId);
         void AddCountToItem(string shoppingCartId, int id);
+        void RemoveItemRegistration(int id);
     }
 
     public class ShoppingCartService : IShoppingCartService
@@ -136,7 +137,8 @@ namespace cfcusaga.domain.Orders
                 ItemId = detail.ItemId,
                 OrderId = detail.OrderId,
                 UnitPrice = detail.UnitPrice,
-                Quantity = detail.Quantity
+                Quantity = detail.Quantity,
+                RegistrationDetail = detail.RegistrationDetail
             };
             // Set the order total of the shopping cart
             _db.OrderDetails.Add(entity);
@@ -144,15 +146,26 @@ namespace cfcusaga.domain.Orders
 
         public void EmptyCart(string shoppingCartId)
         {
-            var cartItems = _db.Carts.Where(
-                cart => cart.CartId == shoppingCartId);
-
-            foreach (var cartItem in cartItems)
+            try
             {
-                _db.Carts.Remove(cartItem);
+                var cartItems = _db.Carts.Where(
+            cart => cart.CartId == shoppingCartId).ToList();
+
+                foreach (var cartItem in cartItems)
+                {
+                    var reg = _db.CartItemRegistrations.FirstOrDefault(r => r.CartID == cartItem.ID);
+                    if (reg!=null)
+                        _db.CartItemRegistrations.Remove(reg);
+                    _db.Carts.Remove(cartItem);
+                }
+                // Save changes
+                _db.SaveChanges();
             }
-            // Save changes
-            _db.SaveChanges();
+            catch (Exception ex)
+            {
+                var msg = ex.Message;
+                throw;
+            }
         }
 
         public async Task<List<Cart>> GetCartItems(string shoppingCartId)
@@ -180,19 +193,37 @@ namespace cfcusaga.domain.Orders
             //    cart => cart.CartId == shoppingCartId).ToList();
 
 
-            return await (from c in _db.Carts
-                join i in _db.Items on c.ItemId equals i.ID
-                where c.CartId == shoppingCartId
-                select new Cart()
-                {
-                    CartId = c.CartId,
-                    Id = c.ID,
-                    DateCreated = c.DateCreated,
-                    ItemId = c.ItemId,
-                    ItemName = i.Name,
-                    ItemPrice = i.Price,
-                    Count = c.Count
-                }).ToListAsync();
+            try
+            {
+                return await (from c in _db.Carts
+                              join i in _db.Items on c.ItemId equals i.ID
+                              join r in _db.CartItemRegistrations on c.ID equals  r.CartID
+                              into tmpTbl from tmp in tmpTbl.DefaultIfEmpty()
+                              where c.CartId == shoppingCartId
+                              select new Cart()
+                              {
+                                  CartId = c.CartId,
+                                  Id = c.ID,
+                                  DateCreated = c.DateCreated,
+                                  ItemId = c.ItemId,
+                                  ItemName = i.Name,
+                                  ItemPrice = i.Price,
+                                  Count = c.Count,
+                                  MemberId = (tmp == null) ? null : tmp.MemberId,
+                                  Lastname = (tmp == null) ? "" : tmp.LastName,
+                                  Firstname = (tmp == null) ? "" : tmp.FirstName,
+                                  BirthDate = (tmp == null) ? null : tmp.BirthDate,
+                                  Gender = (tmp == null) ? null : tmp.Gender,
+                                  Notes = (tmp == null) ? null : tmp.Notes,
+                                  Allergies = (tmp == null) ? null : tmp.Allergies,
+                                  RelationToMemberTypeId = (short) ((tmp == null) ? 0 : tmp.RelationToMemberTypeId),
+                              }).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.Message;
+                throw;
+            }
         }
 
         public bool IsValidOrder(int id, string userName)
@@ -290,6 +321,16 @@ namespace cfcusaga.domain.Orders
                         && c.ItemId == id);
             if (aCart != null) aCart.Count++;
              _db.SaveChanges();
+        }
+
+        public void RemoveItemRegistration(int id)
+        {
+            var itemRegistratin = _db.CartItemRegistrations.FirstOrDefault(c => c.CartID == id);
+
+            if (itemRegistratin != null)
+            {
+                _db.CartItemRegistrations.Remove(itemRegistratin);
+            }
         }
 
 
