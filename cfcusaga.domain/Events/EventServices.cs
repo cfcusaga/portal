@@ -146,6 +146,7 @@ namespace cfcusaga.domain.Events
             var item = _db.Set<data.Item>().Create();
 
             //Mapper.Map<Item, data.Item>(newItem, item);
+            item.EventId = newItem.EventId;
             item.Description = newItem.Description;
             item.IsShirtIncluded = newItem.IsShirtIncluded;
             item.IsRequireBirthDateInfo = newItem.IsRequireBirthDateInfo;
@@ -156,7 +157,7 @@ namespace cfcusaga.domain.Events
             item.Price = newItem.Price;
             item.ItemPictureUrl = newItem.ItemPictureUrl;
             item.InternalImage = newItem.InternalImage;
-
+            
             _db.Items.Add(item);
             await _db.SaveChangesAsync();
             return item.ID;
