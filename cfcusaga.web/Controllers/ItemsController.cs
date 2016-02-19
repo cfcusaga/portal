@@ -65,6 +65,7 @@ namespace Cfcusaga.Web.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.ItemId = id;
             return View(item);
         }
 

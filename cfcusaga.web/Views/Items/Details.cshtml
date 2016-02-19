@@ -59,17 +59,17 @@
 <div>
     <h4>Item</h4>
     <hr />
-    <dl class="dl-horizontal">
+    @*<dl class="dl-horizontal">
         <img src="@Url.Action("RenderImage", new { id = Model.Id})" />
-    </dl>
+    </dl>*@
     <dl class="dl-horizontal">
-        <dt>
+        @*<dt>
             @Html.DisplayNameFor(model => model.Catagorie.Name)
         </dt>
 
         <dd>
             @Html.DisplayFor(model => model.Catagorie.Name)
-        </dd>
+        </dd>*@
 
         <dt>
             @Html.DisplayNameFor(model => model.Name)
@@ -87,27 +87,38 @@
             @Html.DisplayFor(model => model.Price)
         </dd>
 
-        <dt>
+        @*<dt>
             @Html.DisplayNameFor(model => model.ItemPictureUrl)
         </dt>
 
         <dd>
             @Html.DisplayFor(model => model.ItemPictureUrl)
-        </dd>
+        </dd>*@
 
     </dl>
 </div>
 <p>
-    <a href="#" class="AddLink"
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            @Html.ActionLink("Add", "Create", "ItemRegistrations", new { itemId = ViewBag.ItemId }, new { @class = "btn btn-primary btn-sm" })
+        </div>
+    </div>
+    <div>
+
+    </div>
+    @*<a href="#" class="AddLink"
        data-id="@Model.Id" data-toggle="modal" data-target="#myModal">
         Add
         to cart
-    </a>
+    </a>*@
     @if (Request.IsAuthenticated && User.IsInRole("Admin"))
     {
-        @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
-        
+        @Html.ActionLink("Edit", "Edit", new {id = Model.Id})
+
     }
-     
+
+
+</p>
+<p>
     @Html.ActionLink("Back to List", "Index")
 </p>

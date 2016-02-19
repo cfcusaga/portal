@@ -54,6 +54,7 @@ namespace cfcusaga.domain.Events
         public int EventId { get; set; }
         public string EventName { get; set; }
 
+        [DisplayName("Category")]
         public virtual Catagory Catagorie { get; set; }
     }
 }
