@@ -77,8 +77,9 @@ namespace cfcusaga.domain.Orders
         [ScaffoldColumn(false)]
         public decimal Total { get; set; }
         public List<OrderDetail> OrderDetails { get; set; }
+        public string CheckNumber { get; set; }
+        public string Notes { get; set; }
 
-       
 
         public string ToString(Order order)
         {

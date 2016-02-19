@@ -145,7 +145,18 @@ namespace cfcusaga.domain.Events
         {
             var item = _db.Set<data.Item>().Create();
 
-            Mapper.Map<Item, data.Item>(newItem, item);
+            //Mapper.Map<Item, data.Item>(newItem, item);
+            item.Description = newItem.Description;
+            item.IsShirtIncluded = newItem.IsShirtIncluded;
+            item.IsRequireBirthDateInfo = newItem.IsRequireBirthDateInfo;
+            item.IsRequireParentWaiver = newItem.IsRequireParentWaiver;
+            item.IsRequireRegistrationInfo = newItem.CatagorieId == 2;// newItem.IsRequireRegistrationInfo;
+            item.Name = newItem.Name;
+            item.CatagoryID = newItem.CatagorieId;
+            item.Price = newItem.Price;
+            item.ItemPictureUrl = newItem.ItemPictureUrl;
+            item.InternalImage = newItem.InternalImage;
+
             _db.Items.Add(item);
             await _db.SaveChangesAsync();
             return item.ID;
@@ -153,14 +164,19 @@ namespace cfcusaga.domain.Events
 
         public async Task<Item> GetEventItemDetails(int? id)
         {
-            var item = await _db.Items.Select(e => new Item()
+            var item = await _db.Items.Select(x => new Item()
             {
-                Id = e.ID,
-                Name =  e.Name,
-                Price = e.Price,
-                ItemPictureUrl = e.ItemPictureUrl,
-                CatagorieId = e.CatagoryID,
-                EventId = (int) e.EventId
+                Id = x.ID,
+                Name =  x.Name,
+                Price = x.Price,
+                ItemPictureUrl = x.ItemPictureUrl,
+                CatagorieId = x.CatagoryID,
+                IsShirtIncluded = x.IsShirtIncluded??false,
+                IsRequireRegistrationInfo =x.IsRequireRegistrationInfo ?? false,
+                IsRequireParentWaiver = x.IsRequireParentWaiver ?? false,
+                IsRequireBirthDateInfo = x.IsRequireBirthDateInfo ?? false,
+                Description = x.Description,
+                EventId = (int) x.EventId
             }).FirstOrDefaultAsync(i => i.Id == id);
             //Mapper.Map(entity, item);
             return item;
@@ -177,6 +193,9 @@ namespace cfcusaga.domain.Events
             //entity.EventId = item.EventId;
             entity.ItemPictureUrl = item.ItemPictureUrl;
             entity.Price = item.Price;
+            entity.IsShirtIncluded = item.IsShirtIncluded;
+            entity.IsRequireBirthDateInfo = item.IsRequireBirthDateInfo;
+            entity.Description = item.Description;
             _db.Entry(entity).State = EntityState.Modified;
             await _db.SaveChangesAsync();
         }

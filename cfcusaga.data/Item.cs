@@ -31,6 +31,8 @@ namespace cfcusaga.data
         public Nullable<bool> IsRequireRegistrationInfo { get; set; }
         public Nullable<bool> IsRequireParentWaiver { get; set; }
         public Nullable<bool> IsRequireBirthDateInfo { get; set; }
+        public Nullable<bool> IsShirtIncluded { get; set; }
+        public string Description { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Cart> Carts { get; set; }

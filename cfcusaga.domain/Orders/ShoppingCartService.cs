@@ -83,7 +83,9 @@ namespace cfcusaga.domain.Orders
                 PostalCode = o.PostalCode,
                 State = o.State,
                 Total = o.Total,
-                Username = o.Username
+                Username = o.Username,
+                CheckNumber = o.CheckNumber,
+                Notes = o.Notes
             }).FirstOrDefault(x => x.Username == name);
             return anOrder;
         }
@@ -95,25 +97,35 @@ namespace cfcusaga.domain.Orders
 
         public async Task AddOrder(Order order)
         {
-            var entity = new data.Order
+            try
             {
-                //Experation = order.Experation,
-                FirstName = order.FirstName,
-                LastName = order.LastName,
-                OrderDate = DateTime.Now,
-                Total = order.Total,
-                Address = order.Address,
-                City = order.City,
-                Country = order.Country,
-                Email = order.Email,
-                Phone = order.Phone,
-                PostalCode = order.PostalCode,
-                State = order.State,
-                Username = order.Username
-            };
-            _db.Orders.Add(entity);
-            await _db.SaveChangesAsync();
-            order.OrderId = entity.OrderId;
+                var entity = new data.Order
+                {
+                    //Experation = order.Experation,
+                    FirstName = order.FirstName,
+                    LastName = order.LastName,
+                    OrderDate = DateTime.Now,
+                    Total = order.Total,
+                    Address = order.Address,
+                    City = order.City,
+                    Country = order.Country,
+                    Email = order.Email,
+                    Phone = order.Phone,
+                    PostalCode = order.PostalCode,
+                    State = order.State,
+                    Username = order.Username,
+                    CheckNumber = order.CheckNumber,
+                    Notes = order.Notes
+                };
+                _db.Orders.Add(entity);
+                await _db.SaveChangesAsync();
+                order.OrderId = entity.OrderId;
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.Message;
+                throw;
+            }
         }
 
         public void AddOrderDetails(OrderDetail detail)

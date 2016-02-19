@@ -101,7 +101,6 @@
     <None Include="packages.config" />
     <EntityDeploy Include="PortalDbModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>PortalDbModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
     <None Include="PortalDbModel.edmx.diagram">
       <DependentUpon>PortalDbModel.edmx</DependentUpon>

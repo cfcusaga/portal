@@ -19,6 +19,7 @@
           <Property Name="Gender" Type="char" MaxLength="1" />
           <Property Name="Notes" Type="varchar" MaxLength="250" />
           <Property Name="Allergies" Type="varchar" MaxLength="250" />
+          <Property Name="TshirtSize" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Carts">
           <Key>
@@ -36,6 +37,7 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="Events">
           <Key>
@@ -64,6 +66,8 @@
           <Property Name="IsRequireRegistrationInfo" Type="bit" />
           <Property Name="IsRequireParentWaiver" Type="bit" />
           <Property Name="IsRequireBirthDateInfo" Type="bit" />
+          <Property Name="IsShirtIncluded" Type="bit" />
+          <Property Name="Description" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="Members">
           <Key>
@@ -112,6 +116,8 @@
           <Property Name="Email" Type="nvarchar(max)" />
           <Property Name="Total" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="SaveInfo" Type="bit" Nullable="false" />
+          <Property Name="CheckNumber" Type="varchar" MaxLength="50" />
+          <Property Name="Notes" Type="varchar" MaxLength="1500" />
         </EntityType>
         <EntityType Name="RelationToMemberTypes">
           <Key>
@@ -265,8 +271,8 @@
           <Property Name="ItemId" Type="Int32" Nullable="false" />
           <Property Name="Count" Type="Int32" Nullable="false" />
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId" FromRole="Cart" ToRole="Item" />
           <NavigationProperty Name="CartItemRegistrations" Relationship="PortalDbModel.FK_CartItemRegistrations_Carts" FromRole="Cart" ToRole="CartItemRegistration" />
+          <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId" FromRole="Cart" ToRole="Item" />
         </EntityType>
         <EntityType Name="Catagory">
           <Key>
@@ -274,6 +280,7 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Items" Relationship="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId" FromRole="Catagory" ToRole="Item" />
         </EntityType>
         <EntityType Name="Event">
@@ -327,6 +334,16 @@
           <EntitySet Name="Events" EntityType="Self.Event" />
           <EntitySet Name="Members" EntityType="Self.Member" />
           <EntitySet Name="OrderDetails" EntityType="Self.OrderDetail" />
+          <EntitySet Name="CartItemRegistrations" EntityType="PortalDbModel.CartItemRegistration" />
+          <EntitySet Name="RelationToMemberTypes" EntityType="PortalDbModel.RelationToMemberType" />
+          <AssociationSet Name="FK_CartItemRegistrations_Carts" Association="PortalDbModel.FK_CartItemRegistrations_Carts">
+            <End Role="Cart" EntitySet="Carts" />
+            <End Role="CartItemRegistration" EntitySet="CartItemRegistrations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CartItemRegistrations_RelationToMemberType" Association="PortalDbModel.FK_CartItemRegistrations_RelationToMemberType">
+            <End Role="RelationToMemberType" EntitySet="RelationToMemberTypes" />
+            <End Role="CartItemRegistration" EntitySet="CartItemRegistrations" />
+          </AssociationSet>
           <EntitySet Name="Items" EntityType="PortalDbModel.Item" />
           <AssociationSet Name="FK_dbo_Carts_dbo_Items_ItemId" Association="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId">
             <End Role="Item" EntitySet="Items" />
@@ -349,17 +366,58 @@
             <End Role="Order" EntitySet="Orders" />
             <End Role="OrderDetail" EntitySet="OrderDetails" />
           </AssociationSet>
-          <EntitySet Name="CartItemRegistrations" EntityType="PortalDbModel.CartItemRegistration" />
-          <EntitySet Name="RelationToMemberTypes" EntityType="PortalDbModel.RelationToMemberType" />
-          <AssociationSet Name="FK_CartItemRegistrations_Carts" Association="PortalDbModel.FK_CartItemRegistrations_Carts">
-            <End Role="Cart" EntitySet="Carts" />
-            <End Role="CartItemRegistration" EntitySet="CartItemRegistrations" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CartItemRegistrations_RelationToMemberType" Association="PortalDbModel.FK_CartItemRegistrations_RelationToMemberType">
-            <End Role="RelationToMemberType" EntitySet="RelationToMemberTypes" />
-            <End Role="CartItemRegistration" EntitySet="CartItemRegistrations" />
-          </AssociationSet>
           </EntityContainer>
+        <EntityType Name="CartItemRegistration">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CartID" Type="Int32" Nullable="false" />
+          <Property Name="MemberId" Type="Int32" />
+          <Property Name="LastName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="FirstName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="BirthDate" Type="DateTime" Precision="3" />
+          <Property Name="RelationToMemberTypeId" Type="Int16" />
+          <Property Name="Gender" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Notes" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Allergies" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Cart" Relationship="PortalDbModel.FK_CartItemRegistrations_Carts" FromRole="CartItemRegistration" ToRole="Cart" />
+          <NavigationProperty Name="RelationToMemberType" Relationship="PortalDbModel.FK_CartItemRegistrations_RelationToMemberType" FromRole="CartItemRegistration" ToRole="RelationToMemberType" />
+          <Property Name="TshirtSize" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="RelationToMemberType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="CartItemRegistrations" Relationship="PortalDbModel.FK_CartItemRegistrations_RelationToMemberType" FromRole="RelationToMemberType" ToRole="CartItemRegistration" />
+        </EntityType>
+        <Association Name="FK_CartItemRegistrations_Carts">
+          <End Type="PortalDbModel.Cart" Role="Cart" Multiplicity="1" />
+          <End Type="PortalDbModel.CartItemRegistration" Role="CartItemRegistration" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cart">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="CartItemRegistration">
+              <PropertyRef Name="CartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CartItemRegistrations_RelationToMemberType">
+          <End Type="PortalDbModel.RelationToMemberType" Role="RelationToMemberType" Multiplicity="0..1" />
+          <End Type="PortalDbModel.CartItemRegistration" Role="CartItemRegistration" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RelationToMemberType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CartItemRegistration">
+              <PropertyRef Name="RelationToMemberTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="Item">
           <Key>
             <PropertyRef Name="ID" />
@@ -371,13 +429,15 @@
           <Property Name="ItemPictureUrl" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
           <Property Name="InternalImage" Type="Binary" MaxLength="Max" FixedLength="false" />
           <Property Name="EventId" Type="Int32" />
+          <Property Name="IsRequireRegistrationInfo" Type="Boolean" />
+          <Property Name="IsRequireParentWaiver" Type="Boolean" />
+          <Property Name="IsRequireBirthDateInfo" Type="Boolean" />
+          <Property Name="IsShirtIncluded" Type="Boolean" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Carts" Relationship="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId" FromRole="Item" ToRole="Cart" />
           <NavigationProperty Name="Catagory" Relationship="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId" FromRole="Item" ToRole="Catagory" />
           <NavigationProperty Name="Event" Relationship="PortalDbModel.FK_Items_Events_EventId" FromRole="Item" ToRole="Event" />
           <NavigationProperty Name="OrderDetails" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" FromRole="Item" ToRole="OrderDetail" />
-          <Property Name="IsRequireRegistrationInfo" Type="Boolean" />
-          <Property Name="IsRequireParentWaiver" Type="Boolean" />
-          <Property Name="IsRequireBirthDateInfo" Type="Boolean" />
         </EntityType>
         <Association Name="FK_dbo_Carts_dbo_Items_ItemId">
           <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
@@ -451,6 +511,8 @@
           <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Total" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <Property Name="SaveInfo" Type="Boolean" Nullable="false" />
+          <Property Name="CheckNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Notes" Type="String" MaxLength="1500" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="OrderDetails" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" FromRole="Order" ToRole="OrderDetail" />
         </EntityType>
         <Association Name="FK_dbo_OrderDetails_dbo_Orders_OrderId">
@@ -464,56 +526,6 @@
             </Principal>
             <Dependent Role="OrderDetail">
               <PropertyRef Name="OrderId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="CartItemRegistration">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CartID" Type="Int32" Nullable="false" />
-          <Property Name="MemberId" Type="Int32" />
-          <Property Name="LastName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="FirstName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="BirthDate" Type="DateTime" Precision="3" />
-          <Property Name="RelationToMemberTypeId" Type="Int16" />
-          <Property Name="Gender" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
-          <Property Name="Notes" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="Allergies" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Cart" Relationship="PortalDbModel.FK_CartItemRegistrations_Carts" FromRole="CartItemRegistration" ToRole="Cart" />
-          <NavigationProperty Name="RelationToMemberType" Relationship="PortalDbModel.FK_CartItemRegistrations_RelationToMemberType" FromRole="CartItemRegistration" ToRole="RelationToMemberType" />
-        </EntityType>
-        <EntityType Name="RelationToMemberType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int16" Nullable="false" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
-          <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="CartItemRegistrations" Relationship="PortalDbModel.FK_CartItemRegistrations_RelationToMemberType" FromRole="RelationToMemberType" ToRole="CartItemRegistration" />
-        </EntityType>
-        <Association Name="FK_CartItemRegistrations_Carts">
-          <End Type="PortalDbModel.Cart" Role="Cart" Multiplicity="1" />
-          <End Type="PortalDbModel.CartItemRegistration" Role="CartItemRegistration" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Cart">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="CartItemRegistration">
-              <PropertyRef Name="CartID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CartItemRegistrations_RelationToMemberType">
-          <End Type="PortalDbModel.RelationToMemberType" Role="RelationToMemberType" Multiplicity="0..1" />
-          <End Type="PortalDbModel.CartItemRegistration" Role="CartItemRegistration" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RelationToMemberType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CartItemRegistration">
-              <PropertyRef Name="RelationToMemberTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -537,6 +549,7 @@
           <EntitySetMapping Name="Catagories">
             <EntityTypeMapping TypeName="PortalDbModel.Catagory">
               <MappingFragment StoreEntitySet="Catagories">
+                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
               </MappingFragment>
@@ -587,45 +600,10 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Items">
-            <EntityTypeMapping TypeName="PortalDbModel.Item">
-              <MappingFragment StoreEntitySet="Items">
-                <ScalarProperty Name="IsRequireBirthDateInfo" ColumnName="IsRequireBirthDateInfo" />
-                <ScalarProperty Name="IsRequireParentWaiver" ColumnName="IsRequireParentWaiver" />
-                <ScalarProperty Name="IsRequireRegistrationInfo" ColumnName="IsRequireRegistrationInfo" />
-                <ScalarProperty Name="EventId" ColumnName="EventId" />
-                <ScalarProperty Name="InternalImage" ColumnName="InternalImage" />
-                <ScalarProperty Name="ItemPictureUrl" ColumnName="ItemPictureUrl" />
-                <ScalarProperty Name="Price" ColumnName="Price" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="CatagoryID" ColumnName="CatagoryID" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Orders">
-            <EntityTypeMapping TypeName="PortalDbModel.Order">
-              <MappingFragment StoreEntitySet="Orders">
-                <ScalarProperty Name="SaveInfo" ColumnName="SaveInfo" />
-                <ScalarProperty Name="Total" ColumnName="Total" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Phone" ColumnName="Phone" />
-                <ScalarProperty Name="Country" ColumnName="Country" />
-                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
-                <ScalarProperty Name="State" ColumnName="State" />
-                <ScalarProperty Name="City" ColumnName="City" />
-                <ScalarProperty Name="Address" ColumnName="Address" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
-                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="CartItemRegistrations">
             <EntityTypeMapping TypeName="PortalDbModel.CartItemRegistration">
               <MappingFragment StoreEntitySet="CartItemRegistrations">
+                <ScalarProperty Name="TshirtSize" ColumnName="TshirtSize" />
                 <ScalarProperty Name="Allergies" ColumnName="Allergies" />
                 <ScalarProperty Name="Notes" ColumnName="Notes" />
                 <ScalarProperty Name="Gender" ColumnName="Gender" />
@@ -645,6 +623,46 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Items">
+            <EntityTypeMapping TypeName="PortalDbModel.Item">
+              <MappingFragment StoreEntitySet="Items">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="IsShirtIncluded" ColumnName="IsShirtIncluded" />
+                <ScalarProperty Name="IsRequireBirthDateInfo" ColumnName="IsRequireBirthDateInfo" />
+                <ScalarProperty Name="IsRequireParentWaiver" ColumnName="IsRequireParentWaiver" />
+                <ScalarProperty Name="IsRequireRegistrationInfo" ColumnName="IsRequireRegistrationInfo" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="InternalImage" ColumnName="InternalImage" />
+                <ScalarProperty Name="ItemPictureUrl" ColumnName="ItemPictureUrl" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CatagoryID" ColumnName="CatagoryID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Orders">
+            <EntityTypeMapping TypeName="PortalDbModel.Order">
+              <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="CheckNumber" ColumnName="CheckNumber" />
+                <ScalarProperty Name="SaveInfo" ColumnName="SaveInfo" />
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

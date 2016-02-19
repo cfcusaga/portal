@@ -31,7 +31,7 @@ namespace Cfcusaga.Web.Controllers
             ViewBag.EventName = anEvent.Name;
 
             ViewBag.CurrentSort = sortOrder;
-            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewBag.PriceSortParm = sortOrder == "Price" ? "price_desc" : "Price";
 
             if (searchString != null)
@@ -61,6 +61,8 @@ namespace Cfcusaga.Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var item = await _svc.GetEventItemDetails(id);
+            //TODO: fix the empty description messing up the display on read-only page
+            //item.Description = string.IsNullOrEmpty(item.Description) ? " " : item.Description;
             if (item == null)
             {
                 return HttpNotFound();
@@ -84,7 +86,7 @@ namespace Cfcusaga.Web.Controllers
             if (ModelState.IsValid)
             {
                 var eventId = EventsController.GetSessionEventId(this.HttpContext);
-                item.EventId = eventId.HasValue ? eventId.Value : 0;
+                item.EventId = eventId ?? 0;
                 await _svc.AddEventItem(item);
                 return RedirectToAction("Index");
             }

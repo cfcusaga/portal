@@ -34,6 +34,8 @@ namespace cfcusaga.data
         public string Email { get; set; }
         public decimal Total { get; set; }
         public bool SaveInfo { get; set; }
+        public string CheckNumber { get; set; }
+        public string Notes { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }

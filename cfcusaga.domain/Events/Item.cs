@@ -56,5 +56,11 @@ namespace cfcusaga.domain.Events
 
         [DisplayName("Category")]
         public virtual Catagory Catagorie { get; set; }
+
+        public bool IsShirtIncluded { get; set; }
+        public bool IsRequireRegistrationInfo { get; set; }
+        public bool IsRequireParentWaiver { get; set; }
+        public bool IsRequireBirthDateInfo { get; set; }
+        public string Description { get; set; }
     }
 }

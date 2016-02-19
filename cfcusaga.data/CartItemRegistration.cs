@@ -24,6 +24,7 @@ namespace cfcusaga.data
         public string Gender { get; set; }
         public string Notes { get; set; }
         public string Allergies { get; set; }
+        public string TshirtSize { get; set; }
     
         public virtual Cart Cart { get; set; }
         public virtual RelationToMemberType RelationToMemberType { get; set; }

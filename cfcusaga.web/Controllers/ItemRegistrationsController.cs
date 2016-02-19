@@ -49,12 +49,16 @@ namespace Cfcusaga.Web.Controllers
         public async Task<ActionResult> Create(int itemId)
         {
             ViewBag.RelationToMemberTypeId = new SelectList(_svc.GetRelationToMemberTypes(), "ID", "Name");
+
             var eventId= EventsController.GetSessionEventId(this.HttpContext);
             var anEvent = await _svc.GetEventDetails(eventId);
             ViewBag.Title = anEvent.Name;
             var item = await _db.Items.FindAsync(itemId);
             ViewBag.SubTitle = item.Name;
             ViewBag.ItemId = itemId;
+            ViewBag.IsRequireBirthDate = item.IsRequireBirthDateInfo ?? false;
+            ViewBag.IsRequireParentWaiver = item.IsRequireParentWaiver ?? false;
+            ViewBag.IsShirtIncluded = item.IsShirtIncluded ?? false;
             return View();
         }
 
@@ -63,7 +67,7 @@ namespace Cfcusaga.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "ID,CartID,MemberId,LastName,FirstName,BirthDate,RelationToMemberType,Gender,Notes,Allergies")] CartItemRegistration itemRegistration)
+        public async Task<ActionResult> Create([Bind(Include = "ID,CartID,MemberId,LastName,FirstName,BirthDate,RelationToMemberType,Gender,Notes,Allergies,TshirtSize")] CartItemRegistration itemRegistration)
         {
             if (ModelState.IsValid)
             {

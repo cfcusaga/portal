@@ -26,8 +26,8 @@ namespace cfcusaga.data
         public int Count { get; set; }
         public System.DateTime DateCreated { get; set; }
     
-        public virtual Item Item { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CartItemRegistration> CartItemRegistrations { get; set; }
+        public virtual Item Item { get; set; }
     }
 }
