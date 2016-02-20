@@ -63,9 +63,19 @@
                     @foreach (var item in Model.CartItems)
                     {
                         <tr id="row-@item.ItemId">
-                            <td>
-                                @Html.ActionLink(item.ItemName, "Details", "Store", new {id = item.Id}, null)
-                            </td>
+                            @if (item.CategoryId == 2)
+                            {
+                                <td>
+                                    @Html.ActionLink(item.ItemName, "Details", "ItemRegistrations", new { id = item.ItemRegistrationId }, null)
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    @Html.ActionLink(item.ItemName, "Details", "Store", new { id = item.Id }, null)
+                                </td>
+                            }
+
                             <td>
                                 @item.ItemPrice
                             </td>

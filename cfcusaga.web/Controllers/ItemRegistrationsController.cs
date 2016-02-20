@@ -61,15 +61,6 @@ namespace Cfcusaga.Web.Controllers
             ViewBag.IsRequireParentWaiver = item.IsRequireParentWaiver ?? false;
             ViewBag.IsShirtIncluded = item.IsShirtIncluded ?? false;
 
-        //[Display(Name = "Adult Small")]
-        //AdultSmall = 1,
-        //[Display(Name = "Adult Medium")]
-        //AdultMedium,
-        //[Display(Name = "Adult Large")]
-        //AdultLarge,
-        //[Display(Name = "Adult X-Large")]
-        //AdultXLarge
-
             var list = new List<SelectListItem>();
             list.Add(new SelectListItem() { Text = "Adult Small", Value = "AdultSmall" });
             list.Add(new SelectListItem() { Text = "Adult Medium", Value = "AdultMedium" });
@@ -103,17 +94,6 @@ namespace Cfcusaga.Web.Controllers
                 _db.CartItemRegistrations.Add(itemRegistration);
                 await _db.SaveChangesAsync();
 
-                //var results = new ShoppingCartRemoveViewModel()
-                //{
-                //    Message = Server.HtmlEncode(foundItem.Name) +
-                //              " has been added to your shopping cart.",
-                //    CartTotal = cart.GetTotal(),
-                //    CartCount = cart.GetCount(),
-                //    ItemCount = count,
-                //    DeleteId = itemId
-                //};
-                //return Json(results);
-
                 return RedirectToAction("Index", "Items" );
             }
 
@@ -132,6 +112,29 @@ namespace Cfcusaga.Web.Controllers
             {
                 return HttpNotFound();
             }
+
+            ViewBag.RelationToMemberTypeId = new SelectList(_svc.GetRelationToMemberTypes(), "ID", "Name");
+
+            var eventId = EventsController.GetSessionEventId(this.HttpContext);
+            var anEvent = await _svc.GetEventDetails(eventId);
+            ViewBag.Title = anEvent.Name;
+
+            var cartItem = await _db.Carts.FindAsync(itemRegistration.CartID);
+
+            var item = await _db.Items.FindAsync(cartItem.ItemId);
+            ViewBag.SubTitle = item.Name;
+            ViewBag.ItemId = item.ID;
+            ViewBag.IsRequireBirthDate = item.IsRequireBirthDateInfo ?? false;
+            ViewBag.IsRequireParentWaiver = item.IsRequireParentWaiver ?? false;
+            ViewBag.IsShirtIncluded = item.IsShirtIncluded ?? false;
+
+            var list = new List<SelectListItem>();
+            list.Add(new SelectListItem() { Text = "Adult Small", Value = "AdultSmall" });
+            list.Add(new SelectListItem() { Text = "Adult Medium", Value = "AdultMedium" });
+            list.Add(new SelectListItem() { Text = "Adult Large", Value = "AdultLarge" });
+            list.Add(new SelectListItem() { Text = "Adult X-Large", Value = "AdultXLarge" });
+            ViewBag.TshirtSizes = list;
+
             return View(itemRegistration);
         }
 

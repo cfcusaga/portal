@@ -175,29 +175,6 @@ namespace cfcusaga.domain.Orders
 
         public async Task<List<Cart>> GetCartItems(string shoppingCartId)
         {
-            //(from op in db.ObjectPermissions
-            // join pg in db.Pages on op.ObjectPermissionName equals page.PageName
-            // where pg.PageID == page.PageID
-            // select new
-            // {
-            //     PermissionName = pg,
-            //     ObjectPermission = op
-            // }).SingleOrDefault();
-            //return _db.Carts.Where(
-            //    cart => cart.CartId == shoppingCartId).ToList();
-
-
-            //return _db.Carts.Select(c=> new domain.Events.Cart()
-            //{
-            //    CartId = c.CartId,
-            //    ID = c.ID,
-            //    DateCreated = c.DateCreated,
-            //    ItemId = c.ItemId
-            //})
-            //.Where(
-            //    cart => cart.CartId == shoppingCartId).ToList();
-
-
             try
             {
                 return await (from c in _db.Carts
@@ -209,11 +186,13 @@ namespace cfcusaga.domain.Orders
                               {
                                   CartId = c.CartId,
                                   Id = c.ID,
+                                  CategoryId = i.CatagoryID,
                                   DateCreated = c.DateCreated,
                                   ItemId = c.ItemId,
                                   ItemName = i.Name,
                                   ItemPrice = i.Price,
                                   Count = c.Count,
+                                  ItemRegistrationId = (tmp == null) ? (int?) null : tmp.ID,
                                   MemberId = (tmp == null) ? null : tmp.MemberId,
                                   Lastname = (tmp == null) ? "" : tmp.LastName,
                                   Firstname = (tmp == null) ? "" : tmp.FirstName,
