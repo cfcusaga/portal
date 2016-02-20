@@ -25,5 +25,7 @@ namespace cfcusaga.domain.Orders
         public int? MemberId { get; set; }
         public string Notes { get; set; }
         public string Allergies { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
     }
 }

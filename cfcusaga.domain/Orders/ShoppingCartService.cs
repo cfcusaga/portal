@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using cfcusaga.data;
+using cfcusaga.domain.Membership;
 using Item = cfcusaga.domain.Events.Item;
+using Member = cfcusaga.domain.Membership.Member;
 
 namespace cfcusaga.domain.Orders
 {
@@ -31,15 +33,18 @@ namespace cfcusaga.domain.Orders
         void MigrateCart(string userName, string shoppingCartId);
         void AddCountToItem(string shoppingCartId, int id);
         void RemoveItemRegistration(int id);
+        void AddMemberDetails(Member aMember);
     }
 
     public class ShoppingCartService : IShoppingCartService
     {
         private readonly PortalDbContext _db;
+        private readonly IMembershipService _memSvc;
 
-        public ShoppingCartService(PortalDbContext db)
+        public ShoppingCartService(PortalDbContext db, IMembershipService memSvc)
         {
             _db = db;
+            _memSvc = memSvc;
         }
 
         public async Task<Item> GetItem(int id)
@@ -331,6 +336,20 @@ namespace cfcusaga.domain.Orders
             {
                 _db.CartItemRegistrations.Remove(itemRegistratin);
             }
+        }
+
+        public void AddMemberDetails(Member item)
+        {
+            var aMember = _db.Set<data.Member>().Create();
+            aMember.LastName = item.LastName;
+            aMember.FirstName = item.Firstname;
+            aMember.BirthDate = item.BirthDate ?? item.BirthDate;
+            aMember.Gender = item.Gender;
+            aMember.Phone = item.Phone;
+            aMember.Email = item.Email;
+            _db.Members.Add(aMember);
+            //_db.SaveChanges();
+            item.Id= aMember.Id;
         }
 
 

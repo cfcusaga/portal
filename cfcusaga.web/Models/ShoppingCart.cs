@@ -35,29 +35,6 @@ namespace Cfcusaga.Web.Models
 
             try
             {
-                //var cartItem = _svc.GetCartItem(ShoppingCartId, item.Id);
-
-                //if (cartItem == null)
-                //{
-
-                //    cartItem = new cfcusaga.domain.Orders.Cart
-                //    {
-                //        ItemId = item.Id,
-                //        CartId = ShoppingCartId,
-                //        Count = 1,
-                //        DateCreated = DateTime.Now
-                //    };
-                //    _svc.AddItemToCart(cartItem);
-                //    //_svc.SaveChanges();
-                //}
-                //else
-                //{
-                //    // If the item does exist in the cart, 
-                //    // then add one to the quantity
-                //    cartItem.Count++;
-                //    _svc.AddCountToItem(ShoppingCartId, item.Id);
-                //}
-
                 var cartItem = new cfcusaga.domain.Orders.Cart
                 {
                     ItemId = item.Id,
@@ -83,29 +60,6 @@ namespace Cfcusaga.Web.Models
 
             try
             {
-                //var cartItem = _svc.GetCartItem(ShoppingCartId, item.Id);
-
-                //if (cartItem == null)
-                //{
-
-                //    cartItem = new cfcusaga.domain.Orders.Cart
-                //    {
-                //        ItemId = item.Id,
-                //        CartId = ShoppingCartId,
-                //        Count = 1,
-                //        DateCreated = DateTime.Now
-                //    };
-                //    _svc.AddItemToCart(cartItem);
-                    
-
-                //}
-                //else
-                //{
-                //    // If the item does exist in the cart, 
-                //    // then add one to the quantity
-                //    cartItem.Count++;
-                //    _svc.AddCountToItem(ShoppingCartId, item.Id);
-                //}
                 var cartItem = new cfcusaga.domain.Orders.Cart
                 {
                     ItemId = item.Id,
@@ -179,6 +133,21 @@ namespace Cfcusaga.Web.Models
                     orderTotal += (item.Count * item.ItemPrice);
                     order.OrderDetails.Add(orderDetail);
                     _svc.AddOrderDetails(orderDetail);
+
+                    if (!item.MemberId.HasValue )
+                    {
+                        var aMember = new cfcusaga.domain.Membership.Member
+                        {
+                            LastName = item.Lastname,
+                            Firstname = item.Firstname,
+                            BirthDate = item.BirthDate ?? item.BirthDate,
+                            Gender = item.Gender,
+                            Phone = item.Phone,
+                            Email = item.Email
+                        };
+                        _svc.AddMemberDetails(aMember);
+                    }
+                    
                     // _svc.RemoveItemRegistration(item.Id);
                 }
                 // Set the order's total to the orderTotal count

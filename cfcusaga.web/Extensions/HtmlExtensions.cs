@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
@@ -69,5 +71,34 @@ namespace Cfcusaga.Web.Extensions
         }
 
         #endregion
+
+
+        public static SelectList ToSelectList<TEnum>(this TEnum enumObj)
+
+        {
+
+            var values = (from TEnum e in Enum.GetValues(typeof(TEnum))
+                          select new { ID = e, Name = (e as Enum).GetDescriptionString() }).ToList();
+            return new SelectList(values, "Id", "Name", enumObj);
+
+        }
+        public static string GetDescriptionString(this Enum val)
+        {
+            try
+            {
+                var attributes = (DescriptionAttribute[])val.GetType().GetField(val.ToString()).GetCustomAttributes(typeof(DescriptionAttribute), false);
+
+                return attributes.Length > 0 ? attributes[0].Description : val.ToString().PascalCaseToPrettyString();
+            }
+            catch (Exception)
+            {
+                return val.ToString().PascalCaseToPrettyString();
+            }
+        }
+
+        public static string PascalCaseToPrettyString(this string s)
+        {
+            return Regex.Replace(s, @"(\B[A-Z]|[0-9]+)", " $1");
+        }
     }
 }

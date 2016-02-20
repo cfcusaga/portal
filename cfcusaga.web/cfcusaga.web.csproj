@@ -235,6 +235,7 @@
     <Compile Include="Models\Analytics.cs" />
     <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\Catagorie.cs" />
+    <Compile Include="Models\Enumerations.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ManageViewModels.cs" />

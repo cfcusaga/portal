@@ -76,6 +76,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\Enums.cs" />
+    <Compile Include="Membership\IMembershipService.cs" />
+    <Compile Include="Membership\Member.cs" />
+    <Compile Include="Membership\MembershipServices.cs" />
     <Compile Include="Orders\Cart.cs" />
     <Compile Include="Events\Event.cs" />
     <Compile Include="Events\EventServices.cs" />

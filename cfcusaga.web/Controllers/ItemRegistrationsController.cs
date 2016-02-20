@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Net;
@@ -59,6 +60,22 @@ namespace Cfcusaga.Web.Controllers
             ViewBag.IsRequireBirthDate = item.IsRequireBirthDateInfo ?? false;
             ViewBag.IsRequireParentWaiver = item.IsRequireParentWaiver ?? false;
             ViewBag.IsShirtIncluded = item.IsShirtIncluded ?? false;
+
+        //[Display(Name = "Adult Small")]
+        //AdultSmall = 1,
+        //[Display(Name = "Adult Medium")]
+        //AdultMedium,
+        //[Display(Name = "Adult Large")]
+        //AdultLarge,
+        //[Display(Name = "Adult X-Large")]
+        //AdultXLarge
+
+            var list = new List<SelectListItem>();
+            list.Add(new SelectListItem() { Text = "Adult Small", Value = "AdultSmall" });
+            list.Add(new SelectListItem() { Text = "Adult Medium", Value = "AdultMedium" });
+            list.Add(new SelectListItem() { Text = "Adult Large", Value = "AdultLarge" });
+            list.Add(new SelectListItem() { Text = "Adult X-Large", Value = "AdultXLarge" });
+            ViewBag.TshirtSizes = list;
             return View();
         }
 

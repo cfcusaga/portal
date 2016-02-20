@@ -10,6 +10,7 @@ using cfcusaga.data;
 using cfcusaga.domain;
 using cfcusaga.domain.Events;
 using cfcusaga.domain.Mappers;
+using cfcusaga.domain.Membership;
 using cfcusaga.domain.Orders;
 using Cfcusaga.Web.Controllers;
 using Cfcusaga.Web.Models;
@@ -41,6 +42,7 @@ namespace Cfcusaga.Web
 
             container.RegisterType<IEventServices, EventServices>();
             container.RegisterType<IShoppingCartService, ShoppingCartService>();
+            container.RegisterType<IMembershipService, MembershipServices>();
 
             //configure/bootstrap the domain layer Automappers. this can be use if not using DI container
             //AutomapperDomainConfiguration.Configure();
