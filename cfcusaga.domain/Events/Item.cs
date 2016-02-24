@@ -61,6 +61,8 @@ namespace cfcusaga.domain.Events
         public bool IsRequireRegistrationInfo { get; set; }
         public bool IsRequireParentWaiver { get; set; }
         public bool IsRequireBirthDateInfo { get; set; }
+        public bool IsRequireTshirtSize { get; set; }
+        public string TshirtSize { get; set; }
         public string Description { get; set; }
     }
 }

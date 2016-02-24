@@ -60,6 +60,68 @@ namespace Cfcusaga.Web.Controllers
             };
             return Json(results);
         }
+
+        [HttpPost]
+        public async Task<ActionResult> AddItemToCart(cfcusaga.data.Item item)
+        {
+            // Retrieve the item from the database
+
+            var foundItem = await _svc.GetItem(item.ID);
+
+            var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
+            int count = cart.AddToCart(foundItem);
+
+            return RedirectToAction("Index", "Items");
+            //var results = new ShoppingCartRemoveViewModel()
+            //{
+            //    Message = Server.HtmlEncode(foundItem.Name) +
+            //              " has been added to your shopping cart.",
+            //    CartTotal = cart.GetTotal(),
+            //    CartCount = cart.GetCount(),
+            //    ItemCount = count,
+            //    DeleteId = item.ID
+            //};
+            //return Json(results);
+        }
+
+        [HttpPost]
+        public RedirectToRouteResult UpdateItemInCart(CartItemViewModel item)
+        {
+            var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
+            var foundItem =  _svc.GetCartItem(cart.ShoppingCartId, item.Id);
+            if (item.CategoryId == (int) CategoryTypeEnum.Tshirt)
+            {
+                if (foundItem.TshirtSize != item.TshirtSize)
+                {
+                    foundItem.TshirtSize = item.TshirtSize;
+                    cart.UpdateCartItem(foundItem);
+                }
+            }
+
+            return RedirectToAction("Index", "Items");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddToCart(int id, string size)
+        {
+            var foundItem = await _svc.GetItem(id);
+
+            var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
+            foundItem.TshirtSize = size;
+            int count = cart.AddToCart(foundItem);
+
+            var results = new ShoppingCartRemoveViewModel()
+            {
+                Message = Server.HtmlEncode(foundItem.Name) +
+                          " has been added to your shopping cart.",
+                CartTotal = cart.GetTotal(),
+                CartCount = cart.GetCount(),
+                ItemCount = count,
+                DeleteId = id
+            };
+            return Json(results);
+        }
+
         //
         // AJAX: /ShoppingCart/RemoveFromCart/5
         [HttpPost]

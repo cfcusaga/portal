@@ -6,6 +6,7 @@ using System.Web;
 using cfcusaga.data;
 using cfcusaga.domain.Orders;
 using Cfcusaga.Web.Extensions;
+using Cfcusaga.Web.ViewModels;
 
 namespace Cfcusaga.Web.Models
 {
@@ -40,7 +41,8 @@ namespace Cfcusaga.Web.Models
                     ItemId = item.Id,
                     CartId = ShoppingCartId,
                     Count = 1,
-                    DateCreated = DateTime.Now
+                    DateCreated = DateTime.Now,
+                    TshirtSize = item.TshirtSize
                 };
                 _svc.AddItemToCart(cartItem);
 
@@ -169,6 +171,11 @@ namespace Cfcusaga.Web.Models
             }
         }
 
+        public void UpdateCartItem(cfcusaga.domain.Orders.Cart foundItem)
+        {
+            _svc.UpdateCartItem(foundItem);
+        }
+
         // We're using HttpContextBase to allow access to cookies.
         public string GetCartId(HttpContextBase context)
         {
@@ -198,5 +205,6 @@ namespace Cfcusaga.Web.Models
             _svc.MigrateCart(userName, ShoppingCartId);
 
         }
+
     }
 }

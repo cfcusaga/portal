@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net;
 using System.Web.Mvc;
@@ -25,6 +26,16 @@ namespace Cfcusaga.Web.Controllers
         public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
             _eventId = EventsController.GetSessionEventId(this.HttpContext);
+            //if (_eventId == null)
+            //{
+            //    if (itemRegistration.Cart.Item.EventId != null)
+            //    {
+            //        eventId = itemRegistration.Cart.Item.EventId;
+            //        EventsController.SetSessionEventId(this.HttpContext, eventId.Value);
+            //    }
+
+            //}
+
 
             //TODO: place this in session
             var anEvent = await _svc.GetEventDetails(_eventId);
@@ -68,6 +79,11 @@ namespace Cfcusaga.Web.Controllers
                 return HttpNotFound();
             }
             ViewBag.ItemId = id;
+
+            //TODO: Remove this duplication from other pages
+            var list = ItemRegistrationsController.GetTShirtSizesList();
+            ViewBag.TshirtSizes = list;
+
             return View(item);
         }
 

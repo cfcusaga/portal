@@ -7,7 +7,7 @@
 <h2>Details</h2>
 
 <div>
-    <h4>ItemRegistration</h4>
+    <h4>@ViewBag.SubTitle</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -39,7 +39,7 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.RelationToMemberType)
+            @Html.DisplayFor(model => model.RelationToMemberType.Name)
         </dd>
 
         <dt>
@@ -70,5 +70,5 @@
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to List", "Index", "Items")
 </p>

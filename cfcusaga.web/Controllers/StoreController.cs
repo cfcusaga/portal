@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
+using AutoMapper.Internal;
 using cfcusaga.data;
+using Cfcusaga.Web.ViewModels;
 
 namespace Cfcusaga.Web.Controllers
 {
@@ -34,9 +37,27 @@ namespace Cfcusaga.Web.Controllers
         // GET: /Store/Details/5
         public ActionResult Details(int id)
         {
-            var item = storeDB.Items.Find(id);
+            ViewBag.Title = "Item";
+            var cartItem = storeDB.Carts.Find(id);
+            var item = storeDB.Items.Find(cartItem.ItemId);
 
-            return View(item);
+            if (item.IsRequireTshirtSize != null && item.IsRequireTshirtSize.Value)
+            {
+                //TODO: Remove this duplication from other pages
+                var list = ItemRegistrationsController.GetTShirtSizesList();
+                ViewBag.TshirtSizes = list;
+            }
+
+            var cartItemModel = new CartItemViewModel();
+            cartItemModel.CategoryId = item.CatagoryID;
+            cartItemModel.Name = item.Name;
+            cartItemModel.ItemPictureUrl = item.ItemPictureUrl;
+            cartItemModel.Id = cartItem.ID;
+            cartItemModel.ItemId = cartItem.ItemId;
+            cartItemModel.Price = item.Price;
+            cartItemModel.IsRequireTshirtSize = item.IsRequireTshirtSize;
+            cartItemModel.TshirtSize = cartItem.TshirtSize;
+            return View(cartItemModel);
         }
 
         //

@@ -9,11 +9,23 @@ using cfcusaga.domain.Events;
 using cfcusaga.domain.Orders;
 using Cfcusaga.Web.Models;
 using Cfcusaga.Web.ViewModel;
+using Cfcusaga.Web.ViewModels;
 
 namespace Cfcusaga.Web.Controllers
 {
     public class ItemRegistrationsController : Controller
     {
+        public static List<SelectListItem> GetTShirtSizesList()
+        {
+            var list = new List<SelectListItem>();
+            list.Add(new SelectListItem() { Text = "Adult Small", Value = "AdultSmall" });
+            list.Add(new SelectListItem() { Text = "Adult Medium", Value = "AdultMedium" });
+            list.Add(new SelectListItem() { Text = "Adult Large", Value = "AdultLarge" });
+            list.Add(new SelectListItem() { Text = "Adult X-Large", Value = "AdultXLarge" });
+            return list;
+        }
+
+
         private readonly IEventServices _svc;
         private readonly IShoppingCartService _cartSvc;
         private readonly PortalDbContext _db;
@@ -43,6 +55,27 @@ namespace Cfcusaga.Web.Controllers
             {
                 return HttpNotFound();
             }
+            var eventId = EventsController.GetSessionEventId(this.HttpContext);
+
+            if (eventId == null)
+            {
+                if (itemRegistration.Cart.Item.EventId != null)
+                {
+                    eventId = itemRegistration.Cart.Item.EventId;
+                    EventsController.SetSessionEventId(this.HttpContext, eventId.Value);
+                }
+
+            }
+
+            var anEvent = await _svc.GetEventDetails(eventId);
+            ViewBag.Title = anEvent.Name;
+
+            var cartItem = await _db.Carts.FindAsync(itemRegistration.CartID);
+
+            var item = await _db.Items.FindAsync(cartItem.ItemId);
+            ViewBag.SubTitle = item.Name;
+
+
             return View(itemRegistration);
         }
 
@@ -61,14 +94,12 @@ namespace Cfcusaga.Web.Controllers
             ViewBag.IsRequireParentWaiver = item.IsRequireParentWaiver ?? false;
             ViewBag.IsShirtIncluded = item.IsShirtIncluded ?? false;
 
-            var list = new List<SelectListItem>();
-            list.Add(new SelectListItem() { Text = "Adult Small", Value = "AdultSmall" });
-            list.Add(new SelectListItem() { Text = "Adult Medium", Value = "AdultMedium" });
-            list.Add(new SelectListItem() { Text = "Adult Large", Value = "AdultLarge" });
-            list.Add(new SelectListItem() { Text = "Adult X-Large", Value = "AdultXLarge" });
+            var list = GetTShirtSizesList();
             ViewBag.TshirtSizes = list;
             return View();
         }
+
+
 
         // POST: ItemRegistrations/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -113,12 +144,20 @@ namespace Cfcusaga.Web.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.RelationToMemberTypeId = new SelectList(_svc.GetRelationToMemberTypes(), "ID", "Name");
+            //ViewBag.RelationToMemberTypeId = new SelectList(_svc.GetRelationToMemberTypes(), "Id", "Name");
 
             var eventId = EventsController.GetSessionEventId(this.HttpContext);
+            if (eventId == null)
+            {
+                if (itemRegistration.Cart.Item.EventId != null)
+                {
+                    eventId = itemRegistration.Cart.Item.EventId;
+                    EventsController.SetSessionEventId(this.HttpContext, eventId.Value);
+                }
+
+            }
             var anEvent = await _svc.GetEventDetails(eventId);
             ViewBag.Title = anEvent.Name;
-
             var cartItem = await _db.Carts.FindAsync(itemRegistration.CartID);
 
             var item = await _db.Items.FindAsync(cartItem.ItemId);
@@ -128,14 +167,25 @@ namespace Cfcusaga.Web.Controllers
             ViewBag.IsRequireParentWaiver = item.IsRequireParentWaiver ?? false;
             ViewBag.IsShirtIncluded = item.IsShirtIncluded ?? false;
 
-            var list = new List<SelectListItem>();
-            list.Add(new SelectListItem() { Text = "Adult Small", Value = "AdultSmall" });
-            list.Add(new SelectListItem() { Text = "Adult Medium", Value = "AdultMedium" });
-            list.Add(new SelectListItem() { Text = "Adult Large", Value = "AdultLarge" });
-            list.Add(new SelectListItem() { Text = "Adult X-Large", Value = "AdultXLarge" });
+            var list = GetTShirtSizesList();
             ViewBag.TshirtSizes = list;
 
-            return View(itemRegistration);
+            var itemRegModel = new ItemRegistrationModel()
+            {
+                LastName = itemRegistration.LastName,
+                MemberId = itemRegistration.MemberId,
+                FirstName = itemRegistration.FirstName,
+                BirthDate = itemRegistration.BirthDate,
+                RelationToMemberTypeId = itemRegistration.RelationToMemberTypeId,
+                Gender = itemRegistration.Gender,
+                TshirtSize = itemRegistration.TshirtSize,
+                Allergies = itemRegistration.Allergies,
+                ID = itemRegistration.ID,
+                CartID = itemRegistration.CartID,
+                RelationToMemberTypes = new SelectList(_svc.GetRelationToMemberTypes(), "Id", "Name")
+        };
+
+            return View(itemRegModel);
         }
 
         // POST: ItemRegistrations/Edit/5
@@ -143,16 +193,45 @@ namespace Cfcusaga.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ID,CartID,MemberId,LastName,FirstName,BirthDate,RelationToMemberType,Gender,Notes,Allergies")] CartItemRegistration itemRegistration)
+        public async Task<ActionResult> Edit([Bind(Include = "ID,CartID,MemberId,LastName,FirstName,BirthDate,RelationToMemberTypeId,Gender,Allergies")] ItemRegistrationModel model)
         {
             if (ModelState.IsValid)
             {
-                _db.Entry(itemRegistration).State = EntityState.Modified;
+                var cartItem = await _db.Carts.FindAsync(model.CartID);
+                var item = await _db.Items.FindAsync(cartItem.ItemId);
+
+                var entity = _db.CartItemRegistrations.Find(model.ID);
+
+                entity.LastName = model.LastName;
+                entity.FirstName = model.FirstName;
+                if (item.IsRequireBirthDateInfo.HasValue && item.IsRequireBirthDateInfo.Value)
+                {
+                    entity.BirthDate = model.BirthDate;
+                }
+                
+                entity.RelationToMemberTypeId = model.RelationToMemberTypeId;
+                entity.Gender = model.Gender;
+                entity.Allergies = model.Allergies;
+                _db.Entry(entity).State = EntityState.Modified;
+
                 await _db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "ShoppingCart");
             }
-            return View(itemRegistration);
+            return View(model);
         }
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<ActionResult> Edit([Bind(Include = "ID,CartID,MemberId,LastName,FirstName,BirthDate,RelationToMemberType,Gender,Notes,Allergies")] CartItemRegistration itemRegistration)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        _db.Entry(itemRegistration).State = EntityState.Modified;
+        //        await _db.SaveChangesAsync();
+        //        return RedirectToAction("Index");
+        //    }
+        //    return View(itemRegistration);
+        //}
 
         // GET: ItemRegistrations/Delete/5
         public async Task<ActionResult> Delete(int? id)

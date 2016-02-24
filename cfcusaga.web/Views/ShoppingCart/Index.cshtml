@@ -1,4 +1,5 @@
-﻿@model Cfcusaga.Web.ViewModels.ShoppingCartViewModel
+﻿@using Cfcusaga.Web.Models
+@model Cfcusaga.Web.ViewModels.ShoppingCartViewModel
 @{
     ViewBag.Title = "Shopping Cart";
 }
@@ -63,13 +64,19 @@
                     @foreach (var item in Model.CartItems)
                     {
                         <tr id="row-@item.ItemId">
-                            @if (item.CategoryId == 2)
+                            @if (item.CategoryId == (int) CategoryTypeEnum.Registration)//registration
                             {
                                 <td>
-                                    @Html.ActionLink(item.ItemName, "Details", "ItemRegistrations", new { id = item.ItemRegistrationId }, null)
+                                    @Html.ActionLink(item.ItemName, "Details", "ItemRegistrations", new {id = item.ItemRegistrationId}, null)
                                 </td>
                             }
-                            else
+                            else if (item.CategoryId == (int)CategoryTypeEnum.Tshirt) //tshirt
+                            {
+                                <td>
+                                    @Html.ActionLink(item.ItemName, "Details", "Store", new { id = item.Id }, null)
+                                </td>
+                            }
+                            else //other item
                             {
                                 <td>
                                     @Html.ActionLink(item.ItemName, "Details", "Store", new { id = item.Id }, null)

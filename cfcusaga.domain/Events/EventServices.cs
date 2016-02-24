@@ -174,6 +174,7 @@ namespace cfcusaga.domain.Events
                 CatagorieId = x.CatagoryID,
                 IsShirtIncluded = x.IsShirtIncluded??false,
                 IsRequireRegistrationInfo =x.IsRequireRegistrationInfo ?? false,
+                IsRequireTshirtSize = x.IsRequireTshirtSize ?? false,
                 IsRequireParentWaiver = x.IsRequireParentWaiver ?? false,
                 IsRequireBirthDateInfo = x.IsRequireBirthDateInfo ?? false,
                 Description = x.Description,
@@ -190,11 +191,12 @@ namespace cfcusaga.domain.Events
             //TODO: Need to find a better to implement this using AutoMapper
 
             entity.Name = item.Name;
-            //entity.CatagoryID = item.CatagorieId;
+            entity.CatagoryID = item.CatagorieId;
             //entity.EventId = item.EventId;
             entity.ItemPictureUrl = item.ItemPictureUrl;
             entity.Price = item.Price;
             entity.IsShirtIncluded = item.IsShirtIncluded;
+            entity.IsRequireTshirtSize = item.IsRequireTshirtSize;
             entity.IsRequireBirthDateInfo = item.IsRequireBirthDateInfo;
             entity.Description = item.Description;
             _db.Entry(entity).State = EntityState.Modified;

@@ -21,7 +21,7 @@ namespace cfcusaga.data
         public decimal UnitPrice { get; set; }
         public string RegistrationDetail { get; set; }
     
-        public virtual Item Item { get; set; }
         public virtual Order Order { get; set; }
+        public virtual Item Item { get; set; }
     }
 }

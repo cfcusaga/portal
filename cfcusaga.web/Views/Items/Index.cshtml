@@ -111,6 +111,11 @@
                 {
                     @Html.ActionLink("Add", "Create", "ItemRegistrations", new {itemId = item.Id}, new {@class = "btn btn-primary btn-xs"})
                 }
+                else if (item.CatagorieId == 3) //Tshirt
+                {
+                    @Html.ActionLink("Add", "Details", "Store", new { id = item.Id }, new { @class = "btn btn-primary btn-xs" })
+                    @*@Html.ActionLink("Add", "Details", new { id = item.Id }, new { @class = "btn btn-primary btn-xs" })*@
+                }
                 else
                 {
                     <a href="#" class="AddLink btn btn-primary btn-xs"

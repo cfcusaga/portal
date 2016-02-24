@@ -34,6 +34,7 @@ namespace cfcusaga.domain.Orders
         void AddCountToItem(string shoppingCartId, int id);
         void RemoveItemRegistration(int id);
         void AddMemberDetails(Member aMember);
+        void UpdateCartItem(Cart foundItem);
     }
 
     public class ShoppingCartService : IShoppingCartService
@@ -331,6 +332,13 @@ namespace cfcusaga.domain.Orders
             item.Id= aMember.Id;
         }
 
+        public void UpdateCartItem(cfcusaga.domain.Orders.Cart cartItem)
+        {
+            var entity = _db.Carts.FirstOrDefault(c => c.ID == cartItem.Id);
+            if (entity != null) entity.TshirtSize = cartItem.TshirtSize;
+            _db.SaveChanges();
+        }
+
 
         //public Cart GetCart(HttpContextBase httpContext)
         //{
@@ -371,6 +379,7 @@ namespace cfcusaga.domain.Orders
             entity.Count = cartItem.Count;
             entity.DateCreated = DateTime.Now.ToUniversalTime();
             entity.ItemId = cartItem.ItemId;
+            entity.TshirtSize = cartItem.TshirtSize;
             _db.Carts.Add(entity);
             _db.SaveChanges();
             cartItem.Id = entity.ID;
