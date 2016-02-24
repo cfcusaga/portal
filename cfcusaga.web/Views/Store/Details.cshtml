@@ -1,4 +1,5 @@
-﻿@model Cfcusaga.Web.ViewModels.CartItemViewModel
+﻿@using Cfcusaga.Web.Models
+@model Cfcusaga.Web.ViewModels.CartItemViewModel
 @{
     ViewBag.Title = "Item - ";// + Model.Name;
 }
@@ -12,6 +13,7 @@
     @Html.HiddenFor(m => m.Id);
     @Html.HiddenFor(m => m.CategoryId);
     @Html.HiddenFor(m => m.ItemId);
+    @Html.HiddenFor(m => m.ReferringUrl)
     @Html.AntiForgeryToken()
     <div id="item-details">
         <p>
@@ -41,11 +43,21 @@
             </p>*@
         }
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+        @if (Model.CategoryId != (int) CategoryTypeEnum.Room)
+        {
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Save" class="btn btn-default"/>
+                </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <p>
+                @Html.ActionLink("Back to List", "Index", "ShoppingCart")
+            </p>
+        }
+
     </div>
 
 }

@@ -67,7 +67,7 @@ namespace Cfcusaga.Web.Controllers
             // Retrieve the item from the database
 
             var foundItem = await _svc.GetItem(item.ID);
-
+            foundItem.TshirtSize = item.TshirtSize;
             var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
             int count = cart.AddToCart(foundItem);
 
@@ -85,7 +85,7 @@ namespace Cfcusaga.Web.Controllers
         }
 
         [HttpPost]
-        public RedirectToRouteResult UpdateItemInCart(CartItemViewModel item)
+        public ActionResult UpdateItemInCart(CartItemViewModel item)
         {
             var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
             var foundItem =  _svc.GetCartItem(cart.ShoppingCartId, item.Id);
@@ -98,29 +98,33 @@ namespace Cfcusaga.Web.Controllers
                 }
             }
 
+            if (item.ReferringUrl != null)
+            {
+                return Redirect(item.ReferringUrl.ToString());
+            }
             return RedirectToAction("Index", "Items");
         }
 
-        [HttpPost]
-        public async Task<ActionResult> AddToCart(int id, string size)
-        {
-            var foundItem = await _svc.GetItem(id);
+        //[HttpPost]
+        //public async Task<ActionResult> AddToCart(int id, string size)
+        //{
+        //    var foundItem = await _svc.GetItem(id);
 
-            var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
-            foundItem.TshirtSize = size;
-            int count = cart.AddToCart(foundItem);
+        //    var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
+        //    foundItem.TshirtSize = size;
+        //    int count = cart.AddToCart(foundItem);
 
-            var results = new ShoppingCartRemoveViewModel()
-            {
-                Message = Server.HtmlEncode(foundItem.Name) +
-                          " has been added to your shopping cart.",
-                CartTotal = cart.GetTotal(),
-                CartCount = cart.GetCount(),
-                ItemCount = count,
-                DeleteId = id
-            };
-            return Json(results);
-        }
+        //    var results = new ShoppingCartRemoveViewModel()
+        //    {
+        //        Message = Server.HtmlEncode(foundItem.Name) +
+        //                  " has been added to your shopping cart.",
+        //        CartTotal = cart.GetTotal(),
+        //        CartCount = cart.GetCount(),
+        //        ItemCount = count,
+        //        DeleteId = id
+        //    };
+        //    return Json(results);
+        //}
 
         //
         // AJAX: /ShoppingCart/RemoveFromCart/5

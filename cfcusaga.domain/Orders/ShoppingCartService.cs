@@ -187,6 +187,7 @@ namespace cfcusaga.domain.Orders
                               {
                                   CartId = c.CartId,
                                   Id = c.ID,
+                                  TshirtSize = c.TshirtSize,
                                   CategoryId = i.CatagoryID,
                                   DateCreated = c.DateCreated,
                                   ItemId = c.ItemId,

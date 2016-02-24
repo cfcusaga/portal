@@ -27,5 +27,14 @@ namespace cfcusaga.domain
             [Display(Name = "Not Applicable")]
             NA = 7
         }
+        public enum CategoryTypeEnum
+        {
+            Registration = 2,
+            Tshirt = 3,
+            Room = 4,
+            Default = 1 //does not have item attributes/details
+        }
     }
+
+
 }

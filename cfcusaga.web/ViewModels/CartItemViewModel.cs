@@ -1,4 +1,6 @@
-﻿namespace Cfcusaga.Web.ViewModels
+﻿using System;
+
+namespace Cfcusaga.Web.ViewModels
 {
     public class CartItemViewModel
     {
@@ -10,5 +12,6 @@
         public bool? IsRequireTshirtSize { get; set; }
         public string TshirtSize { get; set; }
         public int CategoryId { get; set; }
+        public Uri ReferringUrl { get; set; }
     }
 }

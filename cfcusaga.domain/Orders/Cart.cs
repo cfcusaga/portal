@@ -30,5 +30,27 @@ namespace cfcusaga.domain.Orders
         public int CategoryId { get; set; }
         public int? ItemRegistrationId { get; set; }
         public string TshirtSize { get; set; }
+
+        public string DisplayName
+        {
+            get
+            {
+
+                if (ItemRegistrationId.HasValue)
+                {
+                    return $"{ItemName} ({Lastname},{Firstname})";
+                }
+                else if (CategoryId == (int) Enums.CategoryTypeEnum.Tshirt)
+                {
+                    return $"{ItemName} ({TshirtSize})";
+                }
+                else
+                {
+                    return ItemName;
+                }
+            } 
+        }
+
+
     }
 }

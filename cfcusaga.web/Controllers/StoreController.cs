@@ -33,12 +33,10 @@ namespace Cfcusaga.Web.Controllers
             return View(catagorieModel);
         }
 
-        //
-        // GET: /Store/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int cartId)
         {
             ViewBag.Title = "Item";
-            var cartItem = storeDB.Carts.Find(id);
+            var cartItem = storeDB.Carts.Find(cartId);
             var item = storeDB.Items.Find(cartItem.ItemId);
 
             if (item.IsRequireTshirtSize != null && item.IsRequireTshirtSize.Value)
@@ -47,6 +45,8 @@ namespace Cfcusaga.Web.Controllers
                 var list = ItemRegistrationsController.GetTShirtSizesList();
                 ViewBag.TshirtSizes = list;
             }
+
+            //ViewBag.ReferringUrl = Request.UrlReferrer;
 
             var cartItemModel = new CartItemViewModel();
             cartItemModel.CategoryId = item.CatagoryID;
@@ -57,10 +57,11 @@ namespace Cfcusaga.Web.Controllers
             cartItemModel.Price = item.Price;
             cartItemModel.IsRequireTshirtSize = item.IsRequireTshirtSize;
             cartItemModel.TshirtSize = cartItem.TshirtSize;
+            cartItemModel.ReferringUrl = Request.UrlReferrer;
             return View(cartItemModel);
         }
 
-        //
+
         // GET: /Store/GenreMenu
         [ChildActionOnly]
         public ActionResult CatagorieMenu()

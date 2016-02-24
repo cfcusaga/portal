@@ -67,19 +67,19 @@
                             @if (item.CategoryId == (int) CategoryTypeEnum.Registration)//registration
                             {
                                 <td>
-                                    @Html.ActionLink(item.ItemName, "Details", "ItemRegistrations", new {id = item.ItemRegistrationId}, null)
+                                    @Html.ActionLink(item.DisplayName, "Details", "ItemRegistrations", new {id = item.ItemRegistrationId}, null)
                                 </td>
                             }
                             else if (item.CategoryId == (int)CategoryTypeEnum.Tshirt) //tshirt
                             {
                                 <td>
-                                    @Html.ActionLink(item.ItemName, "Details", "Store", new { id = item.Id }, null)
+                                    @Html.ActionLink(item.DisplayName, "Details", "Store", new { cartId = item.Id}, null)
                                 </td>
                             }
                             else //other item
                             {
                                 <td>
-                                    @Html.ActionLink(item.ItemName, "Details", "Store", new { id = item.Id }, null)
+                                    @Html.ActionLink(item.ItemName, "Details", "Store", new { cartId = item.Id }, null)
                                 </td>
                             }
 
