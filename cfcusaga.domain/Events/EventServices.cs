@@ -26,6 +26,8 @@ namespace cfcusaga.domain.Events
         //Task<Item> FindEventItemAsync(int? id);
         Task DeleteEventItem(int id);
         IEnumerable GetRelationToMemberTypes();
+        IEnumerable GetRelationToMemberTypesRequiresParentWaiver();
+        IEnumerable GetRelationToMemberTypesAdults();
     }
 
     public class EventServices : IEventServices
@@ -198,6 +200,7 @@ namespace cfcusaga.domain.Events
             entity.IsShirtIncluded = item.IsShirtIncluded;
             entity.IsRequireTshirtSize = item.IsRequireTshirtSize;
             entity.IsRequireBirthDateInfo = item.IsRequireBirthDateInfo;
+            entity.IsRequireParentWaiver = item.IsRequireParentWaiver;
             entity.Description = item.Description;
             _db.Entry(entity).State = EntityState.Modified;
             await _db.SaveChangesAsync();
@@ -213,6 +216,16 @@ namespace cfcusaga.domain.Events
         public IEnumerable GetRelationToMemberTypes()
         {
             return _db.RelationToMemberTypes;
+        }
+
+        public IEnumerable GetRelationToMemberTypesRequiresParentWaiver()
+        {
+            return _db.RelationToMemberTypes.Where(m => (m.Id == 2) || (m.Id == 9));
+        }
+
+        public IEnumerable GetRelationToMemberTypesAdults()
+        {
+            return _db.RelationToMemberTypes.Where(m => (m.Id == 0) || (m.Id == 1) || (m.Id ==3) || (m.Id == 9));
         }
 
         public async Task<IPagedList<Item>> GetEventItems(int? eventId, string sortOrder, string searchString, int pageSize, int pageNumber)

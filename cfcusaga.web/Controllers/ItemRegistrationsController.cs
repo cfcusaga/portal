@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Threading.Tasks;
@@ -73,6 +74,8 @@ namespace Cfcusaga.Web.Controllers
             var cartItem = await _db.Carts.FindAsync(itemRegistration.CartID);
 
             var item = await _db.Items.FindAsync(cartItem.ItemId);
+            ViewBag.IsShirtIncluded = item.IsShirtIncluded ?? false;
+            ViewBag.IsRequireBirthDate = item.IsRequireBirthDateInfo ?? false;
             ViewBag.SubTitle = item.Name;
 
 
@@ -82,7 +85,7 @@ namespace Cfcusaga.Web.Controllers
         // GET: ItemRegistrations/Create
         public async Task<ActionResult> Create(int itemId)
         {
-            ViewBag.RelationToMemberTypeId = new SelectList(_svc.GetRelationToMemberTypes(), "ID", "Name");
+            //ViewBag.RelationToMemberTypeId = new SelectList(_svc.GetRelationToMemberTypes(), "ID", "Name");
 
             var eventId= EventsController.GetSessionEventId(this.HttpContext);
             var anEvent = await _svc.GetEventDetails(eventId);
@@ -96,7 +99,20 @@ namespace Cfcusaga.Web.Controllers
 
             var list = GetTShirtSizesList();
             ViewBag.TshirtSizes = list;
-            return View();
+
+            var newRegistratinItem = new ItemRegistrationModel();
+            if (item.IsRequireParentWaiver != null && item.IsRequireParentWaiver.Value)
+            {
+                var relationTypes = _svc.GetRelationToMemberTypesRequiresParentWaiver();
+                newRegistratinItem.RelationToMemberTypes = new SelectList(relationTypes, "Id", "Name");
+            }
+            else
+            {
+                var relationTypes = _svc.GetRelationToMemberTypesAdults();
+                newRegistratinItem.RelationToMemberTypes = new SelectList(relationTypes, "Id", "Name");
+            }
+            
+            return View(newRegistratinItem);
         }
 
 
@@ -167,6 +183,16 @@ namespace Cfcusaga.Web.Controllers
             ViewBag.IsRequireParentWaiver = item.IsRequireParentWaiver ?? false;
             ViewBag.IsShirtIncluded = item.IsShirtIncluded ?? false;
 
+            IEnumerable relationTypes;
+            if (item.IsRequireParentWaiver != null && item.IsRequireParentWaiver.Value)
+            {
+                 relationTypes = _svc.GetRelationToMemberTypesRequiresParentWaiver();
+            }
+            else
+            {
+                 relationTypes = _svc.GetRelationToMemberTypesAdults();
+            }
+
             var list = GetTShirtSizesList();
             ViewBag.TshirtSizes = list;
 
@@ -182,7 +208,7 @@ namespace Cfcusaga.Web.Controllers
                 Allergies = itemRegistration.Allergies,
                 ID = itemRegistration.ID,
                 CartID = itemRegistration.CartID,
-                RelationToMemberTypes = new SelectList(_svc.GetRelationToMemberTypes(), "Id", "Name")
+                RelationToMemberTypes = new SelectList(relationTypes, "Id", "Name")
         };
 
             return View(itemRegModel);
@@ -193,7 +219,7 @@ namespace Cfcusaga.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ID,CartID,MemberId,LastName,FirstName,BirthDate,RelationToMemberTypeId,Gender,Allergies")] ItemRegistrationModel model)
+        public async Task<ActionResult> Edit([Bind(Include = "ID,CartID,MemberId,LastName,FirstName,BirthDate,RelationToMemberTypeId,Gender,Allergies,TshirtSize")] ItemRegistrationModel model)
         {
             if (ModelState.IsValid)
             {
@@ -212,6 +238,10 @@ namespace Cfcusaga.Web.Controllers
                 entity.RelationToMemberTypeId = model.RelationToMemberTypeId;
                 entity.Gender = model.Gender;
                 entity.Allergies = model.Allergies;
+                if (model.TshirtSize != null)
+                {
+                    entity.TshirtSize = model.TshirtSize;
+                }
                 _db.Entry(entity).State = EntityState.Modified;
 
                 await _db.SaveChangesAsync();
