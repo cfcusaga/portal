@@ -52,5 +52,6 @@ namespace cfcusaga.domain.Orders
         }
 
         public int? EventId { get; set; }
+        public string RegistrationTshirtSize { get; set; }
     }
 }

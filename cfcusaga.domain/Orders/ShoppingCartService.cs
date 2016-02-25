@@ -118,10 +118,10 @@ namespace cfcusaga.domain.Orders
                 try
                 {
                     decimal orderTotal = 0;
-                    var entity = CreateOrder(order);
-                    _db.Orders.Add(entity);
+                    var dbOrder = CreateOrder(order);
+                    _db.Orders.Add(dbOrder);
                     await _db.SaveChangesAsync();
-                    order.OrderId = entity.OrderId;
+                    order.OrderId = dbOrder.OrderId;
 
                     foreach (var item in cartItems)
                     {
@@ -129,7 +129,7 @@ namespace cfcusaga.domain.Orders
                         var orderDetail = CreateOrderDetail(order, item);
                         // Set the order total of the shopping cart
                         orderTotal += (item.Count * item.ItemPrice);
-                        order.OrderDetails.Add(orderDetail);
+                        //order.OrderDetails.Add(orderDetail);
                         await AddOrderDetails(orderDetail);
 
                         cfcusaga.domain.Membership.Member aMember = null;
@@ -149,8 +149,8 @@ namespace cfcusaga.domain.Orders
 
                     //TODO: Clean the 
                     //order.OrderDetails
-
-                    //_svc.SaveChanges();
+                    dbOrder.Total = order.Total;
+                    await SaveChangesAsync();
                     // Empty the shopping cart
                     EmptyCart(shoppingCartId);
 
@@ -182,6 +182,7 @@ namespace cfcusaga.domain.Orders
 
         private static OrderDetail CreateOrderDetail(Order order, Cart item)
         {
+            var tShirtSize = item.CategoryId == (int) Enums.CategoryTypeEnum.Registration ? item.RegistrationTshirtSize : item.TshirtSize;
             var orderDetail = new cfcusaga.domain.Orders.OrderDetail
             {
                 ItemId = item.ItemId,
@@ -194,7 +195,7 @@ namespace cfcusaga.domain.Orders
                 Gender = item.Gender,
                 BirthDate = item.BirthDate,
                 Allergies = item.Allergies,
-                TshirtSize = item.TshirtSize,
+                TshirtSize = tShirtSize,
                 RegistrationDetail = item.ToJson()
             };
             return orderDetail;
@@ -300,6 +301,7 @@ namespace cfcusaga.domain.Orders
                                   Gender = (tmp == null) ? null : tmp.Gender,
                                   Notes = (tmp == null) ? null : tmp.Notes,
                                   Allergies = (tmp == null) ? null : tmp.Allergies,
+                                  RegistrationTshirtSize = (tmp == null) ? null : tmp.TshirtSize,
                                   RelationToMemberTypeId = (short) ((tmp == null) ? 0 : tmp.RelationToMemberTypeId),
                               }).ToListAsync();
             }
