@@ -34,6 +34,15 @@ namespace cfcusaga.domain
             Room = 4,
             Default = 1 //does not have item attributes/details
         }
+
+        public enum RelationToMe
+        {
+            Self = 0,
+            Spouse = 1,
+            Child = 2,
+            Parent = 3,
+            Other = 9 //not related
+        }
     }
 
 

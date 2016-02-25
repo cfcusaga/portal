@@ -22,7 +22,7 @@ namespace cfcusaga.domain.Orders
         Order GetOrderByIdentity(string name);
         Task SaveChangesAsync();
         Task AddOrder(Order order);
-        void AddOrderDetails(OrderDetail detail);
+        Task AddOrderDetails(OrderDetail detail);
         void EmptyCart(string shoppingCartId);
         Task<List<Cart>> GetCartItems(string shoppingCartId);
         bool IsValidOrder(int id, string userName);
@@ -33,8 +33,9 @@ namespace cfcusaga.domain.Orders
         void MigrateCart(string userName, string shoppingCartId);
         void AddCountToItem(string shoppingCartId, int id);
         void RemoveItemRegistration(int id);
-        void AddMemberDetails(Member aMember);
+        Task AddMemberDetails(Member aMember);
         void UpdateCartItem(Cart foundItem);
+        Task<int> AddEventRegistrations(Member aMember, Order order, Cart item);
     }
 
     public class ShoppingCartService : IShoppingCartService
@@ -46,6 +47,11 @@ namespace cfcusaga.domain.Orders
         {
             _db = db;
             _memSvc = memSvc;
+        }
+
+        public PortalDbContext DbContext
+        {
+            get { return _db; }
         }
 
         public async Task<Item> GetItem(int id)
@@ -135,7 +141,7 @@ namespace cfcusaga.domain.Orders
             }
         }
 
-        public void AddOrderDetails(OrderDetail detail)
+        public async Task AddOrderDetails(OrderDetail detail)
         {
             //portalDB.OrderDetails.Add(detail);
             var entity = new data.OrderDetail
@@ -144,10 +150,18 @@ namespace cfcusaga.domain.Orders
                 OrderId = detail.OrderId,
                 UnitPrice = detail.UnitPrice,
                 Quantity = detail.Quantity,
-                RegistrationDetail = detail.RegistrationDetail
+                RegistrationDetail = detail.RegistrationDetail,
+                Lastname = detail.Lastname,
+                Firstname = detail.Firstname,
+                Gender = detail.Gender,
+                BirthDate = detail.BirthDate,
+                Allergies = detail.Allergies,
+                TshirtSize = detail.TshirtSize
             };
             // Set the order total of the shopping cart
             _db.OrderDetails.Add(entity);
+            await _db.SaveChangesAsync();
+            detail.OrderDetailId = entity.OrderDetailId;
         }
 
         public void EmptyCart(string shoppingCartId)
@@ -193,6 +207,7 @@ namespace cfcusaga.domain.Orders
                                   ItemId = c.ItemId,
                                   ItemName = i.Name,
                                   ItemPrice = i.Price,
+                                  EventId = i.EventId,
                                   Count = c.Count,
                                   ItemRegistrationId = (tmp == null) ? (int?) null : tmp.ID,
                                   MemberId = (tmp == null) ? null : tmp.MemberId,
@@ -319,18 +334,28 @@ namespace cfcusaga.domain.Orders
             }
         }
 
-        public void AddMemberDetails(Member item)
+        public async Task AddMemberDetails(Member item)
         {
-            var aMember = _db.Set<data.Member>().Create();
-            aMember.LastName = item.LastName;
-            aMember.FirstName = item.Firstname;
-            aMember.BirthDate = item.BirthDate ?? item.BirthDate;
-            aMember.Gender = item.Gender;
-            aMember.Phone = item.Phone;
-            aMember.Email = item.Email;
-            _db.Members.Add(aMember);
-            //_db.SaveChanges();
-            item.Id= aMember.Id;
+            try
+            {
+                var aMember = _db.Set<data.Member>().Create();
+                aMember.LastName = item.LastName;
+                aMember.FirstName = item.Firstname;
+                aMember.BirthDate = item.BirthDate ?? item.BirthDate;
+                aMember.Gender = item.Gender;
+                aMember.Phone = item.Phone;
+                aMember.Email = item.Email;
+                aMember.DateCreated = DateTime.Now;
+                aMember.DateModified = DateTime.Now;
+                _db.Members.Add(aMember);
+                await _db.SaveChangesAsync();
+                item.Id = aMember.Id;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
 
         public void UpdateCartItem(cfcusaga.domain.Orders.Cart cartItem)
@@ -338,6 +363,19 @@ namespace cfcusaga.domain.Orders
             var entity = _db.Carts.FirstOrDefault(c => c.ID == cartItem.Id);
             if (entity != null) entity.TshirtSize = cartItem.TshirtSize;
             _db.SaveChanges();
+        }
+
+        public async Task<int> AddEventRegistrations(Member aMember, Order order, Cart item)
+        {
+            var eventReg = _db.Set<data.EventRegistration>().Create();
+            if (item.EventId != null) eventReg.EventId = item.EventId.Value;
+            eventReg.MemberId = aMember.Id;
+            eventReg.OrderId = order.OrderId;
+            eventReg.CreationDate = DateTime.Now;
+            eventReg.ModifiedDate = DateTime.Now;
+            _db.EventRegistrations.Add(eventReg);
+            await _db.SaveChangesAsync();
+            return eventReg.ID;
         }
 
 

@@ -17,8 +17,8 @@ namespace cfcusaga.data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Item()
         {
-            this.OrderDetails = new HashSet<OrderDetail>();
             this.Carts = new HashSet<Cart>();
+            this.OrderDetails = new HashSet<OrderDetail>();
         }
     
         public int ID { get; set; }
@@ -39,8 +39,8 @@ namespace cfcusaga.data
         public virtual Catagory Catagory { get; set; }
         public virtual Event Event { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Cart> Carts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }

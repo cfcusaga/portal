@@ -109,7 +109,7 @@ namespace Cfcusaga.Web.Models
             return total ?? decimal.Zero;
         }
 
-        public async Task<cfcusaga.domain.Orders.Order> CreateOrder(cfcusaga.domain.Orders.Order order)
+        public async Task<cfcusaga.domain.Orders.Order> CreateOrderDetails(cfcusaga.domain.Orders.Order order)
         {
             try
             {
@@ -129,28 +129,33 @@ namespace Cfcusaga.Web.Models
                         UnitPrice = item.ItemPrice,
                         Quantity = item.Count,
                         CartId = item.Id,
+                        Lastname = item.Lastname,
+                        Firstname = item.Firstname,
+                        Gender = item.Gender,
+                        BirthDate = item.BirthDate,
+                        Allergies = item.Allergies,
+                        TshirtSize = item.TshirtSize,
                         RegistrationDetail = js
                     };
                     // Set the order total of the shopping cart
                     orderTotal += (item.Count * item.ItemPrice);
                     order.OrderDetails.Add(orderDetail);
-                    _svc.AddOrderDetails(orderDetail);
+                    await _svc.AddOrderDetails(orderDetail);
 
-                    if (!item.MemberId.HasValue )
+                    cfcusaga.domain.Membership.Member aMember = null;
+                    if (item.CategoryId == (int)CategoryTypeEnum.Registration && !item.MemberId.HasValue )
                     {
-                        var aMember = new cfcusaga.domain.Membership.Member
+                        aMember = new cfcusaga.domain.Membership.Member
                         {
-                            LastName = item.Lastname,
-                            Firstname = item.Firstname,
-                            BirthDate = item.BirthDate ?? item.BirthDate,
-                            Gender = item.Gender,
-                            Phone = item.Phone,
-                            Email = item.Email
+                            LastName = item.Lastname, Firstname = item.Firstname, BirthDate = item.BirthDate ?? item.BirthDate, Gender = item.Gender, Phone = item.Phone, Email = item.Email
                         };
-                        _svc.AddMemberDetails(aMember);
+                        await _svc.AddMemberDetails(aMember);
                     }
-                    
-                    // _svc.RemoveItemRegistration(item.Id);
+                    if (item.CategoryId == (int) CategoryTypeEnum.Registration && aMember != null)
+                    {
+                        await _svc.AddEventRegistrations(aMember, order, item);
+                    }
+                    // _svc.RemoveItemRegistration(item.Id
                 }
                 // Set the order's total to the orderTotal count
                 order.Total = orderTotal;
@@ -158,7 +163,7 @@ namespace Cfcusaga.Web.Models
                 //TODO: Clean the 
                 //order.OrderDetails
 
-                _svc.SaveChanges();
+                //_svc.SaveChanges();
                 // Empty the shopping cart
                 EmptyCart();
                 // Return the OrderId as the confirmation number

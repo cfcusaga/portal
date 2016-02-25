@@ -64,6 +64,9 @@
     <Compile Include="Event.cs">
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="EventRegistration.cs">
+      <DependentUpon>PortalDbModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Item.cs">
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>

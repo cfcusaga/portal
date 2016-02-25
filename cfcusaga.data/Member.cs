@@ -14,6 +14,12 @@ namespace cfcusaga.data
     
     public partial class Member
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Member()
+        {
+            this.EventRegistrations = new HashSet<EventRegistration>();
+        }
+    
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -28,5 +34,10 @@ namespace cfcusaga.data
         public Nullable<bool> IsHeadOfFamily { get; set; }
         public Nullable<int> MotherMemberId { get; set; }
         public Nullable<int> FatherMemberId { get; set; }
+        public System.DateTime DateCreated { get; set; }
+        public System.DateTime DateModified { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EventRegistration> EventRegistrations { get; set; }
     }
 }

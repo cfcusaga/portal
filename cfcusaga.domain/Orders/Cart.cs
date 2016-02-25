@@ -51,6 +51,6 @@ namespace cfcusaga.domain.Orders
             } 
         }
 
-
+        public int? EventId { get; set; }
     }
 }

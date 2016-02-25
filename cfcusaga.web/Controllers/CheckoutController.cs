@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web.Mvc;
 using cfcusaga.domain.Orders;
 using  Cfcusaga.Web.Configuration;
@@ -67,14 +68,16 @@ namespace  Cfcusaga.Web.Controllers
 
             try
             {
-                    order.Username = User.Identity.Name;
-                    order.Email = User.Identity.Name;
-                    order.OrderDate = DateTime.Now;
-                    var currentUserId = User.Identity.GetUserId();
+                order.Username = User.Identity.Name;
+                order.Email = User.Identity.Name;
+                order.OrderDate = DateTime.Now;
+                var currentUserId = User.Identity.GetUserId();
+
 
                     if (order.SaveInfo && !order.Username.Equals("guest@guest.com"))
                     {
-                        var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+                        var manager =
+                            new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
                         var store = new UserStore<ApplicationUser>(new ApplicationDbContext());
                         var ctx = store.Context;
                         var currentUser = manager.FindById(User.Identity.GetUserId());
@@ -93,22 +96,23 @@ namespace  Cfcusaga.Web.Controllers
                         await ctx.SaveChangesAsync();
 
                         //await storeDB.SaveChangesAsync();
-                        await _svc.SaveChangesAsync();
+                        //await _svc.SaveChangesAsync();
                     }
+
 
                     //Save Order
                     await _svc.AddOrder(order);
 
                     //Process the order
-                    var cart = ShoppingCart.GetCart(this.HttpContext,_svc);
+                    var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
 
                     //order = cart.CreateOrder(order);
-                    order = await cart.CreateOrder(order);
+                    order = await cart.CreateOrderDetails(order);
 
-                    CheckoutController.SendOrderMessage(order.FirstName, "New Order: " + order.OrderId,order.ToString(order), appConfig.OrderEmail);
+                    CheckoutController.SendOrderMessage(order.FirstName, "New Order: " + order.OrderId,
+                        order.ToString(order), appConfig.OrderEmail);
                     //CheckoutController.SendOrderMessage_SendGrid(order.FirstName, "New Order: " + order.OrderId,order.ToString(), appConfig.OrderEmail);
-
-                    return RedirectToAction("Complete",
+            return RedirectToAction("Complete",
                         new { id = order.OrderId });
                 
             }

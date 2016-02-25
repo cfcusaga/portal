@@ -17,6 +17,7 @@ namespace cfcusaga.data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Order()
         {
+            this.EventRegistrations = new HashSet<EventRegistration>();
             this.OrderDetails = new HashSet<OrderDetail>();
         }
     
@@ -37,6 +38,8 @@ namespace cfcusaga.data
         public string CheckNumber { get; set; }
         public string Notes { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EventRegistration> EventRegistrations { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }
