@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using cfcusaga.data;
 using cfcusaga.domain.Membership;
+using Cfcusaga.Web.Extensions;
 using Item = cfcusaga.domain.Events.Item;
 using Member = cfcusaga.domain.Membership.Member;
 
@@ -21,7 +22,7 @@ namespace cfcusaga.domain.Orders
         //ShoppingCart GetCart(HttpContextBase httpContext);
         Order GetOrderByIdentity(string name);
         Task SaveChangesAsync();
-        Task AddOrder(Order order);
+        //Task AddOrder(Order order);
         Task AddOrderDetails(OrderDetail detail);
         void EmptyCart(string shoppingCartId);
         Task<List<Cart>> GetCartItems(string shoppingCartId);
@@ -36,6 +37,7 @@ namespace cfcusaga.domain.Orders
         Task AddMemberDetails(Member aMember);
         void UpdateCartItem(Cart foundItem);
         Task<int> AddEventRegistrations(Member aMember, Order order, Cart item);
+        Task AddOrder(Order order, List<cfcusaga.domain.Orders.Cart> cartItems, string shoppingCartId);
     }
 
     public class ShoppingCartService : IShoppingCartService
@@ -108,37 +110,118 @@ namespace cfcusaga.domain.Orders
             return _db.SaveChangesAsync();
         }
 
-        public async Task AddOrder(Order order)
+
+        public async Task AddOrder(Order order, List<cfcusaga.domain.Orders.Cart> cartItems, string shoppingCartId)
         {
-            try
+            using (var dbContextTransaction = _db.Database.BeginTransaction())
             {
-                var entity = new data.Order
+                try
                 {
-                    //Experation = order.Experation,
-                    FirstName = order.FirstName,
-                    LastName = order.LastName,
-                    OrderDate = DateTime.Now,
-                    Total = order.Total,
-                    Address = order.Address,
-                    City = order.City,
-                    Country = order.Country,
-                    Email = order.Email,
-                    Phone = order.Phone,
-                    PostalCode = order.PostalCode,
-                    State = order.State,
-                    Username = order.Username,
-                    CheckNumber = order.CheckNumber,
-                    Notes = order.Notes
-                };
-                _db.Orders.Add(entity);
-                await _db.SaveChangesAsync();
-                order.OrderId = entity.OrderId;
+                    decimal orderTotal = 0;
+                    var entity = CreateOrder(order);
+                    _db.Orders.Add(entity);
+                    await _db.SaveChangesAsync();
+                    order.OrderId = entity.OrderId;
+
+                    foreach (var item in cartItems)
+                    {
+                        var js = item.ToJson();
+                        var orderDetail = CreateOrderDetail(order, item);
+                        // Set the order total of the shopping cart
+                        orderTotal += (item.Count * item.ItemPrice);
+                        order.OrderDetails.Add(orderDetail);
+                        await AddOrderDetails(orderDetail);
+
+                        cfcusaga.domain.Membership.Member aMember = null;
+                        if (item.CategoryId == (int)Enums.CategoryTypeEnum.Registration && !item.MemberId.HasValue)
+                        {
+                            aMember = CreateMember(item);
+                            await AddMemberDetails(aMember);
+                        }
+                        if (item.CategoryId == (int)Enums.CategoryTypeEnum.Registration && aMember != null)
+                        {
+                            await AddEventRegistrations(aMember, order, item);
+                        }
+                        // _svc.RemoveItemRegistration(item.Id
+                    }
+                    // Set the order's total to the orderTotal count
+                    order.Total = orderTotal;
+
+                    //TODO: Clean the 
+                    //order.OrderDetails
+
+                    //_svc.SaveChanges();
+                    // Empty the shopping cart
+                    EmptyCart(shoppingCartId);
+
+
+                    dbContextTransaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    var msg = ex.Message;
+                    dbContextTransaction.Rollback();
+                    throw;
+                }
             }
-            catch (Exception ex)
+
+        }
+
+        private static Member CreateMember(Cart item)
+        {
+            return new cfcusaga.domain.Membership.Member
             {
-                var msg = ex.Message;
-                throw;
-            }
+                LastName = item.Lastname,
+                Firstname = item.Firstname,
+                BirthDate = item.BirthDate ?? item.BirthDate,
+                Gender = item.Gender,
+                Phone = item.Phone,
+                Email = item.Email
+            };
+        }
+
+        private static OrderDetail CreateOrderDetail(Order order, Cart item)
+        {
+            var orderDetail = new cfcusaga.domain.Orders.OrderDetail
+            {
+                ItemId = item.ItemId,
+                OrderId = order.OrderId,
+                UnitPrice = item.ItemPrice,
+                Quantity = item.Count,
+                CartId = item.Id,
+                Lastname = item.Lastname,
+                Firstname = item.Firstname,
+                Gender = item.Gender,
+                BirthDate = item.BirthDate,
+                Allergies = item.Allergies,
+                TshirtSize = item.TshirtSize,
+                RegistrationDetail = item.ToJson()
+            };
+            return orderDetail;
+        }
+
+
+        private static data.Order CreateOrder(Order order)
+        {
+            var entity = new data.Order
+            {
+                //Experation = order.Experation,
+                FirstName = order.FirstName,
+                LastName = order.LastName,
+                OrderDate = DateTime.Now,
+                Total = order.Total,
+                Address = order.Address,
+                City = order.City,
+                Country = order.Country,
+                Email = order.Email,
+                Phone = order.Phone,
+                PostalCode = order.PostalCode,
+                State = order.State,
+                Username = order.Username,
+                CheckNumber = order.CheckNumber,
+                Notes = order.Notes
+            };
+            return entity;
         }
 
         public async Task AddOrderDetails(OrderDetail detail)

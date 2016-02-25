@@ -109,72 +109,72 @@ namespace Cfcusaga.Web.Models
             return total ?? decimal.Zero;
         }
 
-        public async Task<cfcusaga.domain.Orders.Order> CreateOrderDetails(cfcusaga.domain.Orders.Order order)
-        {
-            try
-            {
-                decimal orderTotal = 0;
-                order.OrderDetails = new List<cfcusaga.domain.Orders.OrderDetail>();
+        //public async Task<cfcusaga.domain.Orders.Order> CreateOrderDetails(cfcusaga.domain.Orders.Order order)
+        //{
+        //    try
+        //    {
+        //        decimal orderTotal = 0;
+        //        order.OrderDetails = new List<cfcusaga.domain.Orders.OrderDetail>();
 
-                var cartItems = await GetCartItems();
-                // Iterate over the items in the cart, 
-                // adding the order details for each
-                foreach (var item in cartItems)
-                {
-                    var js = item.ToJson();
-                    var orderDetail = new cfcusaga.domain.Orders.OrderDetail
-                    {
-                        ItemId = item.ItemId,
-                        OrderId = order.OrderId,
-                        UnitPrice = item.ItemPrice,
-                        Quantity = item.Count,
-                        CartId = item.Id,
-                        Lastname = item.Lastname,
-                        Firstname = item.Firstname,
-                        Gender = item.Gender,
-                        BirthDate = item.BirthDate,
-                        Allergies = item.Allergies,
-                        TshirtSize = item.TshirtSize,
-                        RegistrationDetail = js
-                    };
-                    // Set the order total of the shopping cart
-                    orderTotal += (item.Count * item.ItemPrice);
-                    order.OrderDetails.Add(orderDetail);
-                    await _svc.AddOrderDetails(orderDetail);
+        //        var cartItems = await GetCartItems();
+        //        // Iterate over the items in the cart, 
+        //        // adding the order details for each
+        //        foreach (var item in cartItems)
+        //        {
+        //            var js = item.ToJson();
+        //            var orderDetail = new cfcusaga.domain.Orders.OrderDetail
+        //            {
+        //                ItemId = item.ItemId,
+        //                OrderId = order.OrderId,
+        //                UnitPrice = item.ItemPrice,
+        //                Quantity = item.Count,
+        //                CartId = item.Id,
+        //                Lastname = item.Lastname,
+        //                Firstname = item.Firstname,
+        //                Gender = item.Gender,
+        //                BirthDate = item.BirthDate,
+        //                Allergies = item.Allergies,
+        //                TshirtSize = item.TshirtSize,
+        //                RegistrationDetail = js
+        //            };
+        //            // Set the order total of the shopping cart
+        //            orderTotal += (item.Count * item.ItemPrice);
+        //            order.OrderDetails.Add(orderDetail);
+        //            await _svc.AddOrderDetails(orderDetail);
 
-                    cfcusaga.domain.Membership.Member aMember = null;
-                    if (item.CategoryId == (int)CategoryTypeEnum.Registration && !item.MemberId.HasValue )
-                    {
-                        aMember = new cfcusaga.domain.Membership.Member
-                        {
-                            LastName = item.Lastname, Firstname = item.Firstname, BirthDate = item.BirthDate ?? item.BirthDate, Gender = item.Gender, Phone = item.Phone, Email = item.Email
-                        };
-                        await _svc.AddMemberDetails(aMember);
-                    }
-                    if (item.CategoryId == (int) CategoryTypeEnum.Registration && aMember != null)
-                    {
-                        await _svc.AddEventRegistrations(aMember, order, item);
-                    }
-                    // _svc.RemoveItemRegistration(item.Id
-                }
-                // Set the order's total to the orderTotal count
-                order.Total = orderTotal;
+        //            cfcusaga.domain.Membership.Member aMember = null;
+        //            if (item.CategoryId == (int)CategoryTypeEnum.Registration && !item.MemberId.HasValue )
+        //            {
+        //                aMember = new cfcusaga.domain.Membership.Member
+        //                {
+        //                    LastName = item.Lastname, Firstname = item.Firstname, BirthDate = item.BirthDate ?? item.BirthDate, Gender = item.Gender, Phone = item.Phone, Email = item.Email
+        //                };
+        //                await _svc.AddMemberDetails(aMember);
+        //            }
+        //            if (item.CategoryId == (int) CategoryTypeEnum.Registration && aMember != null)
+        //            {
+        //                await _svc.AddEventRegistrations(aMember, order, item);
+        //            }
+        //            // _svc.RemoveItemRegistration(item.Id
+        //        }
+        //        // Set the order's total to the orderTotal count
+        //        order.Total = orderTotal;
 
-                //TODO: Clean the 
-                //order.OrderDetails
+        //        //TODO: Clean the 
+        //        //order.OrderDetails
 
-                //_svc.SaveChanges();
-                // Empty the shopping cart
-                EmptyCart();
-                // Return the OrderId as the confirmation number
-                return order;
-            }
-            catch (Exception ex)
-            {
-                var msg = ex.Message;
-                throw;
-            }
-        }
+        //        //_svc.SaveChanges();
+        //        // Empty the shopping cart
+        //        EmptyCart();
+        //        // Return the OrderId as the confirmation number
+        //        return order;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var msg = ex.Message;
+        //        throw;
+        //    }
+        //}
 
         public void UpdateCartItem(cfcusaga.domain.Orders.Cart foundItem)
         {

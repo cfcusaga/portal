@@ -99,15 +99,17 @@ namespace  Cfcusaga.Web.Controllers
                         //await _svc.SaveChangesAsync();
                     }
 
-
-                    //Save Order
-                    await _svc.AddOrder(order);
-
-                    //Process the order
                     var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
 
+                    var cartItems = await cart.GetCartItems();
+                    //Save Order
+                    await _svc.AddOrder(order, cartItems, cart.ShoppingCartId);
+
+                    //Process the order
+                    
+
                     //order = cart.CreateOrder(order);
-                    order = await cart.CreateOrderDetails(order);
+                    //order = await cart.CreateOrderDetails(order);
 
                     CheckoutController.SendOrderMessage(order.FirstName, "New Order: " + order.OrderId,
                         order.ToString(order), appConfig.OrderEmail);
