@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - CFC USA-GA </title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @*<link rel="stylesheet" href="/Content/card.css">*@
+</head>
+<body>
+
+            <div class="bs-component">
+                <div class="navbar navbar-inverse navbar-fixed-top">
+                    <div class="navbar-header">
+                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                        @Html.ActionLink("CFC USA-GA Portal", "Index", "Home", null, new { @class = "navbar-brand" })
+                    </div>
+                        <div class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav">
+                                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                                @if (Request.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperUser")))
+                                {
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin Area <b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <li>@Html.ActionLink("Orders", "Index", "Orders")</li>
+                                            <li>@Html.ActionLink("Events", "Index", "Events")</li>
+                                            <li>@Html.ActionLink("Catagorie", "Index", "Catagories")</li>
+                                            <li>@Html.ActionLink("Analytics", "Index", "Analytics")</li>
+                                            @if (Request.IsAuthenticated && User.IsInRole("SuperUser"))
+                                            {
+                                                <li class="divider"></li>
+                                                <li class="dropdown-header">Roles Admin</li>
+                                                <li>@Html.ActionLink("RolesAdmin", "Index", "RolesAdmin")</li>
+                                                <li>@Html.ActionLink("UsersAdmin", "Index", "UsersAdmin")</li>
+                                            }
+
+                                        </ul>
+                                    </li>
+                                }
+                                <li>@Html.ActionLink("Event", "Index", "Events")</li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">About us <b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li>@Html.ActionLink("About", "About", "Home")</li>
+                                        <li class="divider"></li>
+                                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            
+                            @Html.Partial("_LoginPartial")
+                           
+                        </div>
+
+                    </div>
+                </div>
+                <br />
+<br/>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                        Start Bootstrap
+                    </a>
+                </li>
+                <li>
+                    <a href="#">Dashboard</a>
+                </li>
+                <li>
+                    <a href="#">Shortcuts</a>
+                </li>
+                <li>
+                    <a href="#">Overview</a>
+                </li>
+                <li>
+                    <a href="#">Events</a>
+                </li>
+                <li>
+                    <a href="#">About</a>
+                </li>
+                <li>
+                    <a href="#">Services</a>
+                </li>
+                <li>
+                    <a href="#">Contact</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- Page Content -->
+        <div class="container-fluid">
+            <div class="row row-offcanvas row-offcanvas-left">
+                <!--/span-->
+                <div class="col-xs-12 col-sm-9">
+                    <br>
+                    @RenderBody()
+                    <div class="row">
+                        <div class="col-6 col-sm-6 col-lg-4">
+                            <h2>Heading R1</h2>
+                            <p>
+                                TEST ootstrap is a front-end framework that uses CSS and JavaScript to facilitate responsive Web design. Bootply is a playground for Bootstrap that enables developers and designers to test, prototype and create mockups using Bootstrap
+                                friendly HTML, CSS and Javascript.
+                            </p>
+                            <p><a class="btn btn-default" href="#">View details »</a></p>
+                        </div>
+                        <!--/span-->
+                        <div class="col-6 col-sm-6 col-lg-4">
+                            <h2>Heading L1</h2>
+                            <p>
+                                Bootply is a playground for Bootstrap that enables developers and designers to test, prototype and create mockups using Bootstrap friendly HTML, CSS and Javascript. Bootstrap is a front-end framework that uses CSS and JavaScript to
+                                facilitate responsive Web design.
+                            </p>
+                            <p><a class="btn btn-default" href="#">View details »</a></p>
+                        </div>
+                        <!--/span-->
+
+
+                        <!--/span-->
+                    </div>
+                    <!--/row-->
+                </div>
+                <!--/span-->
+
+            </div>
+            <!--/row-->
+            <hr>
+            <footer>
+                <p>&copy; @DateTime.Now.Year - CFC USA-GA</p>
+            </footer>
+        </div>
+
+
+                @Scripts.Render("~/bundles/jquery")
+                @Scripts.Render("~/bundles/bootstrap")
+                @RenderSection("scripts", required: false)
+</body>
+</html>

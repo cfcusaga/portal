@@ -261,6 +261,7 @@
     <Content Include="Content\card.css" />
     <Content Include="Content\datepicker.css" />
     <Content Include="Content\PagedList1.css" />
+    <Content Include="Content\simple-sidebar.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -388,6 +389,8 @@
     <Content Include="Views\ItemRegistrations\Details.cshtml" />
     <Content Include="Views\ItemRegistrations\Edit.cshtml" />
     <Content Include="Views\ItemRegistrations\Index.cshtml" />
+    <Content Include="Views\Shared\_LayoutConf.cshtml" />
+    <Content Include="Views\Home\FamilyConf.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

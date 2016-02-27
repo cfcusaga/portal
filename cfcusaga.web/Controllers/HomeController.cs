@@ -20,5 +20,10 @@ namespace  Cfcusaga.Web.Controllers {
 
             return View();
         }
+
+        public ActionResult FamilyConf()
+        {
+            return View();
+        }
     }
 }
