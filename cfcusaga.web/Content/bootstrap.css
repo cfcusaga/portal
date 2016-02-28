@@ -4372,6 +4372,7 @@ a.list-group-item.active > .badge,
   margin-bottom: 30px;
   color: inherit;
   background-color: #fafafa;
+  min-height: 300px;
 }
 .jumbotron h1,
 .jumbotron .h1 {
@@ -4391,7 +4392,7 @@ a.list-group-item.active > .badge,
 @media screen and (min-width: 768px) {
   .jumbotron {
     padding-top: 48px;
-    padding-bottom: 48px;
+    padding-bottom: 28px;
   }
   .container .jumbotron {
     padding-left: 60px;
