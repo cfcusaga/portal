@@ -70,12 +70,13 @@
     }
         </style>*@
 
-<div class="jumbotron" style="background-image: url(~/content/images/frontpage2.png); background-size: 100%;">
-    <h2><b>CFC KIDS Family Conference 2016 Registration</b></h2>
+<div class="jumbotron" style="background-image: url(http://cfcusaga.azurewebsites.net/content/images/frontpage3.png); background-size: 100%;background-repeat: no-repeat">
+    @*<h2><b>CFC KIDS Family Conference 2016 Registration</b></h2>*@
     <p class="lead"><b>June 18-19, 2016</b></p>
     <p class="lead">
-        <a href="http://www.rockeagle4h.org/index.html" target="_blank">4H Rock Eagle</a><br/>
-        Eatonton, GA</p>
+        <a href="http://www.rockeagle4h.org/index.html" target="_blank">4H Rock Eagle</a><br />
+        Eatonton, GA
+    </p>
     <p>
         <ul>
             Early Bird Registration until May 1st, 2016
@@ -85,7 +86,7 @@
         </ul>
     </p>
     <p>
-        <button type="button" class="btn btn-primary btn-large" onclick="location.href = '@Url.Action("Register", "Items", new {eventId = 7})'">Register Now &raquo;</button>
+        <button type="button" class="btn btn-primary" onclick="location.href = '@Url.Action("Register", "Items", new {eventId = 7})'">Register Now &raquo;</button>
         <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">FAQ</button>
         <a href="https://facebook.com/groups/cfckidsfamilyconf2016se" title="Facebook" class="btn btn-facebook"><i class="fa fa-facebook fa-fw"></i> Facebook</a>
     </p>
@@ -119,30 +120,32 @@
     </div>
     <div class="col-md-6">
         <h2> </h2>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/IYL3760e2BQ" frameborder="0" allowfullscreen></iframe>
-    </div>
-
-
-
-
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog" style="width: 60%;height: 500px">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="px">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">FAQ</h4>
-            </div>
-            <div class="modal-body">
-                <iframe src="https://docs.google.com/document/d/1LiaapQOE7WIsgWysC36LIc_dvt8louUk5qEuiG8QDlU/pub?embedded=true" width="100%" height="500px" frameborder="0" allowtransparency="true"></iframe>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
+        <div class="embed-responsive embed-responsive-4by3">
+            <iframe class="embed-responsive-item" width="100%" height="315" src="https://www.youtube.com/embed/IYL3760e2BQ" frameborder="0" ></iframe>
         </div>
-        <!-- /.modal-content -->
     </div>
-    <!-- /.modal-dialog -->
-</div>
+
+
+
+
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="px">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">FAQ</h4>
+                </div>
+                <div class="modal-body">
+                    <iframe src="https://docs.google.com/document/d/1LiaapQOE7WIsgWysC36LIc_dvt8louUk5qEuiG8QDlU/pub?embedded=true" width="100%" height="400px" frameborder="0" allowtransparency="true"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
