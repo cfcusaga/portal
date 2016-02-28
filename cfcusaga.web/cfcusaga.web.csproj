@@ -260,6 +260,13 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\card.css" />
     <Content Include="Content\datepicker.css" />
+    <Content Include="Content\facebook.css" />
+    <Content Include="Content\images\frontpage.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\images\frontpage1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\PagedList1.css" />
     <Content Include="Content\simple-sidebar.css" />
     <Content Include="favicon.ico" />

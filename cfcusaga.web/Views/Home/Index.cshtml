@@ -2,22 +2,75 @@
     ViewBag.Title = "Home Page";
 }
 @*<style type="text/css">
-.container_frame {
-    position: relative;
-    width: 100%;
-    height: 0;
-    padding-bottom: 56.25%;
+    .homepage-hero-module {
+      border-right: none;
+      border-left: none;
+      position: relative;
+    }
+    .no-video .video-container video,
+    .touch .video-container video {
+      display: none;
+    }
+    .no-video .video-container .poster,
+    .touch .video-container .poster {
+      display: block !important;
+    }
+    .video-container {
+      position: relative;
+      bottom: 0%;
+      left: 0%;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+    .video-container .poster img {
+      width: 100%;
+      bottom: 0;
+      position: absolute;
+    }
+    .video-container .filter {
+      z-index: 100;
+      position: absolute;
+      background: rgba(0, 0, 0, 0.4);
+      width: 100%;
+    }
+    .video-container .title-container {
+      z-index: 1000;
+      position: absolute;
+      top: 35%;
+      width: 100%;
+      text-align: center;
+      color: #fff;
+    }
+    .video-container .description .inner {
+      font-size: 1em;
+      width: 45%;
+      margin: 0 auto;
+    }
+    .video-container .link {
+      position: absolute;
+      bottom: 3em;
+      width: 100%;
+      text-align: center;
+      z-index: 1001;
+      font-size: 2em;
+      color: #fff;
+    }
+    .video-container .link a {
+      color: #fff;
+    }
+    .video-container video {
+      position: absolute;
+      z-index: 0;
+      bottom: 0;
+    }
+    .video-container video.fillWidth {
+      width: 100%;
 }
-.video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-</style>*@
+    </style>*@
 
-<div class="jumbotron">
+<div class="jumbotron" style="background-image: url(~/Content/images/frontpage1.png); background-size: 100%;">
     <h1>CFC KIDS Family Conference 2016 Registration</h1>
     <p class="lead">June 18-19, 2016</p>
     <p class="lead">4H Rock Eagle</p>
@@ -25,6 +78,7 @@
     <p>
         <button type="button" class="btn btn-primary btn-large" onclick="location.href = '@Url.Action("Register", "Items", new {eventId = 7})'">Register Now &raquo;</button>
         <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">FAQ</button>
+        <a href="https://facebook.com/groups/cfckidsfamilyconf2016se" title="Facebook" class="btn btn-facebook"><i class="fa fa-facebook fa-fw"></i> Facebook</a>
     </p>
 </div>
 
