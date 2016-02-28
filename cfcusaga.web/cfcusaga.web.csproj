@@ -269,6 +269,7 @@
     </Content>
     <Content Include="Content\images\frontpage2.png" />
     <Content Include="Content\images\frontpage3.png" />
+    <Content Include="Content\images\frontpage4.png" />
     <Content Include="Content\PagedList1.css" />
     <Content Include="Content\simple-sidebar.css" />
     <Content Include="favicon.ico" />
