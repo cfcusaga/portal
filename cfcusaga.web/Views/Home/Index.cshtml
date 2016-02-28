@@ -2,79 +2,88 @@
     ViewBag.Title = "Home Page";
 }
 @*<style type="text/css">
-    .homepage-hero-module {
-      border-right: none;
-      border-left: none;
-      position: relative;
+        .homepage-hero-module {
+          border-right: none;
+          border-left: none;
+          position: relative;
+        }
+        .no-video .video-container video,
+        .touch .video-container video {
+          display: none;
+        }
+        .no-video .video-container .poster,
+        .touch .video-container .poster {
+          display: block !important;
+        }
+        .video-container {
+          position: relative;
+          bottom: 0%;
+          left: 0%;
+          height: 100%;
+          width: 100%;
+          overflow: hidden;
+          background: #000;
+        }
+        .video-container .poster img {
+          width: 100%;
+          bottom: 0;
+          position: absolute;
+        }
+        .video-container .filter {
+          z-index: 100;
+          position: absolute;
+          background: rgba(0, 0, 0, 0.4);
+          width: 100%;
+        }
+        .video-container .title-container {
+          z-index: 1000;
+          position: absolute;
+          top: 35%;
+          width: 100%;
+          text-align: center;
+          color: #fff;
+        }
+        .video-container .description .inner {
+          font-size: 1em;
+          width: 45%;
+          margin: 0 auto;
+        }
+        .video-container .link {
+          position: absolute;
+          bottom: 3em;
+          width: 100%;
+          text-align: center;
+          z-index: 1001;
+          font-size: 2em;
+          color: #fff;
+        }
+        .video-container .link a {
+          color: #fff;
+        }
+        .video-container video {
+          position: absolute;
+          z-index: 0;
+          bottom: 0;
+        }
+        .video-container video.fillWidth {
+          width: 100%;
     }
-    .no-video .video-container video,
-    .touch .video-container video {
-      display: none;
-    }
-    .no-video .video-container .poster,
-    .touch .video-container .poster {
-      display: block !important;
-    }
-    .video-container {
-      position: relative;
-      bottom: 0%;
-      left: 0%;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-      background: #000;
-    }
-    .video-container .poster img {
-      width: 100%;
-      bottom: 0;
-      position: absolute;
-    }
-    .video-container .filter {
-      z-index: 100;
-      position: absolute;
-      background: rgba(0, 0, 0, 0.4);
-      width: 100%;
-    }
-    .video-container .title-container {
-      z-index: 1000;
-      position: absolute;
-      top: 35%;
-      width: 100%;
-      text-align: center;
-      color: #fff;
-    }
-    .video-container .description .inner {
-      font-size: 1em;
-      width: 45%;
-      margin: 0 auto;
-    }
-    .video-container .link {
-      position: absolute;
-      bottom: 3em;
-      width: 100%;
-      text-align: center;
-      z-index: 1001;
-      font-size: 2em;
-      color: #fff;
-    }
-    .video-container .link a {
-      color: #fff;
-    }
-    .video-container video {
-      position: absolute;
-      z-index: 0;
-      bottom: 0;
-    }
-    .video-container video.fillWidth {
-      width: 100%;
-}
-    </style>*@
+        </style>*@
 
-<div class="jumbotron" style="background-image: url(~/Content/images/frontpage1.png); background-size: 100%;">
-    <h1>CFC KIDS Family Conference 2016 Registration</h1>
-    <p class="lead">June 18-19, 2016</p>
-    <p class="lead">4H Rock Eagle</p>
-    <p class="lead">Eatonton, GA</p>
+<div class="jumbotron" style="background-image: url(~/content/images/frontpage2.png); background-size: 100%;">
+    <h2><b>CFC KIDS Family Conference 2016 Registration</b></h2>
+    <p class="lead"><b>June 18-19, 2016</b></p>
+    <p class="lead">
+        <a href="http://www.rockeagle4h.org/index.html" target="_blank">4H Rock Eagle</a><br/>
+        Eatonton, GA</p>
+    <p>
+        <ul>
+            Early Bird Registration until May 1st, 2016
+            <li>$85 per Child Participant, $75 for the 3rd Sibling+ of the Participant</li>
+            <li>$55 per Youth, $55 per Parent or Guardian or Guest</li>
+
+        </ul>
+    </p>
     <p>
         <button type="button" class="btn btn-primary btn-large" onclick="location.href = '@Url.Action("Register", "Items", new {eventId = 7})'">Register Now &raquo;</button>
         <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">FAQ</button>
@@ -101,11 +110,11 @@
             Help us to rejoice at all times and to not be afraid. Fill us with your peace as we claim your glory in the upcoming CFC Kids Family Conference.
         </p>
         <p>
-            Father in heaven, we thank you for our families.<br/>
-            Jesus, our brother, stay with us always.<br/>
-            Holy Spirit, be with us always<br/>
-            Mama Mary, our mother, pray for us, your children.<br/>
-
+            Father in heaven, we thank you for our families.<br />
+            Jesus, our brother, stay with us always.<br />
+            Holy Spirit, be with us always<br />
+            Mama Mary, our mother, pray for us, your children.<br />
+            <b>Amen.</b>
         </p>
     </div>
     <div class="col-md-6">
@@ -127,7 +136,7 @@
                 <h4 class="modal-title" id="myModalLabel">FAQ</h4>
             </div>
             <div class="modal-body">
-                <iframe src="https://docs.google.com/document/d/1LiaapQOE7WIsgWysC36LIc_dvt8louUk5qEuiG8QDlU/pub?embedded=true"  width="100%" height="500px" frameborder="0" allowtransparency="true"></iframe>
+                <iframe src="https://docs.google.com/document/d/1LiaapQOE7WIsgWysC36LIc_dvt8louUk5qEuiG8QDlU/pub?embedded=true" width="100%" height="500px" frameborder="0" allowtransparency="true"></iframe>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

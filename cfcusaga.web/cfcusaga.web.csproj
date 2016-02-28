@@ -267,6 +267,7 @@
     <Content Include="Content\images\frontpage1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\images\frontpage2.png" />
     <Content Include="Content\PagedList1.css" />
     <Content Include="Content\simple-sidebar.css" />
     <Content Include="favicon.ico" />
