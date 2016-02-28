@@ -1,12 +1,31 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
+@*<style type="text/css">
+.container_frame {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%;
+}
+.video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+</style>*@
 
 <div class="jumbotron">
     <h1>CFC KIDS Family Conference 2016 Registration</h1>
     <p class="lead">June 18-19, 2016</p>
+    <p class="lead">4H Rock Eagle</p>
     <p class="lead">Eatonton, GA</p>
-    <p><button type="button" class="btn btn-primary btn-large" onclick="location.href='@Url.Action("Register", "Items", new {eventId=7})'">Register Now &raquo;</button></p>
+    <p>
+        <button type="button" class="btn btn-primary btn-large" onclick="location.href = '@Url.Action("Register", "Items", new {eventId = 7})'">Register Now &raquo;</button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">FAQ</button>
+    </p>
 </div>
 
 <div class="row">
@@ -28,19 +47,39 @@
             Help us to rejoice at all times and to not be afraid. Fill us with your peace as we claim your glory in the upcoming CFC Kids Family Conference.
         </p>
         <p>
-            Father in heaven, we thank you for our families.<br />
-            Jesus, our brother, stay with us always.<br />
-            Holy Spirit, be with us always<br />
-            Mama Mary, our mother, pray for us, your children.<br />
+            Father in heaven, we thank you for our families.<br/>
+            Jesus, our brother, stay with us always.<br/>
+            Holy Spirit, be with us always<br/>
+            Mama Mary, our mother, pray for us, your children.<br/>
 
         </p>
     </div>
     <div class="col-md-6">
-        <h2>    </h2>
+        <h2> </h2>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/IYL3760e2BQ" frameborder="0" allowfullscreen></iframe>
     </div>
 
 
 
 
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 60%;height: 500px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="px">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">FAQ</h4>
+            </div>
+            <div class="modal-body">
+                <iframe src="https://docs.google.com/document/d/1LiaapQOE7WIsgWysC36LIc_dvt8louUk5qEuiG8QDlU/pub?embedded=true"  width="100%" height="500px" frameborder="0" allowtransparency="true"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
 </div>
