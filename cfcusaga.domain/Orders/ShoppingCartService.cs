@@ -23,7 +23,7 @@ namespace cfcusaga.domain.Orders
         Order GetOrderByIdentity(string name);
         Task SaveChangesAsync();
         //Task AddOrder(Order order);
-        Task AddOrderDetails(OrderDetail detail);
+        Task SaveOrderDetails(OrderDetail detail);
         void EmptyCart(string shoppingCartId);
         Task<List<Cart>> GetCartItems(string shoppingCartId);
         bool IsValidOrder(int id, string userName);
@@ -122,15 +122,17 @@ namespace cfcusaga.domain.Orders
                     _db.Orders.Add(dbOrder);
                     await _db.SaveChangesAsync();
                     order.OrderId = dbOrder.OrderId;
-
+                    List<OrderDetail> orderDetails;
                     foreach (var item in cartItems)
                     {
                         var js = item.ToJson();
-                        var orderDetail = CreateOrderDetail(order, item);
+                         var orderDetail = CreateOrderDetail(order, item);
+                        order.OrderDetails.Add(orderDetail);
                         // Set the order total of the shopping cart
                         orderTotal += (item.Count * item.ItemPrice);
+                        
                         //order.OrderDetails.Add(orderDetail);
-                        await AddOrderDetails(orderDetail);
+                        await SaveOrderDetails(orderDetail);
 
                         cfcusaga.domain.Membership.Member aMember = null;
                         if (item.CategoryId == (int)Enums.CategoryTypeEnum.Registration && !item.MemberId.HasValue)
@@ -144,6 +146,7 @@ namespace cfcusaga.domain.Orders
                         }
                         // _svc.RemoveItemRegistration(item.Id
                     }
+                    
                     // Set the order's total to the orderTotal count
                     order.Total = orderTotal;
 
@@ -225,7 +228,7 @@ namespace cfcusaga.domain.Orders
             return entity;
         }
 
-        public async Task AddOrderDetails(OrderDetail detail)
+        public async Task SaveOrderDetails(OrderDetail detail)
         {
             //portalDB.OrderDetails.Add(detail);
             var entity = new data.OrderDetail

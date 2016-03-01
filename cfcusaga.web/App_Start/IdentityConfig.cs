@@ -15,6 +15,7 @@ using Microsoft.Owin.Security;
 using RestSharp;
 using System.Net.Mail;
 using System.Net;
+using SendGrid;
 
 namespace  Cfcusaga.Web
 {
@@ -29,8 +30,61 @@ namespace  Cfcusaga.Web
 
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
         {
-            var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
+            var appDbContext = context.Get<ApplicationDbContext>();
+            var appUserManager = new ApplicationUserManager(new UserStore<ApplicationUser>(appDbContext));
+
             // Configure validation logic for usernames
+            appUserManager.UserValidator = new UserValidator<ApplicationUser>(appUserManager)
+            {
+                AllowOnlyAlphanumericUserNames = true,
+                RequireUniqueEmail = true
+            };
+
+            // Configure validation logic for passwords
+            appUserManager.PasswordValidator = new PasswordValidator
+            {
+                RequiredLength = 6,
+                RequireNonLetterOrDigit = true,
+                RequireDigit = true,
+                RequireLowercase = false,
+                RequireUppercase = false,
+            };
+
+            appUserManager.EmailService = new EmailService();
+
+            var dataProtectionProvider = options.DataProtectionProvider;
+            if (dataProtectionProvider != null)
+            {
+                appUserManager.UserTokenProvider = new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("ASP.NET Identity"))
+                {
+                    //Code for email confirmation and reset password life time
+                    TokenLifespan = TimeSpan.FromHours(6)
+                };
+            }
+
+            return appUserManager;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public static ApplicationUserManager Create_Orig(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
+        {
+            var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
             manager.UserValidator = new UserValidator<ApplicationUser>(manager)
             {
                 AllowOnlyAlphanumericUserNames = false,
@@ -155,25 +209,38 @@ namespace  Cfcusaga.Web
             return Task.FromResult(0);
         }
 
-        public static RestResponse SendRegistrationMessage(IdentityMessage message)
+        public static async Task SendRegistrationMessage(IdentityMessage message)
         {
-            RestClient client = new RestClient();
-            AppConfigurations appConfig = new AppConfigurations();
-            client.BaseUrl = "https://api.mailgun.net/v2";
-            client.Authenticator =
-                   new HttpBasicAuthenticator("api",
-                                              appConfig.EmailApiKey);
-            RestRequest request = new RestRequest();
-            request.AddParameter("domain",
-                                appConfig.DomainForApiKey, ParameterType.UrlSegment);
-            request.Resource = "{domain}/messages";
-            request.AddParameter("from", appConfig.FromName + " <" + appConfig.FromEmail + ">");
-            request.AddParameter("to", "User <" + message.Destination + ">");
-            request.AddParameter("subject", message.Subject);
-            request.AddParameter("html", message.Body);
-            request.Method = Method.POST;
-            IRestResponse executor = client.Execute(request);
-            return executor as RestResponse;
+            //RestClient client = new RestClient();
+            //AppConfigurations appConfig = new AppConfigurations();
+            //client.BaseUrl = "https://api.mailgun.net/v2";
+            //client.Authenticator =
+            //       new HttpBasicAuthenticator("api",
+            //                                  appConfig.EmailApiKey);
+            //RestRequest request = new RestRequest();
+            //request.AddParameter("domain",
+            //                    appConfig.DomainForApiKey, ParameterType.UrlSegment);
+            //request.Resource = "{domain}/messages";
+            //request.AddParameter("from", appConfig.FromName + " <" + appConfig.FromEmail + ">");
+            //request.AddParameter("to", "User <" + message.Destination + ">");
+            //request.AddParameter("subject", message.Subject);
+            //request.AddParameter("html", message.Body);
+            //request.Method = Method.POST;
+            //IRestResponse executor = client.Execute(request);
+            //return executor as RestResponse;
+
+
+            var appConfig = new AppConfigurations();
+
+            var myMessage = new SendGridMessage();
+            myMessage.AddTo(message.Destination);
+            myMessage.From = new MailAddress(appConfig.FromEmail, appConfig.FromName);
+            myMessage.Subject = message.Subject;
+            myMessage.Html = message.Body;
+
+            var transportWeb = new SendGrid.Web(appConfig.EmailApiKey);
+
+            await transportWeb.DeliverAsync(myMessage);
         }
 
         //TODO

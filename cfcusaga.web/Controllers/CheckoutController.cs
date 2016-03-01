@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using RestSharp;
 using Cfcusaga.Web.Models;
+using SendGrid;
 
 namespace  Cfcusaga.Web.Controllers
 {
@@ -89,7 +90,7 @@ namespace  Cfcusaga.Web.Controllers
                         currentUser.Phone = order.Phone;
                         currentUser.PostalCode = order.PostalCode;
                         currentUser.FirstName = order.FirstName;
-
+                        
                         //Save this back
                         //http://stackoverflow.com/questions/20444022/updating-user-data-asp-net-identity
                         //var result = await UserManager.UpdateAsync(currentUser);
@@ -111,7 +112,7 @@ namespace  Cfcusaga.Web.Controllers
                     //order = cart.CreateOrder(order);
                     //order = await cart.CreateOrderDetails(order);
 
-                    CheckoutController.SendOrderMessage(order.FirstName, "New Order: " + order.OrderId,
+                    await CheckoutController.SendOrderMessage_SendGrid(order.Email, "Your Registration: " + order.OrderId,
                         order.ToString(order), appConfig.OrderEmail);
                     //CheckoutController.SendOrderMessage_SendGrid(order.FirstName, "New Order: " + order.OrderId,order.ToString(), appConfig.OrderEmail);
             return RedirectToAction("Complete",
@@ -142,28 +143,56 @@ namespace  Cfcusaga.Web.Controllers
             }
         }
 
-        private static RestResponse SendOrderMessage(String toName, String subject, String body, String destination)
+        //private static RestResponse SendOrderMessage(String toName, String subject, String body, String destination)
+        //{
+        //    RestClient client = new RestClient();
+        //    //fix this we have this up top too
+        //    AppConfigurations appConfig = new AppConfigurations();
+        //    // TODO: this is free emai service
+        //    client.BaseUrl = "https://api.mailgun.net/v2";
+        //    client.Authenticator =
+        //           new HttpBasicAuthenticator("api",
+        //                                      appConfig.EmailApiKey);
+        //    RestRequest request = new RestRequest();
+        //    request.AddParameter("domain",
+        //                        appConfig.DomainForApiKey, ParameterType.UrlSegment);
+        //    request.Resource = "{domain}/messages";
+        //    request.AddParameter("from", appConfig.FromName + " <" + appConfig.FromEmail + ">");
+        //    request.AddParameter("to", toName + " <" + destination + ">");
+        //    request.AddParameter("subject", subject);
+        //    request.AddParameter("html", body);
+        //    request.Method = Method.POST;
+        //    IRestResponse executor = client.Execute(request);
+        //    return executor as RestResponse;
+        //}
+        //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
+
+
+        public static async  Task SendOrderMessage_SendGrid(String toName, String subject, String body, String destination)
         {
-            RestClient client = new RestClient();
-            //fix this we have this up top too
-            AppConfigurations appConfig = new AppConfigurations();
-            // TODO: this is free emai service
-            client.BaseUrl = "https://api.mailgun.net/v2";
-            client.Authenticator =
-                   new HttpBasicAuthenticator("api",
-                                              appConfig.EmailApiKey);
-            RestRequest request = new RestRequest();
-            request.AddParameter("domain",
-                                appConfig.DomainForApiKey, ParameterType.UrlSegment);
-            request.Resource = "{domain}/messages";
-            request.AddParameter("from", appConfig.FromName + " <" + appConfig.FromEmail + ">");
-            request.AddParameter("to", toName + " <" + destination + ">");
-            request.AddParameter("subject", subject);
-            request.AddParameter("html", body);
-            request.Method = Method.POST;
-            IRestResponse executor = client.Execute(request);
-            return executor as RestResponse;
+
+            var appConfig = new AppConfigurations();
+
+            var myMessage = new SendGridMessage();
+            myMessage.AddTo(toName);
+            myMessage.From = new MailAddress(appConfig.FromEmail, appConfig.FromName);
+            myMessage.Subject = subject;
+            myMessage.Html = body;
+
+            var transportWeb = new SendGrid.Web(appConfig.EmailApiKey);
+
+            await transportWeb.DeliverAsync(myMessage);
         }
+
+
+
+
+
+
+
+
+
+
 
         //private static async void SendOrderMessage_SendGrid(String toName, String subject, String body, String destination)
         //{

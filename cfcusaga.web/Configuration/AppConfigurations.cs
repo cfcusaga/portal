@@ -94,7 +94,7 @@ namespace  Cfcusaga.Web.Configuration
                     NameValueCollection appSettings =
                        ConfigurationManager.AppSettings;
 
-                    _domainForApiKey = appSettings["FromName"];
+                    _fromName = appSettings["FromName"];
                     return _fromName;
                 }
             }
@@ -117,7 +117,7 @@ namespace  Cfcusaga.Web.Configuration
                     NameValueCollection appSettings =
                        ConfigurationManager.AppSettings;
 
-                    _domainForApiKey = appSettings["FromEmail"];
+                    _fromEmail = appSettings["FromEmail"];
                     return _fromEmail;
                 }
             }

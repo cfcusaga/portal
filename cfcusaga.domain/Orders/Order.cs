@@ -85,12 +85,12 @@ namespace cfcusaga.domain.Orders
         {
             StringBuilder bob = new StringBuilder();
 
-            bob.Append("<p>Order Information for Order: "+ order.OrderId +"<br>Placed at: " + order.OrderDate +"</p>").AppendLine();
+            bob.Append("<p>Registration # : "+ order.OrderId +"<br>Placed at: " + order.OrderDate +"</p>").AppendLine();
             bob.Append("<p>Name: " + order.FirstName + " " + order.LastName + "<br>");
             bob.Append("Address: " + order.Address + " " + order.City + " " + order.State + " " + order.PostalCode + "<br>");
             bob.Append("Contact: " + order.Email + "     " + order.Phone + "</p>");
             //bob.Append("<p>Charge: " + order.CreditCard + " " + order.Experation.ToString("dd-MM-yyyy") + "</p>");
-            bob.Append("<p>Credit Card Type: " + order.CcType + "</p>");
+            bob.Append("<p>Check Number: " + order.CheckNumber + "</p>");
 
             bob.Append("<br>").AppendLine();
             bob.Append("<Table>").AppendLine();
@@ -104,7 +104,23 @@ namespace cfcusaga.domain.Orders
                 foreach (var item in order.OrderDetails)
                 {
                     bob.Append("<tr>");
-                    output = "<td>" + item.Item.Name + "</td>" + "<td>" + item.Quantity + "</td>" + "<td>" + item.Quantity * item.UnitPrice + "</td>";
+                    if (item.CategoryId == (int) Enums.CategoryTypeEnum.Registration)
+                    {
+                        output = "<td>" + item.Item.Name + "(" + item.Lastname + "," + item.Firstname + ")" + "</td>" + "<td>" + item.Quantity + "</td>" + "<td>" + item.Quantity * item.UnitPrice + "</td>";
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(item.TshirtSize))
+                        {
+                            output = "<td>" + item.Item.Name + "(" + item.TshirtSize + ")" + "</td>" + "<td>" + item.Quantity + "</td>" + "<td>" + item.Quantity * item.UnitPrice + "</td>";
+                        }
+                        else
+                        {
+                            output = "<td>" + item.Item.Name + "</td>" + "<td>" + item.Quantity + "</td>" + "<td>" + item.Quantity * item.UnitPrice + "</td>";
+                        }
+                        
+                    }
+                    
                     bob.Append(output).AppendLine();
                     Console.WriteLine(output);
                     bob.Append("</tr>");

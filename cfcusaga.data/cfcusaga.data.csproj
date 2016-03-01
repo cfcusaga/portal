@@ -61,6 +61,7 @@
     <Compile Include="Catagory.cs">
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Enums\Enums.cs" />
     <Compile Include="Event.cs">
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>
@@ -79,6 +80,7 @@
     <Compile Include="OrderDetail.cs">
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Partials\OrderDetail.cs" />
     <Compile Include="PortalDbModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -130,6 +132,7 @@
       <LastGenOutput>PortalDbModel.cs</LastGenOutput>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
