@@ -104,6 +104,7 @@
           <Property Name="FatherMemberId" Type="int" />
           <Property Name="DateCreated" Type="datetime" Nullable="false" />
           <Property Name="DateModified" Type="datetime" Nullable="false" />
+          <Property Name="AspNetUserId" Type="nvarchar" MaxLength="128" />
         </EntityType>
         <EntityType Name="OrderDetails">
           <Key>
@@ -667,6 +668,7 @@
           <Property Name="FatherMemberId" Type="Int32" />
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="DateModified" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="AspNetUserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="EventRegistrations" Relationship="PortalDbModel.FK_EventRegistrations_Members" FromRole="Member" ToRole="EventRegistration" />
         </EntityType>
         <Association Name="FK_EventRegistrations_Members">
@@ -824,6 +826,7 @@
           <EntitySetMapping Name="Members">
             <EntityTypeMapping TypeName="PortalDbModel.Member">
               <MappingFragment StoreEntitySet="Members">
+                <ScalarProperty Name="AspNetUserId" ColumnName="AspNetUserId" />
                 <ScalarProperty Name="DateModified" ColumnName="DateModified" />
                 <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
                 <ScalarProperty Name="FatherMemberId" ColumnName="FatherMemberId" />

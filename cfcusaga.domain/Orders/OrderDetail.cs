@@ -21,5 +21,6 @@ namespace cfcusaga.domain.Orders
         public string Allergies { get; set; }
         public string TshirtSize { get; set; }
         public int CategoryId { get; set; }
+        public string ItemName { get; set; }
     }
 }

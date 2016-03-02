@@ -106,17 +106,17 @@ namespace cfcusaga.domain.Orders
                     bob.Append("<tr>");
                     if (item.CategoryId == (int) Enums.CategoryTypeEnum.Registration)
                     {
-                        output = "<td>" + item.Item.Name + "(" + item.Lastname + "," + item.Firstname + ")" + "</td>" + "<td>" + item.Quantity + "</td>" + "<td>" + item.Quantity * item.UnitPrice + "</td>";
+                        output = "<td>" + item.ItemName + "(" + item.Lastname + "," + item.Firstname + ")" + "</td>" + "<td>" + item.Quantity + "</td>" + "<td>" + item.Quantity * item.UnitPrice + "</td>";
                     }
                     else
                     {
                         if (!string.IsNullOrEmpty(item.TshirtSize))
                         {
-                            output = "<td>" + item.Item.Name + "(" + item.TshirtSize + ")" + "</td>" + "<td>" + item.Quantity + "</td>" + "<td>" + item.Quantity * item.UnitPrice + "</td>";
+                            output = "<td>" + item.ItemName + "(" + item.TshirtSize + ")" + "</td>" + "<td>" + item.Quantity + "</td>" + "<td>" + item.Quantity * item.UnitPrice + "</td>";
                         }
                         else
                         {
-                            output = "<td>" + item.Item.Name + "</td>" + "<td>" + item.Quantity + "</td>" + "<td>" + item.Quantity * item.UnitPrice + "</td>";
+                            output = "<td>" + item.ItemName + "</td>" + "<td>" + item.Quantity + "</td>" + "<td>" + item.Quantity * item.UnitPrice + "</td>";
                         }
                         
                     }

@@ -37,7 +37,7 @@ namespace cfcusaga.domain.Orders
         Task AddMemberDetails(Member aMember);
         void UpdateCartItem(Cart foundItem);
         Task<int> AddEventRegistrations(Member aMember, Order order, Cart item);
-        Task AddOrder(Order order, List<cfcusaga.domain.Orders.Cart> cartItems, string shoppingCartId);
+        Task<int> AddOrder(Order order, List<Cart> cartItems, string shoppingCartId, string currentUserId);
     }
 
     public class ShoppingCartService : IShoppingCartService
@@ -111,8 +111,12 @@ namespace cfcusaga.domain.Orders
         }
 
 
-        public async Task AddOrder(Order order, List<cfcusaga.domain.Orders.Cart> cartItems, string shoppingCartId)
+        public async Task<int> AddOrder(Order order, List<Cart> cartItems, string shoppingCartId, string currentUserId)
         {
+            int memberId = 0;
+            int fatherMeberId = 0;
+            int motherMemberId = 0;
+            List<int> childMemberIds = new List<int>();
             using (var dbContextTransaction = _db.Database.BeginTransaction())
             {
                 try
@@ -122,10 +126,11 @@ namespace cfcusaga.domain.Orders
                     _db.Orders.Add(dbOrder);
                     await _db.SaveChangesAsync();
                     order.OrderId = dbOrder.OrderId;
-                    List<OrderDetail> orderDetails;
+                    //List<OrderDetail> orderDetails;
                     foreach (var item in cartItems)
                     {
                         var js = item.ToJson();
+                        
                          var orderDetail = CreateOrderDetail(order, item);
                         order.OrderDetails.Add(orderDetail);
                         // Set the order total of the shopping cart
@@ -138,7 +143,29 @@ namespace cfcusaga.domain.Orders
                         if (item.CategoryId == (int)Enums.CategoryTypeEnum.Registration && !item.MemberId.HasValue)
                         {
                             aMember = CreateMember(item);
+                            if (item.RelationToMemberTypeId == (int)Enums.RelationToMe.Self)
+                            {
+                                aMember.AspNetUserId = currentUserId;
+                            }
                             await AddMemberDetails(aMember);
+                            if (item.RelationToMemberTypeId == (int) Enums.RelationToMe.Self || item.RelationToMemberTypeId == (int)Enums.RelationToMe.Spouse)
+                            {
+                                memberId = aMember.Id;
+                                if (item.Gender == "M")
+                                {
+                                    fatherMeberId = memberId;
+                                }
+                                if (item.Gender == "F")
+                                {
+                                    motherMemberId = memberId;
+                                }
+
+                                //UpdateCurrentUserMemberId(aMember.Id);
+                            }
+                            else if (item.RelationToMemberTypeId == (int)Enums.RelationToMe.Child)
+                            {
+                                childMemberIds.Add(aMember.Id);
+                            }
                         }
                         if (item.CategoryId == (int)Enums.CategoryTypeEnum.Registration && aMember != null)
                         {
@@ -146,7 +173,12 @@ namespace cfcusaga.domain.Orders
                         }
                         // _svc.RemoveItemRegistration(item.Id
                     }
-                    
+                    foreach (var childMemberId in childMemberIds)
+                    {
+                        UpdateChildMemberParentIds(childMemberId, motherMemberId, fatherMeberId);
+                    }
+                    UpdateHeadOfFamily(fatherMeberId, motherMemberId);
+                    UpdateSpouseId(motherMemberId, fatherMeberId);
                     // Set the order's total to the orderTotal count
                     order.Total = orderTotal;
 
@@ -167,8 +199,70 @@ namespace cfcusaga.domain.Orders
                     throw;
                 }
             }
-
+            return memberId;
         }
+
+        private void UpdateSpouseId(int memberId, int spouseId)
+        {
+            if (spouseId <= 0) return;
+            var entity = _db.Members.FirstOrDefault(c => c.Id == memberId);
+            if (entity != null)
+            {
+                entity.SpouseMemberId = spouseId;
+            }
+            _db.SaveChanges();
+        }
+
+        private void UpdateHeadOfFamily(int fatherMeberId, int motherMemberId)
+        {
+            if (fatherMeberId <= 0) return;
+            var entity = _db.Members.FirstOrDefault(c => c.Id == fatherMeberId);
+            if (entity != null)
+            {
+                entity.IsHeadOfFamily = true;
+                if (motherMemberId > 0)
+                {
+                    entity.SpouseMemberId = motherMemberId;
+                }
+            }
+            _db.SaveChanges();
+        }
+
+        private void UpdateChildMemberParentIds(int childMemberId, int motherMemberId, int fatherMeberId)
+        {
+            var entity = _db.Members.FirstOrDefault(c => c.Id == childMemberId);
+            if (entity != null)
+            {
+                if (motherMemberId > 0)
+                    entity.MotherMemberId = motherMemberId;
+                if (fatherMeberId > 0) 
+                    entity.FatherMemberId = fatherMeberId;
+                
+            }
+            _db.SaveChanges();
+        }
+
+        //private void UpdateCurrentUserMemberId(int id)
+        //{
+        //    var manager =
+        //        new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+        //    var store = new UserStore<ApplicationUser>(new ApplicationDbContext());
+        //    var ctx = store.Context;
+        //    var currentUser = manager.FindById(User.Identity.GetUserId());
+
+        //    currentUser.Address = order.Address;
+        //    currentUser.City = order.City;
+        //    currentUser.Country = order.Country;
+        //    currentUser.State = order.State;
+        //    currentUser.Phone = order.Phone;
+        //    currentUser.PostalCode = order.PostalCode;
+        //    currentUser.FirstName = order.FirstName;
+
+        //    //Save this back
+        //    //http://stackoverflow.com/questions/20444022/updating-user-data-asp-net-identity
+        //    //var result = await UserManager.UpdateAsync(currentUser);
+        //    await ctx.SaveChangesAsync();
+        //}
 
         private static Member CreateMember(Cart item)
         {
@@ -199,6 +293,8 @@ namespace cfcusaga.domain.Orders
                 BirthDate = item.BirthDate,
                 Allergies = item.Allergies,
                 TshirtSize = tShirtSize,
+                CategoryId = item.CategoryId,
+                ItemName = item.ItemName,
                 RegistrationDetail = item.ToJson()
             };
             return orderDetail;
@@ -433,6 +529,7 @@ namespace cfcusaga.domain.Orders
                 aMember.Gender = item.Gender;
                 aMember.Phone = item.Phone;
                 aMember.Email = item.Email;
+                aMember.AspNetUserId = item.AspNetUserId;
                 aMember.DateCreated = DateTime.Now;
                 aMember.DateModified = DateTime.Now;
                 _db.Members.Add(aMember);

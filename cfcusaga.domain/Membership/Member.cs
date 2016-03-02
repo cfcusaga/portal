@@ -15,5 +15,6 @@ namespace cfcusaga.domain.Membership
        public string Phone { get; set; }
        public string Email { get; set; }
        public int Id { get; set; }
+       public string AspNetUserId { get; set; }
     }
 }

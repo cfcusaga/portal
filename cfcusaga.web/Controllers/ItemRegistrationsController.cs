@@ -2,20 +2,67 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using cfcusaga.data;
 using cfcusaga.domain.Events;
 using cfcusaga.domain.Orders;
+using Cfcusaga.Web.Extensions;
 using Cfcusaga.Web.Models;
-using Cfcusaga.Web.ViewModel;
 using Cfcusaga.Web.ViewModels;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Enums = cfcusaga.domain.Enums;
+using Member = cfcusaga.domain.Membership.Member;
 
 namespace Cfcusaga.Web.Controllers
 {
+    public class CurrentRegistrationInfo
+    {
+        public string Lastname { get; set; }
+        public string Firsname { get; set; }
+        public bool IsSelfSelected { get; set; }
+        public string Gender { get; set; }
+    }
     public class ItemRegistrationsController : Controller
     {
+        private const string CurrentRegistrationInfoKey = "CurrentRegistrationInfo";
+
+        public static CurrentRegistrationInfo GetSessionCurrentRegistrationInfo(HttpContextBase context)
+        {
+            var o = context.Session?[CurrentRegistrationInfoKey];
+            return o as CurrentRegistrationInfo;
+        }
+
+        public static void SetSessionCurrentRegistrationInfo(HttpContextBase httpContext, string lastname, string firstname)
+        {
+            var httpSessionStateBase = httpContext.Session;
+            var info = new CurrentRegistrationInfo()
+            {
+                Lastname = lastname,
+                Firsname = firstname,
+                IsSelfSelected = false,
+                Gender = string.Empty
+            };
+            if (httpSessionStateBase != null) httpSessionStateBase[CurrentRegistrationInfoKey] = info;
+        }
+
+        public static void SetSessionCurrentRegistrationInfo(HttpContextBase httpContext, string lastname, string firstname, bool isSelf, string gender)
+        {
+            var httpSessionStateBase = httpContext.Session;
+            var info = new CurrentRegistrationInfo()
+            {
+                Lastname = lastname,
+                Firsname = firstname,
+                IsSelfSelected =  true,
+                Gender = gender
+            };
+            if (httpSessionStateBase != null) httpSessionStateBase[CurrentRegistrationInfoKey] = info;
+        }
+
         public static List<SelectListItem> GetTShirtSizesList()
         {
             var list = new List<SelectListItem>();
@@ -31,11 +78,39 @@ namespace Cfcusaga.Web.Controllers
         private readonly IShoppingCartService _cartSvc;
         private readonly PortalDbContext _db;
 
-        public ItemRegistrationsController(PortalDbContext db, IEventServices svc, IShoppingCartService cartSvc)
+
+
+        public ItemRegistrationsController()
+        {
+        }
+
+        //public AccountController(ApplicationUserManager userManager)
+        //{
+        //    UserManager = userManager;
+        //}
+
+        private ApplicationUserManager _userManager;
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
+
+
+
+        public ItemRegistrationsController(PortalDbContext db, IEventServices svc, IShoppingCartService cartSvc, ApplicationUserManager userManager)
         {
             _db = db;
             _svc = svc;
             _cartSvc = cartSvc;
+            UserManager = userManager;
+            //}
         }
 
         // GET: ItemRegistrations
@@ -100,6 +175,8 @@ namespace Cfcusaga.Web.Controllers
             var list = GetTShirtSizesList();
             ViewBag.TshirtSizes = list;
 
+
+            var sessionInfo = ItemRegistrationsController.GetSessionCurrentRegistrationInfo(this.HttpContext);
             var newRegistratinItem = new ItemRegistrationModel();
             if (item.IsRequireParentWaiver != null && item.IsRequireParentWaiver.Value)
             {
@@ -108,10 +185,27 @@ namespace Cfcusaga.Web.Controllers
             }
             else
             {
-                var relationTypes = _svc.GetRelationToMemberTypesAdults();
-                newRegistratinItem.RelationToMemberTypes = new SelectList(relationTypes, "Id", "Name");
+                var relationTypes = _svc.GetRelationToMemberTypesAdults().ToList();
+                IEnumerable<RelationToMemberType> selectListItems = null;
+                //newRegistratinItem.RelationToMemberTypes = new SelectList(relationTypes, "Id", "Name");
+                if (sessionInfo != null && sessionInfo.IsSelfSelected)
+                {
+                    selectListItems = relationTypes.Where(m => m.Name.ToUpper() != "SELF");
+                }
+                else
+                {
+                    selectListItems = relationTypes.ToList();
+                }
+                var relationTypesList = new SelectList(selectListItems, "Id", "Name");
+                newRegistratinItem.RelationToMemberTypes = relationTypesList;
             }
+
             
+            if (sessionInfo != null)
+            {
+                newRegistratinItem.LastName = sessionInfo.Lastname;
+            }
+
             return View(newRegistratinItem);
         }
 
@@ -133,18 +227,57 @@ namespace Cfcusaga.Web.Controllers
 
                 var cart = ShoppingCart.GetCart(this.HttpContext, _cartSvc);
                 int count;
-                cfcusaga.domain.Orders.Cart anItem =  cart.AddToCart(foundItem, out count);
-                
+                var anItem =  cart.AddToCart(foundItem, out count);
 
-                var eventId = EventsController.GetSessionEventId(this.HttpContext);
+                ItemRegistrationsController.SetSessionCurrentRegistrationInfo(this.HttpContext, itemRegistration.LastName, string.Empty);
+                //var eventId = EventsController.GetSessionEventId(this.HttpContext);
+
                 itemRegistration.CartID = anItem.Id;
+
+                if (itemRegistration.RelationToMemberTypeId != null && itemRegistration.RelationToMemberTypeId == (int)Enums.RelationToMe.Self)
+                {
+                    ItemRegistrationsController.SetSessionCurrentRegistrationInfo(this.HttpContext, itemRegistration.LastName, itemRegistration.FirstName, true, itemRegistration.Gender);
+                    var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+                    if (user != null)
+                    {
+                        var aMember = await GetMember(user.Id);
+                        if (aMember != null)
+                        {
+                            itemRegistration.MemberId = aMember.Id;
+                            itemRegistration.LastName = aMember.LastName;
+                            itemRegistration.FirstName = aMember.Firstname;
+                            itemRegistration.Gender = aMember.Gender;
+                        }
+                    }
+                }
+
+
                 _db.CartItemRegistrations.Add(itemRegistration);
                 await _db.SaveChangesAsync();
 
                 return RedirectToAction("Index", "Items" );
             }
 
-            return View(itemRegistration);
+            return View();
+        }
+
+        private async Task<Member> GetMember(string id)
+        {
+            var entity = await _db.Members.FirstOrDefaultAsync(m => m.AspNetUserId == id);
+            if (entity != null)
+            {
+                return new Member
+                {
+                    Id = entity.Id,
+                    LastName =  entity.LastName,
+                    Firstname =  entity.FirstName,
+                    Gender = entity.Gender,
+                    BirthDate = entity.BirthDate,
+                    Email = entity.Email,
+                    Phone = entity.Phone
+                };
+            }
+            return null;
         }
 
         // GET: ItemRegistrations/Edit/5

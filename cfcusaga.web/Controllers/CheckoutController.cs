@@ -12,6 +12,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using RestSharp;
 using Cfcusaga.Web.Models;
 using SendGrid;
+using Order = cfcusaga.domain.Orders.Order;
 
 namespace  Cfcusaga.Web.Controllers
 {
@@ -50,7 +51,20 @@ namespace  Cfcusaga.Web.Controllers
             if (previousOrder != null)
                 return View(previousOrder);
             else
-                return View();
+            {
+                var sessionInfo = ItemRegistrationsController.GetSessionCurrentRegistrationInfo(this.HttpContext);
+                var sessionOrder = new Order();
+                if (sessionInfo != null)
+                {
+                    sessionOrder.LastName = sessionOrder.LastName;
+                    sessionOrder.FirstName = sessionOrder.FirstName;
+                    return View(sessionOrder);
+                }
+                else
+                {
+                    return View();
+                }
+            }
         }
 
         //
@@ -90,7 +104,6 @@ namespace  Cfcusaga.Web.Controllers
                         currentUser.Phone = order.Phone;
                         currentUser.PostalCode = order.PostalCode;
                         currentUser.FirstName = order.FirstName;
-                        
                         //Save this back
                         //http://stackoverflow.com/questions/20444022/updating-user-data-asp-net-identity
                         //var result = await UserManager.UpdateAsync(currentUser);
@@ -104,8 +117,12 @@ namespace  Cfcusaga.Web.Controllers
 
                     var cartItems = await cart.GetCartItems();
                     //Save Order
-                    await _svc.AddOrder(order, cartItems, cart.ShoppingCartId);
+                    var memberId = await _svc.AddOrder(order, cartItems, cart.ShoppingCartId, currentUserId);
+                //if (memberId > 0)
+                //{
+                //    UpdateLoginUserMemberId(memberId);
 
+                //}
                     //Process the order
                     
 
@@ -123,6 +140,21 @@ namespace  Cfcusaga.Web.Controllers
             {
                 //Invalid - redisplay with errors
                 return View(order);
+            }
+        }
+
+        private async void UpdateLoginUserMemberId(int memberId)
+        {
+            var manager =
+                new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            var store = new UserStore<ApplicationUser>(new ApplicationDbContext());
+            var ctx = store.Context;
+            var currentUser = manager.FindById(User.Identity.GetUserId());
+
+            if (currentUser != null)
+            {
+                //currentUser.MemberId = memberId;
+                //await ctx.SaveChangesAsync();
             }
         }
 
@@ -170,18 +202,27 @@ namespace  Cfcusaga.Web.Controllers
 
         public static async  Task SendOrderMessage_SendGrid(String toName, String subject, String body, String destination)
         {
+            try
+            {
 
-            var appConfig = new AppConfigurations();
+                var appConfig = new AppConfigurations();
 
-            var myMessage = new SendGridMessage();
-            myMessage.AddTo(toName);
-            myMessage.From = new MailAddress(appConfig.FromEmail, appConfig.FromName);
-            myMessage.Subject = subject;
-            myMessage.Html = body;
+                var myMessage = new SendGridMessage();
+                myMessage.AddTo(toName);
+                myMessage.From = new MailAddress(appConfig.FromEmail, appConfig.FromName);
+                myMessage.Subject = subject;
+                myMessage.Html = body;
 
-            var transportWeb = new SendGrid.Web(appConfig.EmailApiKey);
+                var transportWeb = new SendGrid.Web(appConfig.EmailApiKey);
 
-            await transportWeb.DeliverAsync(myMessage);
+                await transportWeb.DeliverAsync(myMessage);
+            }
+            catch (Exception ex)
+            {
+                //TODO: remove this
+                Console.WriteLine(ex.Message);
+                //throw;
+            }
         }
 
 

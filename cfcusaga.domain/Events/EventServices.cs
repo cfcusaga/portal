@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,8 +27,8 @@ namespace cfcusaga.domain.Events
         //Task<Item> FindEventItemAsync(int? id);
         Task DeleteEventItem(int id);
         IEnumerable GetRelationToMemberTypes();
-        IEnumerable GetRelationToMemberTypesRequiresParentWaiver();
-        IEnumerable GetRelationToMemberTypesAdults();
+        IEnumerable<RelationToMemberType> GetRelationToMemberTypesRequiresParentWaiver();
+        IEnumerable<RelationToMemberType> GetRelationToMemberTypesAdults();
     }
 
     public class EventServices : IEventServices
@@ -218,12 +219,12 @@ namespace cfcusaga.domain.Events
             return _db.RelationToMemberTypes;
         }
 
-        public IEnumerable GetRelationToMemberTypesRequiresParentWaiver()
+        public IEnumerable<RelationToMemberType> GetRelationToMemberTypesRequiresParentWaiver()
         {
             return _db.RelationToMemberTypes.Where(m => (m.Id == 2) || (m.Id == 9));
         }
 
-        public IEnumerable GetRelationToMemberTypesAdults()
+        public IEnumerable<RelationToMemberType> GetRelationToMemberTypesAdults()
         {
             return _db.RelationToMemberTypes.Where(m => (m.Id == 0) || (m.Id == 1) || (m.Id ==3) || (m.Id == 9));
         }
