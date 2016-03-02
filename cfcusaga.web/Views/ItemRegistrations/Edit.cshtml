@@ -16,6 +16,20 @@
         <h4>@ViewBag.SubTitle</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.RelationToMemberTypeId, "Registration is for my", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @*@Html.DropDownListFor(model => model.RelationToMemberTypeId, Model.RelationToMemberTypes, htmlAttributes: new { @class = "form-control" })*@
+                @foreach (var depart in Model.RelationToMemberTypes)
+                {
+                    @depart.Text <span style="margin-left: 5px"></span> @Html.RadioButtonFor(m => m.RelationToMemberTypeId, depart.Value)<span style="margin-left: 10px">|</span>
+
+                }  
+                @Html.ValidationMessageFor(model => model.RelationToMemberTypeId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
         <div class="form-group">
             @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -32,14 +46,15 @@
             </div>
         </div>
 
-        @if (ViewBag.IsRequireBirthDate){
+        @if (ViewBag.IsRequireBirthDate)
+        {
             <div class="form-group">
                 @Html.LabelFor(model => model.BirthDate, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.BirthDate, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(model => model.BirthDateDisplay, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.BirthDate, "", new { @class = "text-danger" })
                 </div>
-            </div>        
+            </div>
         }
 
 
@@ -51,13 +66,7 @@
                 </div>
             </div>*@
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.RelationToMemberTypeId, "Registration is for my", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.RelationToMemberTypeId, Model.RelationToMemberTypes, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.RelationToMemberTypeId, "", new { @class = "text-danger" })
-            </div>
-        </div>
+
 
         <div class="form-group">
             @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label col-md-2" })

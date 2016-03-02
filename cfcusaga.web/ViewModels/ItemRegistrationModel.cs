@@ -16,5 +16,17 @@ namespace Cfcusaga.Web.ViewModels
         public int CartID { get; set; }
         public int? MemberId { get; set; }
         public SelectList RelationToMemberTypes { get; set; }
+
+        public string BirthDateDisplay
+        {
+            get
+            {
+                if (BirthDate.HasValue)
+                {
+                    return BirthDate.Value.ToString("MM/dd/yyyy");
+                }
+                return string.Empty;
+            }
+        }
     }
 }

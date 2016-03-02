@@ -191,6 +191,7 @@ namespace Cfcusaga.Web.Controllers
                 if (sessionInfo != null && sessionInfo.IsSelfSelected)
                 {
                     selectListItems = relationTypes.Where(m => m.Name.ToUpper() != "SELF");
+                    newRegistratinItem.Gender = sessionInfo.Gender=="F"?"M":"F";//TODO: need to make gender an Enum
                 }
                 else
                 {
@@ -316,14 +317,29 @@ namespace Cfcusaga.Web.Controllers
             ViewBag.IsRequireParentWaiver = item.IsRequireParentWaiver ?? false;
             ViewBag.IsShirtIncluded = item.IsShirtIncluded ?? false;
 
-            IEnumerable relationTypes;
+            var sessionInfo = ItemRegistrationsController.GetSessionCurrentRegistrationInfo(this.HttpContext);
+            //IEnumerable relationTypes;
+            SelectList relationTypesList = null;
             if (item.IsRequireParentWaiver != null && item.IsRequireParentWaiver.Value)
             {
-                 relationTypes = _svc.GetRelationToMemberTypesRequiresParentWaiver();
+                var relationTypes = _svc.GetRelationToMemberTypesRequiresParentWaiver();
+                relationTypesList = new SelectList(relationTypes, "Id", "Name");
             }
             else
             {
-                 relationTypes = _svc.GetRelationToMemberTypesAdults();
+                 //relationTypes = _svc.GetRelationToMemberTypesAdults();
+                var relationTypes = _svc.GetRelationToMemberTypesAdults().ToList();
+                IEnumerable<RelationToMemberType> selectListItems = null;
+                //newRegistratinItem.RelationToMemberTypes = new SelectList(relationTypes, "Id", "Name");
+                if (sessionInfo != null && sessionInfo.IsSelfSelected)
+                {
+                    selectListItems = relationTypes.Where(m => m.Name.ToUpper() != "SELF");
+                }
+                else
+                {
+                    selectListItems = relationTypes.ToList();
+                }
+                relationTypesList = new SelectList(selectListItems, "Id", "Name");
             }
 
             var list = GetTShirtSizesList();
@@ -341,7 +357,7 @@ namespace Cfcusaga.Web.Controllers
                 Allergies = itemRegistration.Allergies,
                 ID = itemRegistration.ID,
                 CartID = itemRegistration.CartID,
-                RelationToMemberTypes = new SelectList(relationTypes, "Id", "Name")
+                RelationToMemberTypes = relationTypesList //new SelectList(relationTypes, "Id", "Name")
         };
 
             return View(itemRegModel);

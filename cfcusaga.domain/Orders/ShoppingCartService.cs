@@ -123,6 +123,7 @@ namespace cfcusaga.domain.Orders
                 {
                     decimal orderTotal = 0;
                     var dbOrder = CreateOrder(order);
+                    dbOrder.AspNetUserId = currentUserId;
                     _db.Orders.Add(dbOrder);
                     await _db.SaveChangesAsync();
                     order.OrderId = dbOrder.OrderId;
@@ -182,6 +183,12 @@ namespace cfcusaga.domain.Orders
                     // Set the order's total to the orderTotal count
                     order.Total = orderTotal;
 
+                    var member = await  GetMemberInfoFromAspNetUserId(currentUserId);
+                    if (member != null)
+                    {
+                        dbOrder.MemberId = member.Id;
+                    }
+
                     //TODO: Clean the 
                     //order.OrderDetails
                     dbOrder.Total = order.Total;
@@ -200,6 +207,23 @@ namespace cfcusaga.domain.Orders
                 }
             }
             return memberId;
+        }
+
+        private async Task<Member> GetMemberInfoFromAspNetUserId(string currentUserId)
+        {
+            var entity = await _db.Members.FirstOrDefaultAsync(c => c.AspNetUserId == currentUserId);
+            if (entity != null)
+            {
+                var aMember = new Member()
+                {
+                    Id = entity.Id,
+                    LastName = entity.LastName,
+                    Firstname = entity.FirstName,
+                    Gender = entity.Gender
+                };
+                return aMember;
+            }
+            return null;
         }
 
         private void UpdateSpouseId(int memberId, int spouseId)
