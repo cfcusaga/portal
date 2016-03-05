@@ -35,11 +35,12 @@ namespace cfcusaga.data
         public string Description { get; set; }
         public Nullable<bool> IsRequireTshirtSize { get; set; }
         public string TshirtSize { get; set; }
+        public Nullable<short> OrgTypeId { get; set; }
     
-        public virtual Catagory Catagory { get; set; }
-        public virtual Event Event { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Cart> Carts { get; set; }
+        public virtual Catagory Catagory { get; set; }
+        public virtual Event Event { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }

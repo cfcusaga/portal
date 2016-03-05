@@ -106,9 +106,6 @@
     <Compile Include="RelationToMemberType.cs">
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="ReportOrdersByEvent_Result.cs">
-      <DependentUpon>PortalDbModel.tt</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />
