@@ -146,7 +146,10 @@ namespace cfcusaga.domain.Orders
                             aMember = CreateMember(item);
                             if (item.RelationToMemberTypeId == (int)Enums.RelationToMe.Self)
                             {
-                                aMember.AspNetUserId = currentUserId;
+                                if (aMember.AspNetUserId == null)
+                                {
+                                    aMember.AspNetUserId = currentUserId;
+                                }
                             }
                             await AddMemberDetails(aMember);
                             if (item.RelationToMemberTypeId == (int) Enums.RelationToMe.Self || item.RelationToMemberTypeId == (int)Enums.RelationToMe.Spouse)

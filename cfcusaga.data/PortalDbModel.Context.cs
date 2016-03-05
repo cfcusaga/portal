@@ -12,6 +12,8 @@ namespace cfcusaga.data
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class PortalDbContext : DbContext
     {
@@ -25,15 +27,32 @@ namespace cfcusaga.data
             //throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Catagory> Catagories { get; set; }
         public virtual DbSet<Event> Events { get; set; }
         public virtual DbSet<CartItemRegistration> CartItemRegistrations { get; set; }
         public virtual DbSet<RelationToMemberType> RelationToMemberTypes { get; set; }
-        public virtual DbSet<Item> Items { get; set; }
         public virtual DbSet<Cart> Carts { get; set; }
         public virtual DbSet<EventRegistration> EventRegistrations { get; set; }
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<Member> Members { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<Catagory> Catagories { get; set; }
+        public virtual DbSet<Item> Items { get; set; }
+    
+        public virtual ObjectResult<ReportOrdersByEvent_Result> ReportOrdersByEvent(Nullable<int> eventid, Nullable<int> page, Nullable<int> pagesize, ObjectParameter recordcount)
+        {
+            var eventidParameter = eventid.HasValue ?
+                new ObjectParameter("eventid", eventid) :
+                new ObjectParameter("eventid", typeof(int));
+    
+            var pageParameter = page.HasValue ?
+                new ObjectParameter("page", page) :
+                new ObjectParameter("page", typeof(int));
+    
+            var pagesizeParameter = pagesize.HasValue ?
+                new ObjectParameter("pagesize", pagesize) :
+                new ObjectParameter("pagesize", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<ReportOrdersByEvent_Result>("ReportOrdersByEvent", eventidParameter, pageParameter, pagesizeParameter, recordcount);
+        }
     }
 }

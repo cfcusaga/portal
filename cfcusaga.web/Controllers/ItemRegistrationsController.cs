@@ -66,10 +66,14 @@ namespace Cfcusaga.Web.Controllers
         public static List<SelectListItem> GetTShirtSizesList()
         {
             var list = new List<SelectListItem>();
-            list.Add(new SelectListItem() { Text = "Adult Small", Value = "AdultSmall" });
-            list.Add(new SelectListItem() { Text = "Adult Medium", Value = "AdultMedium" });
-            list.Add(new SelectListItem() { Text = "Adult Large", Value = "AdultLarge" });
-            list.Add(new SelectListItem() { Text = "Adult X-Large", Value = "AdultXLarge" });
+            list.Add(new SelectListItem() { Text = "Youth Small", Value = "YS" });
+            list.Add(new SelectListItem() { Text = "Youth Medium", Value = "YM" });
+            list.Add(new SelectListItem() { Text = "Youth Large", Value = "YL" });
+            list.Add(new SelectListItem() { Text = "Youth X-Large", Value = "YXL" });
+            list.Add(new SelectListItem() { Text = "Adult Small", Value = "AS" });
+            list.Add(new SelectListItem() { Text = "Adult Medium", Value = "AM" });
+            list.Add(new SelectListItem() { Text = "Adult Large", Value = "AL" });
+            list.Add(new SelectListItem() { Text = "Adult X-Large", Value = "AXL" });
             return list;
         }
 
@@ -178,6 +182,8 @@ namespace Cfcusaga.Web.Controllers
 
             var sessionInfo = ItemRegistrationsController.GetSessionCurrentRegistrationInfo(this.HttpContext);
             var newRegistratinItem = new ItemRegistrationModel();
+            newRegistratinItem.Gender = "M";
+
             if (item.IsRequireParentWaiver != null && item.IsRequireParentWaiver.Value)
             {
                 var relationTypes = _svc.GetRelationToMemberTypesRequiresParentWaiver();

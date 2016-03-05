@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.Core.Common.CommandTrees;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace cfcusaga.data
+﻿namespace cfcusaga.data
 {
     public partial class CartItemRegistration
     {

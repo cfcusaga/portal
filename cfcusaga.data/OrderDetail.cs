@@ -27,7 +27,7 @@ namespace cfcusaga.data
         public string Allergies { get; set; }
         public string TshirtSize { get; set; }
     
-        public virtual Item Item { get; set; }
         public virtual Order Order { get; set; }
+        public virtual Item Item { get; set; }
     }
 }

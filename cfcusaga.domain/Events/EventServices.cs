@@ -233,7 +233,9 @@ namespace cfcusaga.domain.Events
         {
             var items = from i in _db.Items
                 join e in _db.Events on i.EventId equals e.Id
+                join c in _db.Catagories on i.CatagoryID equals  c.ID
                         where i.EventId == eventId.Value
+                        orderby c.SortOrder ascending 
                 select new Item
                 {
                     Name = i.Name,
@@ -262,7 +264,7 @@ namespace cfcusaga.domain.Events
                     items = items.OrderByDescending(s => s.Price);
                     break;
                 default: // Name ascending 
-                    items = items.OrderBy(s => s.Name);
+                    //items = items.OrderBy(s => s.Name);
                     break;
             }
             

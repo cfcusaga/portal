@@ -225,6 +225,7 @@
     <Compile Include="Configuration\IConfiguration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AnalyticsController.cs" />
+    <Compile Include="Controllers\EventRegistrationsController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\CatagoriesController.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
@@ -232,7 +233,9 @@
     <Compile Include="Controllers\ItemRegistrationsController.cs" />
     <Compile Include="Controllers\ItemsController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\MyOrdersController.cs" />
     <Compile Include="Controllers\OrdersController.cs" />
+    <Compile Include="Controllers\ReportOrdersController.cs" />
     <Compile Include="Controllers\RolesAdminController.cs" />
     <Compile Include="Controllers\ShoppingCartController.cs" />
     <Compile Include="Controllers\StoreController.cs" />
@@ -415,6 +418,22 @@
     <Content Include="Views\Shared\_LayoutConf.cshtml" />
     <Content Include="Views\Home\FamilyConf.cshtml" />
     <Content Include="Views\Shared\_GoogleAnalytics.cshtml" />
+    <Content Include="Views\EventRegistrations\Create.cshtml" />
+    <Content Include="Views\EventRegistrations\Delete.cshtml" />
+    <Content Include="Views\EventRegistrations\Details.cshtml" />
+    <Content Include="Views\EventRegistrations\Edit.cshtml" />
+    <Content Include="Views\EventRegistrations\Index.cshtml" />
+    <Content Include="Views\MyOrders\Create.cshtml" />
+    <Content Include="Views\MyOrders\Delete.cshtml" />
+    <Content Include="Views\MyOrders\Details.cshtml" />
+    <Content Include="Views\MyOrders\Edit.cshtml" />
+    <Content Include="Views\MyOrders\Index.cshtml" />
+    <Content Include="Views\ReportOrders\Index - Copy.cshtml" />
+    <Content Include="Views\ReportOrders\Create.cshtml" />
+    <Content Include="Views\ReportOrders\Delete.cshtml" />
+    <Content Include="Views\ReportOrders\Details.cshtml" />
+    <Content Include="Views\ReportOrders\Edit.cshtml" />
+    <Content Include="Views\ReportOrders\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

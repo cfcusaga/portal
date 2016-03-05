@@ -1,0 +1,36 @@
+﻿@model System.Data.Entity.Core.Objects.ObjectResult<cfcusaga.data.ReportOrdersByEvent_Result>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>title</h2>
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("OrderId", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.ActionLink("Lastname", "Index", new { sortOrder = ViewBag.DateSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.ActionLink("Firstname", "Index", new { sortOrder = ViewBag.OrgIdSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th></th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.lastname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.firstname)
+            </td>
+        </tr>
+    }
+</table>
