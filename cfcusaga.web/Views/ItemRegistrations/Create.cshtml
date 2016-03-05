@@ -28,18 +28,24 @@
         <div class="form-group">
             @Html.LabelFor(model => model.RelationToMemberTypeId, "Registration is for my", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
+                @{var isDefaultSelected = false;}
                 @foreach (var depart in Model.RelationToMemberTypes)
                 {
-                    if (Model.RelationToMemberTypeId == null && depart.Value == "0")
+                    if (Model.RelationToMemberTypeId == null && !isDefaultSelected)
                     {
-                        @depart.Text <span style="margin-left: 5px"></span> @Html.RadioButtonFor(m => m.RelationToMemberTypeId, depart.Value, new { @checked = "checked" })<span style="margin-left: 10px">|</span>
+                        isDefaultSelected = true;
+                        @depart.Text
+                        <span style="margin-left: 5px"></span>
+                        @Html.RadioButtonFor(m => m.RelationToMemberTypeId, depart.Value, new {@checked = "checked"})<span style="margin-left: 10px">|</span>
                     }
                     else
                     {
-                        @depart.Text <span style="margin-left: 5px"></span> @Html.RadioButtonFor(m => m.RelationToMemberTypeId, depart.Value)<span style="margin-left: 10px">|</span>
+                        @depart.Text
+                        <span style="margin-left: 5px"></span>
+                        @Html.RadioButtonFor(m => m.RelationToMemberTypeId, depart.Value)<span style="margin-left: 10px">|</span>
                     }
-                }  
-                @Html.ValidationMessageFor(model => model.RelationToMemberTypeId, "", new { @class = "text-danger" })
+                }
+                @Html.ValidationMessageFor(model => model.RelationToMemberTypeId, "", new {@class = "text-danger"})
             </div>
         </div>
 
