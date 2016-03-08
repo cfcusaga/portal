@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using cfcusaga.data;
 
 namespace cfcusaga.domain.Orders
 {
@@ -77,6 +78,7 @@ namespace cfcusaga.domain.Orders
         [ScaffoldColumn(false)]
         public decimal Total { get; set; }
         public List<OrderDetail> OrderDetails { get; set; } = new List<domain.Orders.OrderDetail>();
+        public List<OrderDiscount> OrderDiscounts { get; set; } = new List<domain.Orders.OrderDiscount>();
         public string CheckNumber { get; set; }
         public string Notes { get; set; }
 
@@ -122,7 +124,16 @@ namespace cfcusaga.domain.Orders
                     }
                     
                     bob.Append(output).AppendLine();
-                    Console.WriteLine(output);
+                    //Console.WriteLine(output);
+                    bob.Append("</tr>");
+                }
+                foreach (var item in order.OrderDiscounts)
+                {
+                    bob.Append("<tr>");
+                    output = "<td>" + item.Name + "</td>" + "<td>" + item.Quantity + "</td>" + "<td>" + item.Quantity * item.Discount + "</td>";
+
+                    bob.Append(output).AppendLine();
+                    //Console.WriteLine(output);
                     bob.Append("</tr>");
                 }
             }

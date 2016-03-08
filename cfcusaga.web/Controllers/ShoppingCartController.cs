@@ -32,7 +32,8 @@ namespace Cfcusaga.Web.Controllers
             var viewModel = new ShoppingCartViewModel
             {
                 CartItems = await cart.GetCartItems(),
-                CartTotal = cart.GetTotal()
+                CartTotal = cart.GetTotal(),
+                CartDiscounts = await cart.GetCartDiscounts()
             };
             // Return the view
             return View(viewModel);
@@ -105,26 +106,6 @@ namespace Cfcusaga.Web.Controllers
             return RedirectToAction("Index", "Items");
         }
 
-        //[HttpPost]
-        //public async Task<ActionResult> AddToCart(int id, string size)
-        //{
-        //    var foundItem = await _svc.GetItem(id);
-
-        //    var cart = ShoppingCart.GetCart(this.HttpContext, _svc);
-        //    foundItem.TshirtSize = size;
-        //    int count = cart.AddToCart(foundItem);
-
-        //    var results = new ShoppingCartRemoveViewModel()
-        //    {
-        //        Message = Server.HtmlEncode(foundItem.Name) +
-        //                  " has been added to your shopping cart.",
-        //        CartTotal = cart.GetTotal(),
-        //        CartCount = cart.GetCount(),
-        //        ItemCount = count,
-        //        DeleteId = id
-        //    };
-        //    return Json(results);
-        //}
 
         //
         // AJAX: /ShoppingCart/RemoveFromCart/5
@@ -144,7 +125,7 @@ namespace Cfcusaga.Web.Controllers
 
             string itemName = anItem.ItemName;
             // Remove from cart
-            int itemCount = cart.RemoveFromCart(id);
+            int itemCount = await cart.RemoveFromCart(id);
 
             // Display the confirmation message
             var results = new ShoppingCartRemoveViewModel

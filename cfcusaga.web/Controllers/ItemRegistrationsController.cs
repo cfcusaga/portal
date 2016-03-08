@@ -15,7 +15,9 @@ using Cfcusaga.Web.Models;
 using Cfcusaga.Web.ViewModels;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using Cart = cfcusaga.domain.Orders.Cart;
 using Enums = cfcusaga.domain.Enums;
+using Item = cfcusaga.domain.Events.Item;
 using Member = cfcusaga.domain.Membership.Member;
 
 namespace Cfcusaga.Web.Controllers
@@ -65,20 +67,22 @@ namespace Cfcusaga.Web.Controllers
 
         public static List<SelectListItem> GetTShirtSizesList()
         {
-            var list = new List<SelectListItem>();
-            list.Add(new SelectListItem() { Text = "Youth Small", Value = "YS" });
-            list.Add(new SelectListItem() { Text = "Youth Medium", Value = "YM" });
-            list.Add(new SelectListItem() { Text = "Youth Large", Value = "YL" });
-            list.Add(new SelectListItem() { Text = "Youth X-Large", Value = "YXL" });
-            list.Add(new SelectListItem() { Text = "Adult Small", Value = "AS" });
-            list.Add(new SelectListItem() { Text = "Adult Medium", Value = "AM" });
-            list.Add(new SelectListItem() { Text = "Adult Large", Value = "AL" });
-            list.Add(new SelectListItem() { Text = "Adult X-Large", Value = "AXL" });
+            var list = new List<SelectListItem>
+            {
+                new SelectListItem() {Text = "Youth Small", Value = "YS"},
+                new SelectListItem() {Text = "Youth Medium", Value = "YM"},
+                new SelectListItem() {Text = "Youth Large", Value = "YL"},
+                new SelectListItem() {Text = "Youth X-Large", Value = "YXL"},
+                new SelectListItem() {Text = "Adult Small", Value = "AS"},
+                new SelectListItem() {Text = "Adult Medium", Value = "AM"},
+                new SelectListItem() {Text = "Adult Large", Value = "AL"},
+                new SelectListItem() {Text = "Adult X-Large", Value = "AXL"}
+            };
             return list;
         }
 
 
-        private readonly IEventServices _svc;
+        private readonly IEventServices _eventSvc;
         private readonly IShoppingCartService _cartSvc;
         private readonly PortalDbContext _db;
 
@@ -111,7 +115,7 @@ namespace Cfcusaga.Web.Controllers
         public ItemRegistrationsController(PortalDbContext db, IEventServices svc, IShoppingCartService cartSvc, ApplicationUserManager userManager)
         {
             _db = db;
-            _svc = svc;
+            _eventSvc = svc;
             _cartSvc = cartSvc;
             UserManager = userManager;
             //}
@@ -147,7 +151,7 @@ namespace Cfcusaga.Web.Controllers
 
             }
 
-            var anEvent = await _svc.GetEventDetails(eventId);
+            var anEvent = await _eventSvc.GetEventDetails(eventId);
             ViewBag.Title = anEvent.Name;
 
             var cartItem = await _db.Carts.FindAsync(itemRegistration.CartID);
@@ -167,7 +171,7 @@ namespace Cfcusaga.Web.Controllers
             //ViewBag.RelationToMemberTypeId = new SelectList(_svc.GetRelationToMemberTypes(), "ID", "Name");
 
             var eventId= EventsController.GetSessionEventId(this.HttpContext);
-            var anEvent = await _svc.GetEventDetails(eventId);
+            var anEvent = await _eventSvc.GetEventDetails(eventId);
             ViewBag.Title = anEvent.Name;
             var item = await _db.Items.FindAsync(itemId);
             ViewBag.SubTitle = item.Name;
@@ -186,12 +190,12 @@ namespace Cfcusaga.Web.Controllers
 
             if (item.IsRequireParentWaiver != null && item.IsRequireParentWaiver.Value)
             {
-                var relationTypes = _svc.GetRelationToMemberTypesRequiresParentWaiver();
+                var relationTypes = _eventSvc.GetRelationToMemberTypesRequiresParentWaiver();
                 newRegistratinItem.RelationToMemberTypes = new SelectList(relationTypes, "Id", "Name");
             }
             else
             {
-                var relationTypes = _svc.GetRelationToMemberTypesAdults().ToList();
+                var relationTypes = _eventSvc.GetRelationToMemberTypesAdults().ToList();
                 IEnumerable<RelationToMemberType> selectListItems = null;
                 //newRegistratinItem.RelationToMemberTypes = new SelectList(relationTypes, "Id", "Name");
                 if (sessionInfo != null && sessionInfo.IsSelfSelected)
@@ -234,12 +238,13 @@ namespace Cfcusaga.Web.Controllers
 
                 var cart = ShoppingCart.GetCart(this.HttpContext, _cartSvc);
                 int count;
-                var anItem =  cart.AddToCart(foundItem, out count);
+                var currentCart =  cart.AddToCart(foundItem, out count);
+                
 
                 ItemRegistrationsController.SetSessionCurrentRegistrationInfo(this.HttpContext, itemRegistration.LastName, string.Empty);
                 //var eventId = EventsController.GetSessionEventId(this.HttpContext);
 
-                itemRegistration.CartID = anItem.Id;
+                itemRegistration.CartID = currentCart.Id;
 
                 if (itemRegistration.RelationToMemberTypeId != null && itemRegistration.RelationToMemberTypeId == (int)Enums.RelationToMe.Self)
                 {
@@ -258,14 +263,63 @@ namespace Cfcusaga.Web.Controllers
                     }
                 }
 
+                using (var dbContextTransaction = _db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        _db.CartItemRegistrations.Add(itemRegistration);
 
-                _db.CartItemRegistrations.Add(itemRegistration);
-                await _db.SaveChangesAsync();
+                        await AddItemDiscount(foundItem, currentCart);
+
+                        await _db.SaveChangesAsync();
+
+                        dbContextTransaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        var msg = ex.Message;
+                        dbContextTransaction.Rollback();
+                        throw;
+                    }
+                }
+
+
 
                 return RedirectToAction("Index", "Items" );
             }
 
             return View();
+        }
+
+        private async Task AddItemDiscount(Item foundItem, Cart currentCart)
+        {
+            var itemDiscount = await _db.Discounts.FirstOrDefaultAsync(d => d.ItemId == foundItem.Id);
+            if (itemDiscount != null)
+            {
+                var itemCount = await _db.Carts.CountAsync(i => i.ItemId == foundItem.Id && i.CartId == currentCart.CartId);
+                if (itemCount >= itemDiscount.DiscountBeginAtNthItem)
+                {
+                    var cartDiscount =
+                        await
+                            _db.CartDiscounts.FirstOrDefaultAsync(
+                                c => c.DiscountId == itemDiscount.Id && c.CartId == currentCart.CartId);
+                    if (cartDiscount != null)
+                    {
+                        if (itemDiscount.DiscountBeginAtNthItem != null)
+                            cartDiscount.Quantity = cartDiscount.Quantity + 1;
+                    }
+                    else
+                    {
+                        var newCartDiscount = _db.Set<cfcusaga.data.CartDiscount>().Create();
+                        newCartDiscount.DiscountId = itemDiscount.Id;
+                        if (itemDiscount.Price != null) newCartDiscount.Discount = itemDiscount.Price.Value;
+                        newCartDiscount.CartId = currentCart.CartId;
+                        if (itemDiscount.DiscountBeginAtNthItem != null)
+                            newCartDiscount.Quantity = itemCount - (itemDiscount.DiscountBeginAtNthItem.Value - 1);
+                        _db.CartDiscounts.Add(newCartDiscount);
+                    }
+                }
+            }
         }
 
         private async Task<Member> GetMember(string id)
@@ -312,7 +366,7 @@ namespace Cfcusaga.Web.Controllers
                 }
 
             }
-            var anEvent = await _svc.GetEventDetails(eventId);
+            var anEvent = await _eventSvc.GetEventDetails(eventId);
             ViewBag.Title = anEvent.Name;
             var cartItem = await _db.Carts.FindAsync(itemRegistration.CartID);
 
@@ -328,13 +382,13 @@ namespace Cfcusaga.Web.Controllers
             SelectList relationTypesList = null;
             if (item.IsRequireParentWaiver != null && item.IsRequireParentWaiver.Value)
             {
-                var relationTypes = _svc.GetRelationToMemberTypesRequiresParentWaiver();
+                var relationTypes = _eventSvc.GetRelationToMemberTypesRequiresParentWaiver();
                 relationTypesList = new SelectList(relationTypes, "Id", "Name");
             }
             else
             {
                  //relationTypes = _svc.GetRelationToMemberTypesAdults();
-                var relationTypes = _svc.GetRelationToMemberTypesAdults().ToList();
+                var relationTypes = _eventSvc.GetRelationToMemberTypesAdults().ToList();
                 IEnumerable<RelationToMemberType> selectListItems = null;
                 //newRegistratinItem.RelationToMemberTypes = new SelectList(relationTypes, "Id", "Name");
                 if (sessionInfo != null && sessionInfo.IsSelfSelected)

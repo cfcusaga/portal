@@ -13,6 +13,7 @@ namespace cfcusaga.domain.Orders
         public decimal ItemPrice { get; set; }
         public string ItemName { get; set; }
 
+        public decimal LineTotal => ItemPrice*Count;
         public virtual domain.Orders.ItemRegistration ItemRegistration { get; set; }
 
 

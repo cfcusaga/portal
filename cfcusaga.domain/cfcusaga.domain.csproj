@@ -92,9 +92,11 @@
     <Compile Include="Mappers\AutomapperDomainConfiguration.cs" />
     <Compile Include="Mappers\DomainEventMapper.cs" />
     <Compile Include="Mappers\ItemDomainToEntityMapper.cs" />
+    <Compile Include="Orders\CartDiscount.cs" />
     <Compile Include="Orders\ItemRegistration.cs" />
     <Compile Include="Orders\Order.cs" />
     <Compile Include="Orders\OrderDetail.cs" />
+    <Compile Include="Orders\OrderDiscount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Orders\ShoppingCartService.cs" />
   </ItemGroup>

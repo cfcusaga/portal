@@ -5,6 +5,16 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="PortalDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="CartDiscounts">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DiscountId" Type="int" Nullable="false" />
+          <Property Name="Discount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CartId" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="CartItemRegistrations">
           <Key>
             <PropertyRef Name="ID" />
@@ -41,6 +51,19 @@
           <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="100" />
           <Property Name="SortOrder" Type="smallint" />
+        </EntityType>
+        <EntityType Name="Discounts">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="DiscountCode" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="ItemId" Type="int" />
+          <Property Name="DiscountBeginAtNthItem" Type="smallint" />
+          <Property Name="DiscountEndAtNthItem" Type="smallint" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="IsActive" Type="bit" />
         </EntityType>
         <EntityType Name="EventRegistrations">
           <Key>
@@ -125,6 +148,16 @@
           <Property Name="Allergies" Type="varchar" MaxLength="250" />
           <Property Name="TshirtSize" Type="varchar" MaxLength="20" />
         </EntityType>
+        <EntityType Name="OrderDiscounts">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderId" Type="int" Nullable="false" />
+          <Property Name="DiscountId" Type="int" Nullable="false" />
+          <Property Name="Discount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Orders">
           <Key>
             <PropertyRef Name="OrderId" />
@@ -156,6 +189,18 @@
           <Property Name="Name" Type="nvarchar" MaxLength="30" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="100" />
         </EntityType>
+        <Association Name="FK_CartDiscounts_Discounts">
+          <End Role="Discounts" Type="Self.Discounts" Multiplicity="1" />
+          <End Role="CartDiscounts" Type="Self.CartDiscounts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Discounts">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CartDiscounts">
+              <PropertyRef Name="DiscountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CartItemRegistrations_Carts">
           <End Role="Carts" Type="Self.Carts" Multiplicity="1" />
           <End Role="CartItemRegistrations" Type="Self.CartItemRegistrations" Multiplicity="*" />
@@ -236,6 +281,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Discounts_Items">
+          <End Role="Items" Type="Self.Items" Multiplicity="0..1" />
+          <End Role="Discounts" Type="Self.Discounts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Items">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Discounts">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_EventRegistrations_Events">
           <End Role="Events" Type="Self.Events" Multiplicity="1" />
           <End Role="EventRegistrations" Type="Self.EventRegistrations" Multiplicity="*" />
@@ -284,6 +341,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_OrderDiscounts_Discounts">
+          <End Role="Discounts" Type="Self.Discounts" Multiplicity="1" />
+          <End Role="OrderDiscounts" Type="Self.OrderDiscounts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Discounts">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="OrderDiscounts">
+              <PropertyRef Name="DiscountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderDiscounts_OrderDiscounts">
+          <End Role="Orders" Type="Self.Orders" Multiplicity="1" />
+          <End Role="OrderDiscounts" Type="Self.OrderDiscounts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Orders">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="OrderDiscounts">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Orders_Members">
           <End Role="Members" Type="Self.Members" Multiplicity="0..1" />
           <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
@@ -303,16 +384,23 @@
           <Parameter Name="recordcount" Type="int" Mode="InOut" />
         </Function>
         <EntityContainer Name="PortalDbModelStoreContainer">
+          <EntitySet Name="CartDiscounts" EntityType="Self.CartDiscounts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CartItemRegistrations" EntityType="Self.CartItemRegistrations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Carts" EntityType="Self.Carts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Catagories" EntityType="Self.Catagories" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Discounts" EntityType="Self.Discounts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EventRegistrations" EntityType="Self.EventRegistrations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Events" EntityType="Self.Events" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Items" EntityType="Self.Items" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Members" EntityType="Self.Members" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderDetails" EntityType="Self.OrderDetails" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderDiscounts" EntityType="Self.OrderDiscounts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RelationToMemberTypes" EntityType="Self.RelationToMemberTypes" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_CartDiscounts_Discounts" Association="Self.FK_CartDiscounts_Discounts">
+            <End Role="Discounts" EntitySet="Discounts" />
+            <End Role="CartDiscounts" EntitySet="CartDiscounts" />
+          </AssociationSet>
           <AssociationSet Name="FK_CartItemRegistrations_Carts" Association="Self.FK_CartItemRegistrations_Carts">
             <End Role="Carts" EntitySet="Carts" />
             <End Role="CartItemRegistrations" EntitySet="CartItemRegistrations" />
@@ -337,6 +425,10 @@
             <End Role="Orders" EntitySet="Orders" />
             <End Role="OrderDetails" EntitySet="OrderDetails" />
           </AssociationSet>
+          <AssociationSet Name="FK_Discounts_Items" Association="Self.FK_Discounts_Items">
+            <End Role="Items" EntitySet="Items" />
+            <End Role="Discounts" EntitySet="Discounts" />
+          </AssociationSet>
           <AssociationSet Name="FK_EventRegistrations_Events" Association="Self.FK_EventRegistrations_Events">
             <End Role="Events" EntitySet="Events" />
             <End Role="EventRegistrations" EntitySet="EventRegistrations" />
@@ -352,6 +444,14 @@
           <AssociationSet Name="FK_Items_Events_EventId" Association="Self.FK_Items_Events_EventId">
             <End Role="Events" EntitySet="Events" />
             <End Role="Items" EntitySet="Items" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderDiscounts_Discounts" Association="Self.FK_OrderDiscounts_Discounts">
+            <End Role="Discounts" EntitySet="Discounts" />
+            <End Role="OrderDiscounts" EntitySet="OrderDiscounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderDiscounts_OrderDiscounts" Association="Self.FK_OrderDiscounts_OrderDiscounts">
+            <End Role="Orders" EntitySet="Orders" />
+            <End Role="OrderDiscounts" EntitySet="OrderDiscounts" />
           </AssociationSet>
           <AssociationSet Name="FK_Orders_Members" Association="Self.FK_Orders_Members">
             <End Role="Members" EntitySet="Members" />
@@ -431,6 +531,25 @@
           <AssociationSet Name="FK_dbo_OrderDetails_dbo_Items_ItemId" Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId">
             <End Role="Item" EntitySet="Items" />
             <End Role="OrderDetail" EntitySet="OrderDetails" />
+          </AssociationSet>
+          <EntitySet Name="Discounts" EntityType="PortalDbModel.Discount" />
+          <AssociationSet Name="FK_Discounts_Items" Association="PortalDbModel.FK_Discounts_Items">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="Discount" EntitySet="Discounts" />
+          </AssociationSet>
+          <EntitySet Name="CartDiscounts" EntityType="PortalDbModel.CartDiscount" />
+          <AssociationSet Name="FK_CartDiscounts_Discounts" Association="PortalDbModel.FK_CartDiscounts_Discounts">
+            <End Role="Discount" EntitySet="Discounts" />
+            <End Role="CartDiscount" EntitySet="CartDiscounts" />
+          </AssociationSet>
+          <EntitySet Name="OrderDiscounts" EntityType="PortalDbModel.OrderDiscount" />
+          <AssociationSet Name="FK_OrderDiscounts_Discounts" Association="PortalDbModel.FK_OrderDiscounts_Discounts">
+            <End Role="Discount" EntitySet="Discounts" />
+            <End Role="OrderDiscount" EntitySet="OrderDiscounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderDiscounts_OrderDiscounts" Association="PortalDbModel.FK_OrderDiscounts_OrderDiscounts">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="OrderDiscount" EntitySet="OrderDiscounts" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="CartItemRegistration">
@@ -604,6 +723,7 @@
           <NavigationProperty Name="EventRegistrations" Relationship="PortalDbModel.FK_EventRegistrations_Orders" FromRole="Order" ToRole="EventRegistration" />
           <NavigationProperty Name="Member" Relationship="PortalDbModel.FK_Orders_Members" FromRole="Order" ToRole="Member" />
           <NavigationProperty Name="OrderDetails" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" FromRole="Order" ToRole="OrderDetail" />
+          <NavigationProperty Name="OrderDiscounts" Relationship="PortalDbModel.FK_OrderDiscounts_OrderDiscounts" FromRole="Order" ToRole="OrderDiscount" />
         </EntityType>
         <Association Name="FK_EventRegistrations_Orders">
           <End Type="PortalDbModel.Order" Role="Order" Multiplicity="1" />
@@ -676,6 +796,7 @@
           <NavigationProperty Name="Catagory" Relationship="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId" FromRole="Item" ToRole="Catagory" />
           <NavigationProperty Name="Event" Relationship="PortalDbModel.FK_Items_Events_EventId" FromRole="Item" ToRole="Event" />
           <NavigationProperty Name="OrderDetails" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" FromRole="Item" ToRole="OrderDetail" />
+          <NavigationProperty Name="Discounts" Relationship="PortalDbModel.FK_Discounts_Items" FromRole="Item" ToRole="Discount" />
         </EntityType>
         <Association Name="FK_dbo_Carts_dbo_Items_ItemId">
           <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
@@ -728,6 +849,93 @@
             </Principal>
             <Dependent Role="OrderDetail">
               <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Discount">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DiscountCode" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="ItemId" Type="Int32" />
+          <Property Name="DiscountBeginAtNthItem" Type="Int16" />
+          <Property Name="DiscountEndAtNthItem" Type="Int16" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="IsActive" Type="Boolean" />
+          <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_Discounts_Items" FromRole="Discount" ToRole="Item" />
+          <NavigationProperty Name="CartDiscounts" Relationship="PortalDbModel.FK_CartDiscounts_Discounts" FromRole="Discount" ToRole="CartDiscount" />
+          <NavigationProperty Name="OrderDiscounts" Relationship="PortalDbModel.FK_OrderDiscounts_Discounts" FromRole="Discount" ToRole="OrderDiscount" />
+        </EntityType>
+        <Association Name="FK_Discounts_Items">
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="0..1" />
+          <End Type="PortalDbModel.Discount" Role="Discount" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Discount">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CartDiscount">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DiscountId" Type="Int32" Nullable="false" />
+          <Property Name="Discount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="CartId" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Discount1" Relationship="PortalDbModel.FK_CartDiscounts_Discounts" FromRole="CartDiscount" ToRole="Discount" />
+        </EntityType>
+        <Association Name="FK_CartDiscounts_Discounts">
+          <End Type="PortalDbModel.Discount" Role="Discount" Multiplicity="1" />
+          <End Type="PortalDbModel.CartDiscount" Role="CartDiscount" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Discount">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CartDiscount">
+              <PropertyRef Name="DiscountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="OrderDiscount">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderId" Type="Int32" Nullable="false" />
+          <Property Name="DiscountId" Type="Int32" Nullable="false" />
+          <Property Name="Discount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Discount1" Relationship="PortalDbModel.FK_OrderDiscounts_Discounts" FromRole="OrderDiscount" ToRole="Discount" />
+          <NavigationProperty Name="Order" Relationship="PortalDbModel.FK_OrderDiscounts_OrderDiscounts" FromRole="OrderDiscount" ToRole="Order" />
+        </EntityType>
+        <Association Name="FK_OrderDiscounts_Discounts">
+          <End Type="PortalDbModel.Discount" Role="Discount" Multiplicity="1" />
+          <End Type="PortalDbModel.OrderDiscount" Role="OrderDiscount" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Discount">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="OrderDiscount">
+              <PropertyRef Name="DiscountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderDiscounts_OrderDiscounts">
+          <End Type="PortalDbModel.Order" Role="Order" Multiplicity="1" />
+          <End Type="PortalDbModel.OrderDiscount" Role="OrderDiscount" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="OrderDiscount">
+              <PropertyRef Name="OrderId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -895,6 +1103,42 @@
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="CatagoryID" ColumnName="CatagoryID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Discounts">
+            <EntityTypeMapping TypeName="PortalDbModel.Discount">
+              <MappingFragment StoreEntitySet="Discounts">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="DiscountEndAtNthItem" ColumnName="DiscountEndAtNthItem" />
+                <ScalarProperty Name="DiscountBeginAtNthItem" ColumnName="DiscountBeginAtNthItem" />
+                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+                <ScalarProperty Name="DiscountCode" ColumnName="DiscountCode" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CartDiscounts">
+            <EntityTypeMapping TypeName="PortalDbModel.CartDiscount">
+              <MappingFragment StoreEntitySet="CartDiscounts">
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="CartId" ColumnName="CartId" />
+                <ScalarProperty Name="Discount" ColumnName="Discount" />
+                <ScalarProperty Name="DiscountId" ColumnName="DiscountId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderDiscounts">
+            <EntityTypeMapping TypeName="PortalDbModel.OrderDiscount">
+              <MappingFragment StoreEntitySet="OrderDiscounts">
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Discount" ColumnName="Discount" />
+                <ScalarProperty Name="DiscountId" ColumnName="DiscountId" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

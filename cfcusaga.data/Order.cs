@@ -19,6 +19,7 @@ namespace cfcusaga.data
         {
             this.EventRegistrations = new HashSet<EventRegistration>();
             this.OrderDetails = new HashSet<OrderDetail>();
+            this.OrderDiscounts = new HashSet<OrderDiscount>();
         }
     
         public int OrderId { get; set; }
@@ -45,5 +46,7 @@ namespace cfcusaga.data
         public virtual Member Member { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrderDiscount> OrderDiscounts { get; set; }
     }
 }

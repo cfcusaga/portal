@@ -10,6 +10,7 @@ namespace  Cfcusaga.Web.Controllers
     public class EventsController : Controller
     {
         private const string EventIdSessionKey = "EventId";
+        private const int DefaultEventId = 7;
 
         public static int? GetSessionEventId(HttpContextBase context)
         {
@@ -17,6 +18,10 @@ namespace  Cfcusaga.Web.Controllers
             {
                 var o = context.Session[EventIdSessionKey];
                 if (o != null) return int.Parse(o.ToString());
+            }
+            else
+            {
+                SetSessionEventId(context, DefaultEventId);
             }
             return null;
         }

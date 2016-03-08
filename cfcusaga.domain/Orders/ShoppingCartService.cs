@@ -28,7 +28,7 @@ namespace cfcusaga.domain.Orders
         Task<List<Cart>> GetCartItems(string shoppingCartId);
         bool IsValidOrder(int id, string userName);
         //object GetCartItem(int id);
-        int RemoveFromCart(string shoppingCartId, int id);
+        Task<int> RemoveFromCart(string shoppingCartId, int id);
         int? GetCount(string shoppingCartId);
         decimal? GetTotal(string shoppingCartId);
         void MigrateCart(string userName, string shoppingCartId);
@@ -38,6 +38,7 @@ namespace cfcusaga.domain.Orders
         void UpdateCartItem(Cart foundItem);
         Task<int> AddEventRegistrations(Member aMember, Order order, Cart item);
         Task<int> AddOrder(Order order, List<Cart> cartItems, string shoppingCartId, string currentUserId);
+        Task<List<CartDiscount>> GetCartDiscounts(string shoppingCartId);
     }
 
     public class ShoppingCartService : IShoppingCartService
@@ -192,9 +193,26 @@ namespace cfcusaga.domain.Orders
                         dbOrder.MemberId = member.Id;
                     }
 
+                    var discounts = await GetCartDiscounts(shoppingCartId);
+                    decimal discountsTotal = 0;
+                    foreach (var discount in discounts)
+                    {
+                        var orderDiscount = new OrderDiscount()
+                        {
+                            OrderId = order.OrderId,
+                            DiscountId = discount.DiscountId,
+                            Name = discount.Name,
+                            Discount = discount.Discount,
+                            Quantity =  discount.Quantity
+                        };
+                        order.OrderDiscounts.Add(orderDiscount);
+                        await AddOrderDiscounts(order, discount);
+                         discountsTotal = (discount.Discount*discount.Quantity);
+                    }
+
                     //TODO: Clean the 
                     //order.OrderDetails
-                    dbOrder.Total = order.Total;
+                    dbOrder.Total = order.Total - discountsTotal;
                     await SaveChangesAsync();
                     // Empty the shopping cart
                     EmptyCart(shoppingCartId);
@@ -210,6 +228,51 @@ namespace cfcusaga.domain.Orders
                 }
             }
             return memberId;
+        }
+
+        private async Task AddOrderDiscounts(Order order, CartDiscount discount)
+        {
+            try
+            {
+                var entity = new data.OrderDiscount()
+                {
+                    OrderId = order.OrderId,
+                    DiscountId = discount.DiscountId,
+                    Discount = discount.Discount,
+                    Quantity = discount.Quantity
+                };
+                // Set the order total of the shopping cart
+                _db.OrderDiscounts.Add(entity);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<List<CartDiscount>> GetCartDiscounts(string shoppingCartId)
+        {
+            try
+            {
+                return await(from c in _db.CartDiscounts
+                             join d  in _db.Discounts on c.DiscountId equals d.Id
+                             where c.CartId == shoppingCartId
+                             select new CartDiscount()
+                             {
+                                 Id = c.Id,
+                                 Name = d.Name,
+                                 DiscountId = c.DiscountId,
+                                 Discount = c.Discount,
+                                 Quantity = c.Quantity
+                             }).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.Message;
+                throw;
+            }
         }
 
         private async Task<Member> GetMemberInfoFromAspNetUserId(string currentUserId)
@@ -445,53 +508,83 @@ namespace cfcusaga.domain.Orders
                 o.Username == userName);
         }
 
-        public int RemoveFromCart(string shoppingCartId, int id)
+        public async Task<int> RemoveFromCart(string shoppingCartId, int id)
         {
-            try
+            using (var dbContextTransaction = _db.Database.BeginTransaction())
             {
-
-                var itemRegistratin = _db.CartItemRegistrations.FirstOrDefault(c => c.CartID == id);
-
-                if (itemRegistratin != null)
+                try
                 {
-                    _db.CartItemRegistrations.Remove(itemRegistratin);
+
+                    var itemRegistratin = _db.CartItemRegistrations.FirstOrDefault(c => c.CartID == id);
+
+                    if (itemRegistratin != null)
+                    {
+                        _db.CartItemRegistrations.Remove(itemRegistratin);
+                    }
+
+                    var cartItem = _db.Carts
+                        .FirstOrDefault(
+                            c => c.CartId == shoppingCartId
+                                 && c.ID == id);
+
+                    int itemCount = 0;
+
+                    if (cartItem != null)
+                    {
+                        if (cartItem.Count > 1)
+                        {
+                            cartItem.Count--;
+                            itemCount = cartItem.Count;
+                        }
+                        else
+                        {
+                            _db.Carts.Remove(cartItem);
+                        }
+
+
+                        await RemoveItemDiscount(cartItem.ItemId, shoppingCartId);
+
+                        await _db.SaveChangesAsync();
+
+                        dbContextTransaction.Commit();
+                    }
+                    return itemCount;
+                }
+                catch (Exception ex)
+                {
+                    var msg = ex.Message;
+                    dbContextTransaction.Rollback();
+                    throw;
                 }
 
+            }
 
 
-                var cartItem = _db.Carts
-                    .FirstOrDefault(
-                        c => c.CartId == shoppingCartId
-                             && c.ID == id);
+        }
 
-                int itemCount = 0;
 
-                if (cartItem != null)
+        private async Task RemoveItemDiscount(int itemId, string shoppingCartId)
+        {
+            var itemDiscount = await _db.Discounts.FirstOrDefaultAsync(d => d.ItemId == itemId);
+            if (itemDiscount != null)
+            {
+                var cartDiscount =
+                    await
+                        _db.CartDiscounts.FirstOrDefaultAsync(
+                            c => c.DiscountId == itemDiscount.Id && c.CartId == shoppingCartId);
+                if (cartDiscount != null)
                 {
-                    if (cartItem.Count > 1)
+                    if (itemDiscount.DiscountBeginAtNthItem != null)
+                        cartDiscount.Quantity = cartDiscount.Quantity - 1;
+                    if (cartDiscount.Quantity == 0)
                     {
-                        cartItem.Count--;
-                        itemCount = cartItem.Count;
+                        _db.CartDiscounts.Remove(cartDiscount);
                     }
-                    else
-                    {
-                        _db.Carts.Remove(cartItem);
-                    }
-                    // Save changes
-                    _db.SaveChanges();
                 }
-                return itemCount;
-            }
-            catch (Exception ex)
-            {
-                var msg = ex.Message;
-                throw;
-            }
-            finally
-            {
-                _db.SaveChanges();
+                
             }
         }
+
 
         public int? GetCount(string shoppingCartId)
         {
@@ -507,11 +600,19 @@ namespace cfcusaga.domain.Orders
             // Multiply item price by count of that item to get 
             // the current price for each of those items in the cart
             // sum all item price totals to get the cart total
-            decimal? total = (from cartItems in _db.Carts
+            decimal? cartTotal = (from cartItems in _db.Carts
                               where cartItems.CartId == shoppingCartId
                               select (int?)cartItems.Count *
                               cartItems.Item.Price).Sum();
-            return total;
+
+            decimal? totalDiscount = (from cartDiscounts in _db.CartDiscounts
+                              where cartDiscounts.CartId == shoppingCartId
+                              select (int?)cartDiscounts.Quantity *
+                              cartDiscounts.Discount).Sum();
+            if (totalDiscount.HasValue)
+                return (cartTotal - totalDiscount);
+            return cartTotal;
+
         }
 
         public void MigrateCart(string userName, string shoppingCartId)
@@ -544,6 +645,8 @@ namespace cfcusaga.domain.Orders
                 _db.CartItemRegistrations.Remove(itemRegistratin);
             }
         }
+
+
 
         public async Task AddMemberDetails(Member item)
         {

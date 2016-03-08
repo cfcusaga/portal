@@ -59,6 +59,7 @@
                             Quantity
                         </th>
                         <th></th>
+                        <th></th>
                     </tr>
                     </thead>
                     @foreach (var item in Model.CartItems)
@@ -90,11 +91,36 @@
                                 @item.Count
                             </td>
                             <td>
+                                @item.LineTotal
+                            </td>
+
+                            <td>
                                 <a href="#" class="RemoveLink"
                                    data-id="@item.Id">
                                     Remove
                                     from cart
                                 </a>
+                            </td>
+                        </tr>
+                    }
+
+                    @foreach (var item in Model.CartDiscounts)
+                    {
+                        <tr id="row-@item.Id">
+                            <td>
+                                @item.Name
+                            </td>
+                            <td>
+                                @item.Discount
+                            </td>
+                            <td id="item-count-@item.Quantity">
+                                @item.Quantity
+                            </td>
+                            <td>
+                               @item.LineTotal
+                            </td>
+                            <td>
+                                &nbsp;
                             </td>
                         </tr>
                     }
@@ -107,6 +133,7 @@
                         <td id="cart-total">
                             @Model.CartTotal
                         </td>
+                        <td></td>
                     </tr>
                 </table>
                 <button type="button" class="btn btn-success btn-sm" onclick="location.href = '@Url.Action("AddressAndPayment", "Checkout")'">

@@ -231,9 +231,9 @@ namespace cfcusaga.domain.Events
 
         public async Task<IPagedList<Item>> GetEventItems(int? eventId, string sortOrder, string searchString, int pageSize, int pageNumber)
         {
-            var items = from i in _db.Items
-                join e in _db.Events on i.EventId equals e.Id
-                join c in _db.Catagories on i.CatagoryID equals  c.ID
+            var items = from i in _db.Items.AsNoTracking()
+                join e in _db.Events.AsNoTracking() on i.EventId equals e.Id
+                join c in _db.Catagories.AsNoTracking() on i.CatagoryID equals  c.ID
                         where i.EventId == eventId.Value
                         orderby c.SortOrder ascending 
                 select new Item

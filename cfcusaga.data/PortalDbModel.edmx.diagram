@@ -26,6 +26,13 @@
         <AssociationConnector Association="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId" />
         <AssociationConnector Association="PortalDbModel.FK_Items_Events_EventId" />
         <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" />
+        <EntityTypeShape EntityType="PortalDbModel.Discount" Width="1.5" PointX="5.25" PointY="5.75" />
+        <AssociationConnector Association="PortalDbModel.FK_Discounts_Items" />
+        <EntityTypeShape EntityType="PortalDbModel.CartDiscount" Width="1.5" PointX="7.5" PointY="13.125" />
+        <AssociationConnector Association="PortalDbModel.FK_CartDiscounts_Discounts" />
+        <EntityTypeShape EntityType="PortalDbModel.OrderDiscount" Width="1.5" PointX="14.875" PointY="8.25" />
+        <AssociationConnector Association="PortalDbModel.FK_OrderDiscounts_Discounts" />
+        <AssociationConnector Association="PortalDbModel.FK_OrderDiscounts_OrderDiscounts" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

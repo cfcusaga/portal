@@ -56,6 +56,15 @@ namespace Cfcusaga.Web.Models
             }
         }
 
+        public async Task<List<cfcusaga.domain.Orders.CartDiscount>> GetCartDiscounts()
+        {
+            return await _svc.GetCartDiscounts(ShoppingCartId);
+        }
+
+        //public async Task<List<cfcusaga.domain.Orders.Cart>> GetCartItems()
+        //{
+        //    return await _svc.GetCartItems(ShoppingCartId);
+        //}
 
         public cfcusaga.domain.Orders.Cart AddToCart(cfcusaga.domain.Events.Item item, out int count)
         {
@@ -82,7 +91,7 @@ namespace Cfcusaga.Web.Models
             }
         }
 
-        public int RemoveFromCart(int id)
+        public Task<int> RemoveFromCart(int id)
         {
             return _svc.RemoveFromCart(ShoppingCartId, id);
         }

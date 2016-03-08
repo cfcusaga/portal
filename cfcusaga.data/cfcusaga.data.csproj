@@ -55,10 +55,16 @@
     <Compile Include="Cart.cs">
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="CartDiscount.cs">
+      <DependentUpon>PortalDbModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="CartItemRegistration.cs">
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Catagory.cs">
+      <DependentUpon>PortalDbModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Discount.cs">
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Enums\Enums.cs" />
@@ -78,6 +84,9 @@
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="OrderDetail.cs">
+      <DependentUpon>PortalDbModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OrderDiscount.cs">
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Partials\CartItemRegistration.cs" />
