@@ -1,68 +1,215 @@
-﻿
-@{
-    ViewBag.Title = "FamilyConf";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+﻿@{
+    ViewBag.Title = "Home Page";
 }
+@*<style type="text/css">
+        .homepage-hero-module {
+          border-right: none;
+          border-left: none;
+          position: relative;
+        }
+        .no-video .video-container video,
+        .touch .video-container video {
+          display: none;
+        }
+        .no-video .video-container .poster,
+        .touch .video-container .poster {
+          display: block !important;
+        }
+        .video-container {
+          position: relative;
+          bottom: 0%;
+          left: 0%;
+          height: 100%;
+          width: 100%;
+          overflow: hidden;
+          background: #000;
+        }
+        .video-container .poster img {
+          width: 100%;
+          bottom: 0;
+          position: absolute;
+        }
+        .video-container .filter {
+          z-index: 100;
+          position: absolute;
+          background: rgba(0, 0, 0, 0.4);
+          width: 100%;
+        }
+        .video-container .title-container {
+          z-index: 1000;
+          position: absolute;
+          top: 35%;
+          width: 100%;
+          text-align: center;
+          color: #fff;
+        }
+        .video-container .description .inner {
+          font-size: 1em;
+          width: 45%;
+          margin: 0 auto;
+        }
+        .video-container .link {
+          position: absolute;
+          bottom: 3em;
+          width: 100%;
+          text-align: center;
+          z-index: 1001;
+          font-size: 2em;
+          color: #fff;
+        }
+        .video-container .link a {
+          color: #fff;
+        }
+        .video-container video {
+          position: absolute;
+          z-index: 0;
+          bottom: 0;
+        }
+        .video-container video.fillWidth {
+          width: 100%;
+    }
+        </style>*@
 
-<<div class="container-fluid">
-    <div class="row row-offcanvas row-offcanvas-left">
-        <!--/span-->
-        <div class="col-xs-12 col-sm-9">
-            <br>
-            <div class="jumbotron">
-                <h1>CFC KIDS Family Conference 2016 Registration</h1>
-                <p class="lead">June 18-19, 2016</p>
-                <p class="lead">Eatonton, GA</p>
-                <p><button type="button" class="btn btn-primary btn-large" onclick="location.href='@Url.Action("Register", "Items", new {eventId=7})'">Register Now &raquo;</button></p>
-            </div>
-            <div class="row">
-                <div class="col-6 col-sm-6 col-lg-4">
-                    <h2>Conference Prayer</h2>
-                    <p>
-
-                        Our gracious God and father, we praise you for making us your children. We are grateful for your son, our Lord Jesus Christ for saving us and making us a member of your family. We thank you for our families whom you have provided for us.
+<!-- Carousel
+ ================================================== -->
+<div id="myCarousel" class="carousel slide">
+    <div class="carousel-inner">
+        <div class="item active">
+            <img src="~/Content/images/header1.jpg" alt="" />
+            <div class="container">
+                <div class="carousel-caption">
+                    <p class="lead" style="font-size: 30px"><b>June 18-19, 2016</b></p>
+                    <p class="lead" >
+                        <b>
+                            <a href="http://www.rockeagle4h.org/index.html" target="_blank" style="color: #CC0000">Rock Eagle 4H</a><br />
+                            <a href="https://goo.gl/maps/d13WugDKuuw" target="_blank" style="color: #CC0000">Eatonton, GA</a>
+                        </b>
+                    </p>
+                    <p style="font-family: sans-serif;">
+                        <ul style="list-style: none">
+                            Early Bird Registration until May 1st, 2016
+                            <li>$85 per Child Participant, $75 for the 3rd+ Sibling of the Participant</li>
+                            <li>$55 per Youth, $55 per Parent or Guardian or Guest</li>
+                            <li>$80 Room rate (4 beds)</li>
+                        </ul>
                     </p>
                     <p>
-                        Lord Jesus, thank you for giving us your mother, Mary to be our mother too. We praise you with joy in our hearts as we sing with mama Mary. Through her powerful intercession, we lift up to you all the families planning to attend the 2016 CFC Kids Family Conference in Georgia.
+                        <button type="button" class="btn btn-primary" onclick="location.href = '@Url.Action("Register", "Items", new {eventId = 7})'">Register Now &raquo;</button>
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">FAQ</button>
+                        <a href="https://facebook.com/groups/cfckidsfamilyconf2016se" title="Facebook" class="btn btn-facebook"><i class="fa fa-facebook fa-fw"></i> Facebook</a>
                     </p>
-                    Father God, in the name of Jesus, we ask you to send the Holy Spirit to us to help us prepare for our CFC kids Family conference. We pray that we will all be open to the Holy Spirit's leading and guidance. Help us to trust in you and depend on your provision completely.
-                    <p>
-                        Holy spirit, open our hearts and help us grow in love as we participate in your work in us and in every family. May you help us practice the virtues of patience and perseverance as we do the work needed for the activities. Give us all the strength we need and teach us to have faith, hope and love when things don't go the way it should be. Most importantly, create in us a humble heart as we serve all the families that you so love.
-                    </p>
-                    <p>
-                        Help us to rejoice at all times and to not be afraid. Fill us with your peace as we claim your glory in the upcoming CFC Kids Family Conference.
-                    </p>
-                    <p>
-                        Father in heaven, we thank you for our families.<br />
-                        Jesus, our brother, stay with us always.<br />
-                        Holy Spirit, be with us always<br />
-                        Mama Mary, our mother, pray for us, your children.<br />
-
-                    </p>
-                    
                 </div>
-                <!--/span-->
-                <div class="col-6 col-sm-6 col-lg-4">
-                    <h2>Heading L1</h2>
-                    <p>
-                        Bootply is a playground for Bootstrap that enables developers and designers to test, prototype and create mockups using Bootstrap friendly HTML, CSS and Javascript. Bootstrap is a front-end framework that uses CSS and JavaScript to
-                        facilitate responsive Web design.
-                    </p>
-                    <p><a class="btn btn-default" href="#">View details »</a></p>
-                </div>
-                <!--/span-->
-
-
-                <!--/span-->
             </div>
-            <!--/row-->
         </div>
-        <!--/span-->
+        <div class="item">
 
+            <img src="~/Content/images/why-kids-family-conf.jpg" alt=""/>
+            <div class="container">
+                <div class="carousel-caption">
+                    <br /><br /><br /><br /><br /><br /><br /><br />
+                    <p>
+                        <button type="button" class="btn btn-primary" onclick="location.href = '@Url.Action("Register", "Items", new {eventId = 7})'">Register Now &raquo;</button>
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">FAQ</button>
+                        <a href="https://facebook.com/groups/cfckidsfamilyconf2016se" title="Facebook" class="btn btn-facebook"><i class="fa fa-facebook fa-fw"></i> Facebook</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="item">
+            <img src="~/Content/images/family.jpg" alt="" />
+            <div class="container">
+                <div class="carousel-caption">
+                    <h1 style="font-family: cursive;font-size: 50px">CFC Kids Family Conference</h1>
+                    <br/><br/><br /><br />
+                    <p>
+                        <button type="button" class="btn btn-primary" onclick="location.href = '@Url.Action("Register", "Items", new {eventId = 7})'">Register Now &raquo;</button>
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">FAQ</button>
+                        <a href="https://facebook.com/groups/cfckidsfamilyconf2016se" title="Facebook" class="btn btn-facebook"><i class="fa fa-facebook fa-fw"></i> Facebook</a>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
-    <!--/row-->
-    <hr>
-    <footer>
-        <p>© Company 2013</p>
-    </footer>
+    <a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
+    <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
+</div><!-- /.carousel -->
+
+<div class="jumbotron" style="background-image: url(http://cfcusaga.azurewebsites.net/content/images/frontpage4.png); background-size: 100%; background-repeat: no-repeat;display: none">
+    @*<h2><b>CFC KIDS Family Conference 2016 Registration</b></h2>*@
+    <p class="lead"><b>June 18-19, 2016</b></p>
+    <p class="lead">
+        <a href="http://www.rockeagle4h.org/index.html" target="_blank">Rock Eagle 4H</a><br />
+        <a href="https://goo.gl/maps/d13WugDKuuw" target="_blank">Eatonton, GA</a>
+    </p>
+    <p>
+        <ul>
+            Early Bird Registration until May 1st, 2016
+            <li>$85 per Child Participant, $75 for the 3rd+ Sibling of the Participant</li>
+            <li>$55 per Youth, $55 per Parent or Guardian or Guest</li>
+            <li>$80 Room rate (4 beds)</li>
+        </ul>
+    </p>
+    <p>
+        <button type="button" class="btn btn-primary" onclick="location.href = '@Url.Action("Register", "Items", new {eventId = 7})'">Register Now &raquo;</button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">FAQ</button>
+        <a href="https://facebook.com/groups/cfckidsfamilyconf2016se" title="Facebook" class="btn btn-facebook"><i class="fa fa-facebook fa-fw"></i> Facebook</a>
+    </p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Conference Prayer</h2>
+        <p>
+            Our gracious God and father, we praise you for making us your children. We are grateful for your son, our Lord Jesus Christ for saving us and making us a member of your family. We thank you for our families whom you have provided for us.
+        </p>
+        <p>
+            Lord Jesus, thank you for giving us your mother, Mary to be our mother too. We praise you with joy in our hearts as we sing with mama Mary. Through her powerful intercession, we lift up to you all the families planning to attend the 2016 CFC Kids Family Conference in Georgia.
+        </p>
+        <p>
+            Father God, in the name of Jesus, we ask you to send the Holy Spirit to us to help us prepare for our CFC kids Family conference. We pray that we will all be open to the Holy Spirit's leading and guidance. Help us to trust in you and depend on your provision completely.
+        </p>
+        <p>
+            Holy spirit, open our hearts and help us grow in love as we participate in your work in us and in every family. May you help us practice the virtues of patience and perseverance as we do the work needed for the activities. Give us all the strength we need and teach us to have faith, hope and love when things don't go the way it should be. Most importantly, create in us a humble heart as we serve all the families that you so love.
+        </p>
+        <p>
+            Help us to rejoice at all times and to not be afraid. Fill us with your peace as we claim your glory in the upcoming CFC Kids Family Conference.
+        </p>
+        <p>
+            Father in heaven, we thank you for our families.<br />
+            Jesus, our brother, stay with us always.<br />
+            Holy Spirit, be with us always<br />
+            Mama Mary, our mother, pray for us, your children.<br />
+            <b>Amen.</b>
+        </p>
+    </div>
+    <div class="col-md-6">
+        <h2>A Conference for the Whole Family!</h2>
+        <div class="embed-responsive embed-responsive-4by3">
+            <iframe class="embed-responsive-item" width="100%" height="315" src="https://www.youtube.com/embed/IYL3760e2BQ" frameborder="0"></iframe>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="px">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">FAQ</h4>
+            </div>
+            <div class="modal-body">
+                <iframe src="https://docs.google.com/document/d/13DEsHpd23uedxY8mQwhR3UB5YVuqsJRpcn9qDIZ_r0U/edit?usp=sharing" width="100%" height="400px" frameborder="0" allowtransparency="true"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
 </div>

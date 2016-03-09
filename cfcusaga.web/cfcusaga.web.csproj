@@ -277,8 +277,12 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\card.css" />
+    <Content Include="Content\carousel.css" />
     <Content Include="Content\datepicker.css" />
     <Content Include="Content\facebook.css" />
+    <Content Include="Content\images\background1.jpg" />
+    <Content Include="Content\images\family.jpg" />
+    <Content Include="Content\images\fb-frontpage1.jpg" />
     <Content Include="Content\images\frontpage.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -288,6 +292,8 @@
     <Content Include="Content\images\frontpage2.png" />
     <Content Include="Content\images\frontpage3.png" />
     <Content Include="Content\images\frontpage4.png" />
+    <Content Include="Content\images\header1.jpg" />
+    <Content Include="Content\images\why-kids-family-conf.jpg" />
     <Content Include="Content\PagedList1.css" />
     <Content Include="Content\simple-sidebar.css" />
     <Content Include="favicon.ico" />
