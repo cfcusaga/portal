@@ -128,9 +128,17 @@ namespace  Cfcusaga.Web.Controllers
 
                     //order = cart.CreateOrder(order);
                     //order = await cart.CreateOrderDetails(order);
-
+                    var emailBody = order.ToString(order);
+                   
+                    emailBody += $"{Environment.NewLine}";
+                    emailBody += $"{Environment.NewLine}";
+                    emailBody += $"Please write 'Family Conference' and the confirmation # in the check memo and your mail your check to: {Environment.NewLine}";
+                    emailBody += $"Allan/Kirsten Tejano {Environment.NewLine}";
+                    emailBody += $"6425 Jonabell Lane {Environment.NewLine}";
+                    emailBody += $"Cumming, GA 30040 {Environment.NewLine}";
+                    emailBody += $"{Environment.NewLine}";
                     await CheckoutController.SendOrderMessage_SendGrid(order.Email, "Your Registration: " + order.OrderId,
-                        order.ToString(order), appConfig.OrderEmail);
+                        emailBody, appConfig.OrderEmail);
                     //CheckoutController.SendOrderMessage_SendGrid(order.FirstName, "New Order: " + order.OrderId,order.ToString(), appConfig.OrderEmail);
             return RedirectToAction("Complete",
                         new { id = order.OrderId });
@@ -211,6 +219,7 @@ namespace  Cfcusaga.Web.Controllers
                 myMessage.AddTo(toName);
                 myMessage.From = new MailAddress(appConfig.FromEmail, appConfig.FromName);
                 myMessage.Subject = subject;
+
                 myMessage.Html = body;
 
                 var transportWeb = new SendGrid.Web(appConfig.EmailApiKey);

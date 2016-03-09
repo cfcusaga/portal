@@ -212,7 +212,8 @@ namespace cfcusaga.domain.Orders
 
                     //TODO: Clean the 
                     //order.OrderDetails
-                    dbOrder.Total = order.Total - discountsTotal;
+                    order.Total = order.Total - discountsTotal;
+                    dbOrder.Total = order.Total;
                     await SaveChangesAsync();
                     // Empty the shopping cart
                     EmptyCart(shoppingCartId);
