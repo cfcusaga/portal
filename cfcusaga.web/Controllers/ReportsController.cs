@@ -36,7 +36,7 @@ namespace Cfcusaga.Web.Controllers
                          join i in _db.Items.AsNoTracking() on od.ItemId equals i.ID
                          join e in _db.Events.AsNoTracking() on i.EventId equals e.Id
                          where e.Id == eventId
-                         orderby o.OrderId
+                         orderby o.OrderId descending 
                          select new OrderItems
                          {
                              OrderId = o.OrderId,
