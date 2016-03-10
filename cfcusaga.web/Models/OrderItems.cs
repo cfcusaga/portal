@@ -61,5 +61,8 @@ namespace Cfcusaga.Web.Models
         public decimal Price { get; set; }
         public string OrderByLastname { get; set; }
         public string OrderByFirstname { get; set; }
+
+        public DateTime? BirthDate { get; set; }
+        public int? Age { get; set; }
     }
 }
