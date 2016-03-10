@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Web.Mvc;
@@ -58,6 +59,7 @@ namespace  Cfcusaga.Web.Controllers
                 {
                     sessionOrder.LastName = sessionOrder.LastName;
                     sessionOrder.FirstName = sessionOrder.FirstName;
+                    sessionOrder.IsAgreeToWaiver = false;
                     return View(sessionOrder);
                 }
                 else
@@ -72,23 +74,25 @@ namespace  Cfcusaga.Web.Controllers
         [HttpPost]
         public async Task<ActionResult> AddressAndPayment(FormCollection values)
         {
-            //ViewBag.CreditCardTypes = CreditCardTypes;
-            //string result =  values[9];
-            
             var order = new cfcusaga.domain.Orders.Order();
-            TryUpdateModel(order);
-
-            //TODO: Need to store this?
-            //order.CreditCard = result;
-
             try
             {
-                order.Username = User.Identity.Name;
+                //ViewBag.CreditCardTypes = CreditCardTypes;
+                //string result =  values[9];
+                //if (!ModelState.IsValid) return View(values); ;
+               
+                TryUpdateModel(order);
+                if (!ModelState.IsValid) return View(order);
+                    //TODO: Need to store this?
+                    //order.CreditCard = result;
+
+                    order.Username = User.Identity.Name;
                 order.Email = User.Identity.Name;
                 order.OrderDate = DateTime.Now;
                 var currentUserId = User.Identity.GetUserId();
 
-
+                    //TODO: force set to true
+                    order.SaveInfo = true; 
                     if (order.SaveInfo && !order.Username.Equals("guest@guest.com"))
                     {
                         var manager =
@@ -118,30 +122,26 @@ namespace  Cfcusaga.Web.Controllers
                     var cartItems = await cart.GetCartItems();
                     //Save Order
                     var memberId = await _svc.AddOrder(order, cartItems, cart.ShoppingCartId, currentUserId);
-                //if (memberId > 0)
-                //{
-                //    UpdateLoginUserMemberId(memberId);
+                    //if (memberId > 0)
+                    //{
+                    //    UpdateLoginUserMemberId(memberId);
 
-                //}
-                    //Process the order
-                    
+                    //}
 
                     //order = cart.CreateOrder(order);
                     //order = await cart.CreateOrderDetails(order);
-                    var emailBody = order.ToString(order);
-                   
-                    emailBody += $"{Environment.NewLine}";
-                    emailBody += $"{Environment.NewLine}";
-                    emailBody += $"Please write 'Family Conference' and the confirmation # in the check memo and your mail your check to: {Environment.NewLine}";
-                    emailBody += $"Allan/Kirsten Tejano {Environment.NewLine}";
-                    emailBody += $"6425 Jonabell Lane {Environment.NewLine}";
-                    emailBody += $"Cumming, GA 30040 {Environment.NewLine}";
-                    emailBody += $"{Environment.NewLine}";
+                    var emailBody = new StringBuilder(order.ToString(order));
+                    emailBody.Append("<p>");
+                    emailBody.Append("Please write \'Family Conference\' and the confirmation # in the check memo and your mail your check to: <br />");
+                    emailBody.Append("Allan/Kirsten Tejano <br />");
+                    emailBody.Append("6425 Jonabell Lane <br />");
+                    emailBody.Append("Cumming, GA 30040 <br />");
+                    emailBody.Append("</p>");
                     await CheckoutController.SendOrderMessage_SendGrid(order.Email, "Your Registration: " + order.OrderId,
-                        emailBody, appConfig.OrderEmail);
-                    //CheckoutController.SendOrderMessage_SendGrid(order.FirstName, "New Order: " + order.OrderId,order.ToString(), appConfig.OrderEmail);
-            return RedirectToAction("Complete",
-                        new { id = order.OrderId });
+                            emailBody.ToString(), appConfig.OrderEmail);
+                        //CheckoutController.SendOrderMessage_SendGrid(order.FirstName, "New Order: " + order.OrderId,order.ToString(), appConfig.OrderEmail);
+                    return RedirectToAction("Complete",
+                            new { id = order.OrderId });
                 
             }
             catch (Exception ex)

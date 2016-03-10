@@ -58,7 +58,6 @@ namespace cfcusaga.domain.Orders
 
         [Display(Name = "Credit Card")]
         [NotMapped]
-        [Required]
         [DataType(DataType.CreditCard)]
         public String CreditCard { get; set; }
 
@@ -67,6 +66,9 @@ namespace cfcusaga.domain.Orders
         public String CcType { get; set; }
 
         public bool SaveInfo { get; set; }
+
+        [Range(typeof(bool), "true", "true", ErrorMessage = "You have to agree to Consent and Release Waiver")]
+        public bool IsAgreeToWaiver{ get; set; }
 
 
         [DisplayName("Email Address")]

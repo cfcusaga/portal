@@ -21,8 +21,8 @@ namespace cfcusaga.data
         public System.DateTime CreationDate { get; set; }
         public System.DateTime ModifiedDate { get; set; }
     
-        public virtual Event Event { get; set; }
         public virtual Member Member { get; set; }
+        public virtual Event Event { get; set; }
         public virtual Order Order { get; set; }
     }
 }

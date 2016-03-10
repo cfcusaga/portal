@@ -5,26 +5,19 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="2db8d0ecf4c74078b8510bcd6bb7bf78" Name="Diagram1">
-        <EntityTypeShape EntityType="PortalDbModel.Event" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="PortalDbModel.CartItemRegistration" Width="1.5" PointX="7.5" PointY="2.5" />
         <EntityTypeShape EntityType="PortalDbModel.RelationToMemberType" Width="1.5" PointX="5.25" PointY="12.25" />
         <AssociationConnector Association="PortalDbModel.FK_CartItemRegistrations_RelationToMemberType" />
         <EntityTypeShape EntityType="PortalDbModel.Cart" Width="1.5" PointX="5.25" PointY="2.25" />
         <AssociationConnector Association="PortalDbModel.FK_CartItemRegistrations_Carts" />
         <EntityTypeShape EntityType="PortalDbModel.EventRegistration" Width="1.5" PointX="10" PointY="4.25" />
-        <AssociationConnector Association="PortalDbModel.FK_EventRegistrations_Events" />
         <EntityTypeShape EntityType="PortalDbModel.OrderDetail" Width="1.5" PointX="8.25" PointY="8" />
         <EntityTypeShape EntityType="PortalDbModel.Member" Width="1.5" PointX="10.375" PointY="8" />
         <AssociationConnector Association="PortalDbModel.FK_EventRegistrations_Members" />
-        <EntityTypeShape EntityType="PortalDbModel.Order" Width="1.5" PointX="12.625" PointY="7.75" />
-        <AssociationConnector Association="PortalDbModel.FK_EventRegistrations_Orders" />
-        <AssociationConnector Association="PortalDbModel.FK_Orders_Members" />
-        <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" />
         <EntityTypeShape EntityType="PortalDbModel.Catagory" Width="1.5" PointX="0.75" PointY="6.125" />
         <EntityTypeShape EntityType="PortalDbModel.Item" Width="1.5" PointX="3" PointY="0.75" />
         <AssociationConnector Association="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId" />
         <AssociationConnector Association="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId" />
-        <AssociationConnector Association="PortalDbModel.FK_Items_Events_EventId" />
         <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" />
         <EntityTypeShape EntityType="PortalDbModel.Discount" Width="1.5" PointX="5.25" PointY="5.75" />
         <AssociationConnector Association="PortalDbModel.FK_Discounts_Items" />
@@ -32,6 +25,13 @@
         <AssociationConnector Association="PortalDbModel.FK_CartDiscounts_Discounts" />
         <EntityTypeShape EntityType="PortalDbModel.OrderDiscount" Width="1.5" PointX="14.875" PointY="8.25" />
         <AssociationConnector Association="PortalDbModel.FK_OrderDiscounts_Discounts" />
+        <EntityTypeShape EntityType="PortalDbModel.Event" Width="1.5" PointX="0.75" PointY="1.125" />
+        <EntityTypeShape EntityType="PortalDbModel.Order" Width="1.5" PointX="12.625" PointY="7.625" />
+        <AssociationConnector Association="PortalDbModel.FK_EventRegistrations_Events" />
+        <AssociationConnector Association="PortalDbModel.FK_EventRegistrations_Orders" />
+        <AssociationConnector Association="PortalDbModel.FK_Items_Events_EventId" />
+        <AssociationConnector Association="PortalDbModel.FK_Orders_Members" />
+        <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" />
         <AssociationConnector Association="PortalDbModel.FK_OrderDiscounts_OrderDiscounts" />
         </Diagram>
     </edmx:Diagrams>

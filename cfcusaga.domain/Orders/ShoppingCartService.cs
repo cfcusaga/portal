@@ -410,7 +410,8 @@ namespace cfcusaga.domain.Orders
                 State = order.State,
                 Username = order.Username,
                 CheckNumber = order.CheckNumber,
-                Notes = order.Notes
+                Notes = order.Notes,
+                IsAgreeToWaiver = order.IsAgreeToWaiver
             };
             return entity;
         }

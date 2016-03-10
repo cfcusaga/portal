@@ -29,6 +29,9 @@ namespace cfcusaga.data
         public System.DateTime CreateDate { get; set; }
         public System.DateTime ModifiedDate { get; set; }
         public string OrgId { get; set; }
+        public bool EnableMailCheck { get; set; }
+        public string MailCheckTo { get; set; }
+        public string MailCheckToAddress { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EventRegistration> EventRegistrations { get; set; }
