@@ -19,8 +19,10 @@ namespace  Cfcusaga.Web.Controllers
                 SetSessionEventId(context, DefaultEventId);
             }
             var o = context.Session?[EventIdSessionKey];
-            if (o != null) return int.Parse(o.ToString());
-            return null;
+            if (o != null)
+                return int.Parse(o.ToString());
+            SetSessionEventId(context, DefaultEventId);
+            return DefaultEventId;
         }
 
         public static void SetSessionEventId(HttpContextBase httpContext, int id)
