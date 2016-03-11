@@ -60,6 +60,7 @@ namespace  Cfcusaga.Web.Controllers
                     sessionOrder.LastName = sessionOrder.LastName;
                     sessionOrder.FirstName = sessionOrder.FirstName;
                     sessionOrder.IsAgreeToWaiver = false;
+                    sessionOrder.Country = "USA";
                     return View(sessionOrder);
                 }
                 else
