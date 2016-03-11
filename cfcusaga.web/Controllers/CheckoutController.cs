@@ -89,9 +89,10 @@ namespace  Cfcusaga.Web.Controllers
 
                     order.Username = User.Identity.Name;
                 order.Email = User.Identity.Name;
-                var eastern = TimeZoneInfo.ConvertTimeFromUtc(DateTime.Now,
-                    TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"));
-                order.OrderDate = eastern;
+                var timeUtc = DateTime.UtcNow;
+                var easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                var easternTime = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone);
+                order.OrderDate = easternTime;
                 var currentUserId = User.Identity.GetUserId();
 
                     //TODO: force set to true
