@@ -294,7 +294,7 @@ namespace Cfcusaga.Web.Controllers
                     if (cartDiscount != null)
                     {
                         if (itemDiscount.DiscountBeginAtNthItem != null)
-                            cartDiscount.Quantity = cartDiscount.Quantity + 1;
+                            cartDiscount.Quantity = itemCount - (itemDiscount.DiscountBeginAtNthItem.Value - 1); //cartDiscount.Quantity + 1;
                     }
                     else
                     {

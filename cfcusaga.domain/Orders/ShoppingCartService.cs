@@ -576,8 +576,13 @@ namespace cfcusaga.domain.Orders
                             c => c.DiscountId == itemDiscount.Id && c.CartId == shoppingCartId);
                 if (cartDiscount != null)
                 {
+                    var itemCount = await _db.Carts.CountAsync(i => i.ItemId == itemId && i.CartId == shoppingCartId);
                     if (itemDiscount.DiscountBeginAtNthItem != null)
-                        cartDiscount.Quantity = cartDiscount.Quantity - 1;
+                    {
+                        //cartDiscount.Quantity = cartDiscount.Quantity - 1;
+                        cartDiscount.Quantity = itemCount - (itemDiscount.DiscountBeginAtNthItem.Value - 1); 
+                    }
+                        
                     if (cartDiscount.Quantity == 0)
                     {
                         _db.CartDiscounts.Remove(cartDiscount);

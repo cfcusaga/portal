@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using cfcusaga.data;
 using Microsoft.AspNet.Identity;
@@ -51,7 +47,7 @@ namespace Cfcusaga.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            EventRegistration eventRegistration = await db.EventRegistrations.FindAsync(id);
+            var eventRegistration = await db.EventRegistrations.FindAsync(id);
             if (eventRegistration == null)
             {
                 return HttpNotFound();

@@ -89,7 +89,7 @@ namespace cfcusaga.domain.Orders
         {
             StringBuilder bob = new StringBuilder();
 
-            bob.Append("<p>Registration # : "+ order.OrderId +"<br>Placed at: " + order.OrderDate +"</p>").AppendLine();
+            bob.Append("<p>Registration # : "+ order.OrderId +"<br>Placed at: " + order.OrderDate +" ET</p>").AppendLine();
             bob.Append("<p>Name: " + order.FirstName + " " + order.LastName + "<br>");
             bob.Append("Address: " + order.Address + " " + order.City + " " + order.State + " " + order.PostalCode + "<br>");
             bob.Append("Contact: " + order.Email + "     " + order.Phone + "</p>");
