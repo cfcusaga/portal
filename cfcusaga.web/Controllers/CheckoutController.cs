@@ -132,7 +132,8 @@ namespace  Cfcusaga.Web.Controllers
                     //order = await cart.CreateOrderDetails(order);
                     var emailBody = new StringBuilder(order.ToString(order));
                     emailBody.Append("<p>");
-                    emailBody.Append("Please write \'Family Conference\' and the confirmation # in the check memo and your mail your check to: <br />");
+                    emailBody.Append("Thank you for registering!<br/>");
+                    emailBody.Append("Please write \'Family Conference\' and the confirmation # in the check memo and mail your check to: <br /><br />");
                     emailBody.Append("Allan/Kirsten Tejano <br />");
                     emailBody.Append("6425 Jonabell Lane <br />");
                     emailBody.Append("Cumming, GA 30040 <br />");
