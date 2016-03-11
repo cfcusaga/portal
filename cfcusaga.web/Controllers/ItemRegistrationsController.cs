@@ -256,9 +256,9 @@ namespace Cfcusaga.Web.Controllers
                     try
                     {
                         _db.CartItemRegistrations.Add(itemRegistration);
+                        //await _db.SaveChangesAsync();
 
                         await AddItemDiscount(foundItem, currentCart);
-
                         await _db.SaveChangesAsync();
 
                         dbContextTransaction.Commit();

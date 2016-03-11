@@ -522,6 +522,7 @@ namespace cfcusaga.domain.Orders
                     if (itemRegistratin != null)
                     {
                         _db.CartItemRegistrations.Remove(itemRegistratin);
+                        await _db.SaveChangesAsync();
                     }
 
                     var cartItem = _db.Carts
@@ -542,7 +543,7 @@ namespace cfcusaga.domain.Orders
                         {
                             _db.Carts.Remove(cartItem);
                         }
-
+                        await _db.SaveChangesAsync();
 
                         await RemoveItemDiscount(cartItem.ItemId, shoppingCartId);
 
