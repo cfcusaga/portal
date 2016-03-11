@@ -126,19 +126,34 @@
     </tr>
     @foreach (var item in Model.OrderDetails)
     {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.ItemDisplayNameFor)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Quantity)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.UnitPrice)
-        </td>
-    </tr>
-    }
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemDisplayNameFor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnitPrice)
+            </td>
+        </tr>
 
+    }
+    @foreach (var item in Model.OrderDiscounts)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Discount1.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Discount)
+            </td>
+        </tr>
+
+    }
 </table>
 
 <p>

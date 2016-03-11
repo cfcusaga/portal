@@ -51,7 +51,7 @@ namespace Cfcusaga.Web.Controllers
                     orders = orders.OrderByDescending(s => s.Total);
                     break;
                 default:  // Name ascending 
-                    orders = orders.OrderBy(s => s.FirstName);
+                    orders = orders.OrderByDescending(s => s.OrderId);
                     break;
             }
 
@@ -71,8 +71,11 @@ namespace Cfcusaga.Web.Controllers
             }
             var order = await db.Orders.FindAsync(id);
             var orderDetails = db.OrderDetails.Where(x => x.OrderId == id );
+            var orderDiscounts = db.OrderDiscounts.Include(x => x.Order).Include(y => y.Discount1).Where(x => x.OrderId == id);
 
             order.OrderDetails = await orderDetails.ToListAsync();
+            order.OrderDiscounts = await orderDiscounts.ToListAsync();
+            
             if (order == null)
             {
                 return HttpNotFound();
