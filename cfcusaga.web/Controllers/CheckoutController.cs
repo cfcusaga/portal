@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
 using System.Web.Mvc;
 using cfcusaga.domain.Orders;
 using  Cfcusaga.Web.Configuration;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using RestSharp;
 using Cfcusaga.Web.Models;
 using SendGrid;
 using Order = cfcusaga.domain.Orders.Order;

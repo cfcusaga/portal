@@ -285,16 +285,15 @@ namespace Cfcusaga.Web.Controllers
             if (itemDiscount != null)
             {
                 var itemCount = await _db.Carts.CountAsync(i => i.ItemId == foundItem.Id && i.CartId == currentCart.CartId);
+                var cartDiscount = await _db.CartDiscounts.FirstOrDefaultAsync(
+                            c => c.DiscountId == itemDiscount.Id && c.CartId == currentCart.CartId);
                 if (itemCount >= itemDiscount.DiscountBeginAtNthItem)
                 {
-                    var cartDiscount =
-                        await
-                            _db.CartDiscounts.FirstOrDefaultAsync(
-                                c => c.DiscountId == itemDiscount.Id && c.CartId == currentCart.CartId);
                     if (cartDiscount != null)
                     {
                         if (itemDiscount.DiscountBeginAtNthItem != null)
-                            cartDiscount.Quantity = itemCount - (itemDiscount.DiscountBeginAtNthItem.Value - 1); //cartDiscount.Quantity + 1;
+                            cartDiscount.Quantity = itemCount - (itemDiscount.DiscountBeginAtNthItem.Value - 1);
+                                //cartDiscount.Quantity + 1;
                     }
                     else
                     {
@@ -305,6 +304,19 @@ namespace Cfcusaga.Web.Controllers
                         if (itemDiscount.DiscountBeginAtNthItem != null)
                             newCartDiscount.Quantity = itemCount - (itemDiscount.DiscountBeginAtNthItem.Value - 1);
                         _db.CartDiscounts.Add(newCartDiscount);
+                    }
+                }
+                else
+                {
+                    // something went wrong ???
+                    if (cartDiscount != null)
+                    {
+                        if (itemDiscount.DiscountBeginAtNthItem != null)
+                            cartDiscount.Quantity = itemCount - (itemDiscount.DiscountBeginAtNthItem.Value - 1);
+                        if (cartDiscount.Quantity == 0)
+                        {
+                            _db.CartDiscounts.Remove(cartDiscount);
+                        }
                     }
                 }
             }
