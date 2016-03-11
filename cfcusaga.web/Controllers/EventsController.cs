@@ -14,15 +14,12 @@ namespace  Cfcusaga.Web.Controllers
 
         public static int? GetSessionEventId(HttpContextBase context)
         {
-            if (context.Session != null)
-            {
-                var o = context.Session[EventIdSessionKey];
-                if (o != null) return int.Parse(o.ToString());
-            }
-            else
+            if (context.Session == null)
             {
                 SetSessionEventId(context, DefaultEventId);
             }
+            var o = context.Session?[EventIdSessionKey];
+            if (o != null) return int.Parse(o.ToString());
             return null;
         }
 
