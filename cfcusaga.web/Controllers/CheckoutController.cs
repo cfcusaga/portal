@@ -89,7 +89,9 @@ namespace  Cfcusaga.Web.Controllers
 
                     order.Username = User.Identity.Name;
                 order.Email = User.Identity.Name;
-                order.OrderDate = DateTime.Now;
+                var eastern = TimeZoneInfo.ConvertTimeFromUtc(DateTime.Now,
+                    TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"));
+                order.OrderDate = eastern;
                 var currentUserId = User.Identity.GetUserId();
 
                     //TODO: force set to true
@@ -139,7 +141,7 @@ namespace  Cfcusaga.Web.Controllers
                     emailBody.Append("6425 Jonabell Lane <br />");
                     emailBody.Append("Cumming, GA 30040 <br />");
                     emailBody.Append("</p>");
-                    await CheckoutController.SendOrderMessage_SendGrid(order.Email, "Your Registration: " + order.OrderId,
+                    await CheckoutController.SendOrderMessage_SendGrid(order.Email, "Your Registration #: " + order.OrderId,
                             emailBody.ToString(), appConfig.OrderEmail);
                         //CheckoutController.SendOrderMessage_SendGrid(order.FirstName, "New Order: " + order.OrderId,order.ToString(), appConfig.OrderEmail);
                     return RedirectToAction("Complete",
@@ -221,7 +223,7 @@ namespace  Cfcusaga.Web.Controllers
                 myMessage.AddTo(toName);
                 myMessage.From = new MailAddress(appConfig.FromEmail, appConfig.FromName);
                 myMessage.Subject = subject;
-
+                myMessage.Bcc = new MailAddress[] {new MailAddress("kidsforchrist.ga@gmail.com","CFC Kids GA")};
                 myMessage.Html = body;
 
                 var transportWeb = new SendGrid.Web(appConfig.EmailApiKey);

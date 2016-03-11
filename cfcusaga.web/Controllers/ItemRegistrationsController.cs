@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -10,7 +9,6 @@ using System.Web.Mvc;
 using cfcusaga.data;
 using cfcusaga.domain.Events;
 using cfcusaga.domain.Orders;
-using Cfcusaga.Web.Extensions;
 using Cfcusaga.Web.Models;
 using Cfcusaga.Web.ViewModels;
 using Microsoft.AspNet.Identity;
@@ -86,16 +84,9 @@ namespace Cfcusaga.Web.Controllers
         private readonly IShoppingCartService _cartSvc;
         private readonly PortalDbContext _db;
 
-
-
         public ItemRegistrationsController()
         {
         }
-
-        //public AccountController(ApplicationUserManager userManager)
-        //{
-        //    UserManager = userManager;
-        //}
 
         private ApplicationUserManager _userManager;
         public ApplicationUserManager UserManager
@@ -109,7 +100,6 @@ namespace Cfcusaga.Web.Controllers
                 _userManager = value;
             }
         }
-
 
 
         public ItemRegistrationsController(PortalDbContext db, IEventServices svc, IShoppingCartService cartSvc, ApplicationUserManager userManager)
@@ -161,7 +151,6 @@ namespace Cfcusaga.Web.Controllers
             ViewBag.IsRequireBirthDate = item.IsRequireBirthDateInfo ?? false;
             ViewBag.SubTitle = item.Name;
 
-
             return View(itemRegistration);
         }
 
@@ -211,7 +200,6 @@ namespace Cfcusaga.Web.Controllers
                 newRegistratinItem.RelationToMemberTypes = relationTypesList;
             }
 
-            
             if (sessionInfo != null)
             {
                 newRegistratinItem.LastName = sessionInfo.Lastname;
