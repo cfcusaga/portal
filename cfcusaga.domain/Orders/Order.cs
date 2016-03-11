@@ -132,7 +132,7 @@ namespace cfcusaga.domain.Orders
                 foreach (var item in order.OrderDiscounts)
                 {
                     bob.Append("<tr>");
-                    output = "<td>" + item.Name + "</td>" + "<td>" + item.Quantity + "</td>" + "<td>" + item.Quantity * item.Discount + "</td>";
+                    output = "<td>" + item.Name + "</td>" + "<td>" + item.Quantity + "</td>" + "<td> - " + item.Quantity * item.Discount + "</td>";
 
                     bob.Append(output).AppendLine();
                     //Console.WriteLine(output);
