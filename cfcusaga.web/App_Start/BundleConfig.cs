@@ -26,7 +26,7 @@ namespace  Cfcusaga.Web
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
-                      //"~/Content/carousel.css",
+                      "~/Content/PagedList1.css",
                       "~/Content/simple-sidebar.css",
                       "~/Content/facebook.css",
                       "~/Content/variables.less",
