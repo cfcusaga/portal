@@ -282,6 +282,7 @@
     <Content Include="Content\facebook.css" />
     <Content Include="Content\images\background1.jpg" />
     <Content Include="Content\images\family.jpg" />
+    <Content Include="Content\images\family942x421.png" />
     <Content Include="Content\images\fb-frontpage1.jpg" />
     <Content Include="Content\images\frontpage.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -293,7 +294,9 @@
     <Content Include="Content\images\frontpage3.png" />
     <Content Include="Content\images\frontpage4.png" />
     <Content Include="Content\images\header1.jpg" />
+    <Content Include="Content\images\header942x421.png" />
     <Content Include="Content\images\why-kids-family-conf.jpg" />
+    <Content Include="Content\images\whyfamilyconf942x421.png" />
     <Content Include="Content\PagedList1.css" />
     <Content Include="Content\simple-sidebar.css" />
     <Content Include="favicon.ico" />
