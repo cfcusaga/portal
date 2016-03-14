@@ -63,6 +63,31 @@ namespace Cfcusaga.Web.Models
         public string OrderByFirstname { get; set; }
 
         public DateTime? BirthDate { get; set; }
-        public int? Age { get; set; }
+
+        public int? AgeOnEventDate => BirthDate?.Age(LaterDate);
+
+        public DateTime LaterDate => new DateTime(2016, 6, 18);
+
+
+    }
+
+    public static class DateTimeExtensions
+    {
+         public static int Age(this DateTime birthDate, DateTime laterDate)
+        {
+            int age;
+            age = laterDate.Year - birthDate.Year;
+
+            if (age > 0)
+            {
+                age -= Convert.ToInt32(laterDate.Date < birthDate.Date.AddYears(age));
+            }
+            else
+            {
+                age = 0;
+            }
+
+            return age;
+        }
     }
 }

@@ -12,14 +12,22 @@ namespace Cfcusaga.Web.Controllers
         private PortalDbContext _db = new PortalDbContext();
 
         // GET: ReportOrders
-        public async Task<ActionResult> Index(int? page, string sortOrder, string currentFilter, string searchString)
+        public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
             var eventId = 7;
-
+            //Date	Description	Name	Age	Price	TShirt	OrderedBy	City	State	Zip
             ViewBag.CurrentSort = sortOrder;
-            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewBag.PriceSortParm = sortOrder == "Price" ? "price_desc" : "Price";
+            ViewBag.OrderIdSortParm = sortOrder == "OrderId" ? "OrderId_desc" : "OrderId";
+            ViewBag.OrderDateSortParm = sortOrder == "OrderDate" ? "OrderDate_desc" : "OrderDate";
+            ViewBag.ItemNameSortParm = sortOrder == "ItemName" ? "ItemName_desc" : "ItemName";
+            ViewBag.FullNameSortParm = sortOrder == "FullName" ? "FullName_desc" : "FullName";
+            ViewBag.AgeOnEventDateSortParm = sortOrder == "AgeOnEventDate" ? "AgeOnEventDate_desc" : "AgeOnEventDate";
 
+            ViewBag.TshirtSortParm = sortOrder == "Tshirt" ? "Tshirt_desc" : "Tshirt";
+            ViewBag.OrderedBySortParm = sortOrder == "OrderedBy" ? "OrderedBy_desc" : "OrderedBy";
+            ViewBag.CitySortParm = sortOrder == "City" ? "City_desc" : "City";
+            ViewBag.StateSortParm = sortOrder == "State" ? "State_desc" : "State";
+            ViewBag.ZipSortParm = sortOrder == "Zip" ? "Zip_desc" : "Zip";
             if (searchString != null)
             {
                 page = 1;
@@ -47,6 +55,7 @@ namespace Cfcusaga.Web.Controllers
                              CategoryId = i.CatagoryID,
                              Firstname = od.Firstname,
                              Lastname = od.Lastname,
+                             BirthDate = od.BirthDate,
                              OrderByLastname = o.LastName,
                              OrderByFirstname = o.FirstName,
                              TshirtSize = od.TshirtSize,
@@ -58,6 +67,82 @@ namespace Cfcusaga.Web.Controllers
                              Price = od.UnitPrice
                          }
             ;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                orders = orders.Where(s => s.Lastname.ToUpper().Contains(searchString.ToUpper())
+                                         || s.OrderId.ToString().Contains(searchString.ToUpper())
+                                         || s.Firstname.ToString().Contains(searchString.ToUpper())
+                                         || s.City.ToString().Contains(searchString.ToUpper())
+                                         || s.State.ToString().Contains(searchString.ToUpper())
+                                         || s.ItemName.ToString().Contains(searchString.ToUpper()));
+            }
+            switch (sortOrder)
+            {
+                case "OrderId":
+                    orders = orders.OrderBy(s => s.OrderId);
+                    break;
+                case "OrderId_desc":
+                    orders = orders.OrderByDescending(s => s.OrderId);
+                    break;
+                case "OrderDate":
+                    orders = orders.OrderBy(s => s.OrderDate);
+                    break;
+                case "OrderDate_desc":
+                    orders = orders.OrderByDescending(s => s.OrderDate);
+                    break;
+                case "ItemName":
+                    orders = orders.OrderBy(s => s.ItemName);
+                    break;
+                case "ItemName_desc":
+                    orders = orders.OrderByDescending(s => s.ItemName);
+                    break;
+                case "FullName":
+                    orders = orders.OrderBy(s => s.Lastname).ThenBy(f => f.Firstname);
+                    break;
+                case "FullName_desc":
+                    orders = orders.OrderByDescending(s => s.Lastname).ThenBy(f => f.Firstname);
+                    break;
+                case "Age":
+                    orders = orders.OrderBy(s => s.BirthDate);
+                    break;
+                case "Age_desc":
+                    orders = orders.OrderByDescending(s => s.BirthDate);
+                    break;
+                case "Tshirt":
+                    orders = orders.OrderBy(s => s.TshirtSize);
+                    break;
+                case "Tshirt_desc":
+                    orders = orders.OrderByDescending(s => s.TshirtSize);
+                    break;
+                case "OrderedBy":
+                    orders = orders.OrderBy(s => s.OrderByLastname).ThenBy(f => f.OrderByFirstname);
+                    break;
+                case "OrderedBy_desc":
+                    orders = orders.OrderByDescending(s => s.OrderByLastname).ThenBy(f => f.OrderByFirstname);
+                    break;
+                case "City":
+                    orders = orders.OrderBy(s => s.City);
+                    break;
+                case "City_desc":
+                    orders = orders.OrderByDescending(s => s.City);
+                    break;
+                case "State":
+                    orders = orders.OrderBy(s => s.State);
+                    break;
+                case "State_desc":
+                    orders = orders.OrderByDescending(s => s.State);
+                    break;
+                case "Zip":
+                    orders = orders.OrderBy(s => s.ZipCode);
+                    break;
+                case "Zip_desc":
+                    orders = orders.OrderByDescending(s => s.ZipCode);
+                    break;
+                default: // Name ascending 
+                    //items = items.OrderBy(s => s.Name);
+                    break;
+            }
             var pageSize = 10;
             var pageNumber = (page ?? 1);
             return View(await orders.ToPagedListAsync(pageNumber, pageSize));
