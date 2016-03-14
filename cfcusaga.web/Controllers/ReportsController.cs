@@ -14,20 +14,8 @@ namespace Cfcusaga.Web.Controllers
         // GET: ReportOrders
         public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            var eventId = 7;
-            //Date	Description	Name	Age	Price	TShirt	OrderedBy	City	State	Zip
-            ViewBag.CurrentSort = sortOrder;
-            ViewBag.OrderIdSortParm = sortOrder == "OrderId" ? "OrderId_desc" : "OrderId";
-            ViewBag.OrderDateSortParm = sortOrder == "OrderDate" ? "OrderDate_desc" : "OrderDate";
-            ViewBag.ItemNameSortParm = sortOrder == "ItemName" ? "ItemName_desc" : "ItemName";
-            ViewBag.FullNameSortParm = sortOrder == "FullName" ? "FullName_desc" : "FullName";
-            ViewBag.AgeOnEventDateSortParm = sortOrder == "AgeOnEventDate" ? "AgeOnEventDate_desc" : "AgeOnEventDate";
-
-            ViewBag.TshirtSortParm = sortOrder == "Tshirt" ? "Tshirt_desc" : "Tshirt";
-            ViewBag.OrderedBySortParm = sortOrder == "OrderedBy" ? "OrderedBy_desc" : "OrderedBy";
-            ViewBag.CitySortParm = sortOrder == "City" ? "City_desc" : "City";
-            ViewBag.StateSortParm = sortOrder == "State" ? "State_desc" : "State";
-            ViewBag.ZipSortParm = sortOrder == "Zip" ? "Zip_desc" : "Zip";
+            const int eventId = 7;
+            InitIndexViewBag(sortOrder);
             if (searchString != null)
             {
                 page = 1;
@@ -44,7 +32,7 @@ namespace Cfcusaga.Web.Controllers
                          join i in _db.Items.AsNoTracking() on od.ItemId equals i.ID
                          join e in _db.Events.AsNoTracking() on i.EventId equals e.Id
                          where e.Id == eventId
-                         orderby o.OrderId descending 
+                         //orderby o.OrderId descending 
                          select new OrderItems
                          {
                              OrderId = o.OrderId,
@@ -68,15 +56,48 @@ namespace Cfcusaga.Web.Controllers
                          }
             ;
 
+            orders = FilterItemsBy(searchString, orders);
+            orders = SortItemsBy(sortOrder, orders);
+            const int pageSize = 10;
+            var pageNumber = (page ?? 1);
+            return View(await orders.ToPagedListAsync(pageNumber, pageSize));
+
+        }
+
+        private void InitIndexViewBag(string sortOrder)
+        {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.OrderIdSortParm = sortOrder == "OrderId" ? "OrderId_desc" : "OrderId";
+            ViewBag.OrderDateSortParm = sortOrder == "OrderDate" ? "OrderDate_desc" : "OrderDate";
+            ViewBag.ItemNameSortParm = sortOrder == "ItemName" ? "ItemName_desc" : "ItemName";
+            ViewBag.FullNameSortParm = sortOrder == "FullName" ? "FullName_desc" : "FullName";
+            ViewBag.AgeOnEventDateSortParm = sortOrder == "AgeOnEventDate" ? "AgeOnEventDate_desc" : "AgeOnEventDate";
+
+            ViewBag.TshirtSortParm = sortOrder == "Tshirt" ? "Tshirt_desc" : "Tshirt";
+            ViewBag.OrderedBySortParm = sortOrder == "OrderedBy" ? "OrderedBy_desc" : "OrderedBy";
+            ViewBag.CitySortParm = sortOrder == "City" ? "City_desc" : "City";
+            ViewBag.StateSortParm = sortOrder == "State" ? "State_desc" : "State";
+            ViewBag.ZipSortParm = sortOrder == "Zip" ? "Zip_desc" : "Zip";
+        }
+
+        private static IQueryable<OrderItems> FilterItemsBy(string searchString, IQueryable<OrderItems> orders)
+        {
             if (!string.IsNullOrEmpty(searchString))
             {
                 orders = orders.Where(s => s.Lastname.ToUpper().Contains(searchString.ToUpper())
-                                         || s.OrderId.ToString().Contains(searchString.ToUpper())
-                                         || s.Firstname.ToString().Contains(searchString.ToUpper())
-                                         || s.City.ToString().Contains(searchString.ToUpper())
-                                         || s.State.ToString().Contains(searchString.ToUpper())
-                                         || s.ItemName.ToString().Contains(searchString.ToUpper()));
+                                           || s.OrderId.ToString().Contains(searchString.ToUpper())
+                                           || s.Firstname.ToString().Contains(searchString.ToUpper())
+                                           || s.City.ToString().Contains(searchString.ToUpper())
+                                           || s.State.ToString().Contains(searchString.ToUpper())
+                                           || s.ItemName.ToString().Contains(searchString.ToUpper())
+                                           || s.TshirtSize.ToString().Contains(searchString.ToUpper())
+                    );
             }
+            return orders;
+        }
+
+        private IQueryable<OrderItems> SortItemsBy(string sortOrder, IQueryable<OrderItems> orders)
+        {
             switch (sortOrder)
             {
                 case "OrderId":
@@ -140,14 +161,10 @@ namespace Cfcusaga.Web.Controllers
                     orders = orders.OrderByDescending(s => s.ZipCode);
                     break;
                 default: // Name ascending 
-                    //items = items.OrderBy(s => s.Name);
+                    orders = orders.OrderByDescending(s => s.OrderId);
                     break;
             }
-            var pageSize = 10;
-            var pageNumber = (page ?? 1);
-            return View(await orders.ToPagedListAsync(pageNumber, pageSize));
-
+            return orders;
         }
-
     }
 }
