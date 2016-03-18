@@ -58,7 +58,7 @@ namespace Cfcusaga.Web.Controllers
 
             orders = FilterItemsBy(searchString, orders);
             orders = SortItemsBy(sortOrder, orders);
-            const int pageSize = 10;
+            const int pageSize = 30;
             var pageNumber = (page ?? 1);
             return View(await orders.ToPagedListAsync(pageNumber, pageSize));
 
