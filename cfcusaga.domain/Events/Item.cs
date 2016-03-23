@@ -22,6 +22,8 @@ namespace cfcusaga.domain.Events
         [Display(Name = "Price")]
         public decimal Price { get; set; }
 
+
+        [Display(Name = "Picture")]
         public byte[] InternalImage { get; set; }
 
         [Display(Name = "Local file")]
@@ -64,5 +66,6 @@ namespace cfcusaga.domain.Events
         public bool IsRequireTshirtSize { get; set; }
         public string TshirtSize { get; set; }
         public string Description { get; set; }
+        public ICollection<ItemImage> ItemImages { get; set; }
     }
 }

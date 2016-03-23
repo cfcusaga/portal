@@ -38,5 +38,6 @@ namespace cfcusaga.data
         public virtual DbSet<OrderDiscount> OrderDiscounts { get; set; }
         public virtual DbSet<Event> Events { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<ItemImage> ItemImages { get; set; }
     }
 }

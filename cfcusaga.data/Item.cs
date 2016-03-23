@@ -20,6 +20,7 @@ namespace cfcusaga.data
             this.Carts = new HashSet<Cart>();
             this.OrderDetails = new HashSet<OrderDetail>();
             this.Discounts = new HashSet<Discount>();
+            this.ItemImages = new HashSet<ItemImage>();
         }
     
         public int ID { get; set; }
@@ -46,5 +47,7 @@ namespace cfcusaga.data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Discount> Discounts { get; set; }
         public virtual Event Event { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ItemImage> ItemImages { get; set; }
     }
 }

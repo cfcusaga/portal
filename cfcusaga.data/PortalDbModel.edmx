@@ -92,6 +92,14 @@
           <Property Name="MailCheckTo" Type="varchar" MaxLength="50" />
           <Property Name="MailCheckToAddress" Type="varchar" MaxLength="250" />
         </EntityType>
+        <EntityType Name="ItemImages">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ItemId" Type="int" Nullable="false" />
+          <Property Name="ImageData" Type="image" Nullable="false" />
+        </EntityType>
         <EntityType Name="Items">
           <Key>
             <PropertyRef Name="ID" />
@@ -333,6 +341,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_ItemImages_Items">
+          <End Role="Items" Type="Self.Items" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="ItemImages" Type="Self.ItemImages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Items">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ItemImages">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Items_Events_EventId">
           <End Role="Events" Type="Self.Events" Multiplicity="0..1" />
           <End Role="Items" Type="Self.Items" Multiplicity="*" />
@@ -395,6 +417,7 @@
           <EntitySet Name="Discounts" EntityType="Self.Discounts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EventRegistrations" EntityType="Self.EventRegistrations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Events" EntityType="Self.Events" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ItemImages" EntityType="Self.ItemImages" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Items" EntityType="Self.Items" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Members" EntityType="Self.Members" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderDetails" EntityType="Self.OrderDetails" Schema="dbo" store:Type="Tables" />
@@ -444,6 +467,10 @@
           <AssociationSet Name="FK_EventRegistrations_Orders" Association="Self.FK_EventRegistrations_Orders">
             <End Role="Orders" EntitySet="Orders" />
             <End Role="EventRegistrations" EntitySet="EventRegistrations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ItemImages_Items" Association="Self.FK_ItemImages_Items">
+            <End Role="Items" EntitySet="Items" />
+            <End Role="ItemImages" EntitySet="ItemImages" />
           </AssociationSet>
           <AssociationSet Name="FK_Items_Events_EventId" Association="Self.FK_Items_Events_EventId">
             <End Role="Events" EntitySet="Events" />
@@ -539,6 +566,11 @@
           <AssociationSet Name="FK_OrderDiscounts_OrderDiscounts" Association="PortalDbModel.FK_OrderDiscounts_OrderDiscounts">
             <End Role="Order" EntitySet="Orders" />
             <End Role="OrderDiscount" EntitySet="OrderDiscounts" />
+          </AssociationSet>
+          <EntitySet Name="ItemImages" EntityType="PortalDbModel.ItemImage" />
+          <AssociationSet Name="FK_ItemImages_Items" Association="PortalDbModel.FK_ItemImages_Items">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="ItemImage" EntitySet="ItemImages" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="CartItemRegistration">
@@ -709,6 +741,7 @@
           <NavigationProperty Name="OrderDetails" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" FromRole="Item" ToRole="OrderDetail" />
           <NavigationProperty Name="Discounts" Relationship="PortalDbModel.FK_Discounts_Items" FromRole="Item" ToRole="Discount" />
           <NavigationProperty Name="Event" Relationship="PortalDbModel.FK_Items_Events_EventId" FromRole="Item" ToRole="Event" />
+          <NavigationProperty Name="ItemImages" Relationship="PortalDbModel.FK_ItemImages_Items" FromRole="Item" ToRole="ItemImage" />
         </EntityType>
         <Association Name="FK_dbo_Carts_dbo_Items_ItemId">
           <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
@@ -947,6 +980,29 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="ItemImage">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ItemId" Type="Int32" Nullable="false" />
+          <Property Name="ImageData" Type="Binary" Nullable="false" MaxLength="Max" FixedLength="false" />
+          <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_ItemImages_Items" FromRole="ItemImage" ToRole="Item" />
+        </EntityType>
+        <Association Name="FK_ItemImages_Items">
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="PortalDbModel.ItemImage" Role="ItemImage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ItemImage">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1151,6 +1207,15 @@
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
                 <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ItemImages">
+            <EntityTypeMapping TypeName="PortalDbModel.ItemImage">
+              <MappingFragment StoreEntitySet="ItemImages">
+                <ScalarProperty Name="ImageData" ColumnName="ImageData" />
+                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

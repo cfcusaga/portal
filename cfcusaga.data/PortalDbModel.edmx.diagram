@@ -33,6 +33,8 @@
         <AssociationConnector Association="PortalDbModel.FK_Orders_Members" />
         <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" />
         <AssociationConnector Association="PortalDbModel.FK_OrderDiscounts_OrderDiscounts" />
+        <EntityTypeShape EntityType="PortalDbModel.ItemImage" Width="1.5" PointX="5.25" PointY="0.75" />
+        <AssociationConnector Association="PortalDbModel.FK_ItemImages_Items" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.UI;
 using AutoMapper;
 using cfcusaga.data;
 using cfcusaga.domain.Helpers;
@@ -162,13 +163,22 @@ namespace cfcusaga.domain.Events
             item.InternalImage = newItem.InternalImage;
             
             _db.Items.Add(item);
+
+            if (newItem.InternalImage != null)
+            {
+                var newImage = _db.ItemImages.Create();
+                newImage.ImageData = newItem.InternalImage;
+                //newImage.ItemId = newItemId;
+                item.ItemImages.Add(newImage);
+            }
             await _db.SaveChangesAsync();
-            return item.ID;
+            var newItemId = item.ID;
+            return newItemId;
         }
 
         public async Task<Item> GetEventItemDetails(int? id)
         {
-            var item = await _db.Items.Select(x => new Item()
+            var item = await _db.Items.Include(co => co.ItemImages).Select(x => new Item()
             {
                 Id = x.ID,
                 Name =  x.Name,
@@ -181,7 +191,9 @@ namespace cfcusaga.domain.Events
                 IsRequireParentWaiver = x.IsRequireParentWaiver ?? false,
                 IsRequireBirthDateInfo = x.IsRequireBirthDateInfo ?? false,
                 Description = x.Description,
-                EventId = (int) x.EventId
+                EventId = (int) x.EventId,
+                ItemImages = x.ItemImages,
+                InternalImage = x.InternalImage
             }).FirstOrDefaultAsync(i => i.Id == id);
             //Mapper.Map(entity, item);
             return item;
@@ -203,6 +215,10 @@ namespace cfcusaga.domain.Events
             entity.IsRequireBirthDateInfo = item.IsRequireBirthDateInfo;
             entity.IsRequireParentWaiver = item.IsRequireParentWaiver;
             entity.Description = item.Description;
+            if (item.InternalImage != null)
+            {
+                entity.InternalImage = item.InternalImage;
+            }
             _db.Entry(entity).State = EntityState.Modified;
             await _db.SaveChangesAsync();
         }

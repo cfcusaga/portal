@@ -94,15 +94,17 @@
         <dd>
             @Html.DisplayFor(model => model.Price)
         </dd>
-
-        @*<dt>
-            @Html.DisplayNameFor(model => model.ItemPictureUrl)
+        <dt>
+           Pictures:
         </dt>
-
         <dd>
-            @Html.DisplayFor(model => model.ItemPictureUrl)
-        </dd>*@
-
+            @if (Model.InternalImage != null)
+            {
+                <img src="data:image;base64,@System.Convert.ToBase64String(Model.InternalImage)" alt="" width="400" height="300"/>
+            }
+            
+        </dd>
+        
     </dl>
 </div>
 @*@if (Model.IsRequireTshirtSize)

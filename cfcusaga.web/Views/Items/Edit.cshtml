@@ -1,4 +1,5 @@
-﻿@model cfcusaga.domain.Events.Item
+﻿@using Cfcusaga.Web.Extensions
+@model cfcusaga.domain.Events.Item
 
 @{
     ViewBag.Title = "Edit";
@@ -7,7 +8,7 @@
 <h2>Edit</h2>
 
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("Edit", "Items", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
     
@@ -19,7 +20,8 @@
         <div class="form-group">
             @Html.LabelFor(model => model.CatagorieId, "CatagorieId", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("CatagorieId", null, htmlAttributes: new { @class = "form-control" })
+                @*@Html.DropDownList("CatagorieId", null, htmlAttributes: new { @class = "form-control" })*@
+                @Html.DropDownListFor(model => model.CatagorieId, null, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.CatagorieId, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -86,6 +88,24 @@
                 @Html.EditorFor(model => model.ItemPictureUrl, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.ItemPictureUrl, "", new { @class = "text-danger" })
             </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.InternalImage, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @if (Model.InternalImage != null)
+                {
+                    <img src="data:image;base64,@System.Convert.ToBase64String(Model.InternalImage)" alt="" width="400" height="300" />
+                }
+            </div>
+        </div>
+
+        <div class="editor-label">
+            Upload Image
+        </div>
+        <div class="editor-field">
+            @Html.FileFor(model => model.File)
+            @Html.ValidationMessageFor(model => model.File)
         </div>
 
         <div class="form-group">
