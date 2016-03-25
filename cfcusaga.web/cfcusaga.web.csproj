@@ -461,7 +461,7 @@
     <Content Include="Views\ReportOrders\Edit.cshtml" />
     <Content Include="Views\ReportOrders\Index.cshtml" />
     <Content Include="Views\Reports\Index.cshtml" />
-    <None Include="Views\Reports\Registrations.cshtml" />
+    <Content Include="Views\Reports\Registrations.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
