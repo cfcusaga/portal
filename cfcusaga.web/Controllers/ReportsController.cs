@@ -8,12 +8,13 @@ using Enums = cfcusaga.domain.Enums;
 
 namespace Cfcusaga.Web.Controllers
 {
-    [Authorize(Roles = "SuperUser, Admin")]
+   
     public class ReportsController : Controller
     {
         private PortalDbContext _db = new PortalDbContext();
 
         // GET: ReportOrders
+        [Authorize(Roles = "SuperUser, Admin")]
         public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
             const int eventId = 7;
