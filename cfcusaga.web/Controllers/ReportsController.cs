@@ -69,7 +69,7 @@ namespace Cfcusaga.Web.Controllers
 
         [AllowAnonymous]
         [HttpGet()]
-        [Route("registrations")]
+        //[Route("registrations")]
         public async Task<ActionResult> Registrations(string sortOrder, string currentFilter, string searchString, int? page)
         {
             const int eventId = 7;
