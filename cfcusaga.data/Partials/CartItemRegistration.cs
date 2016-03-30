@@ -1,7 +1,10 @@
-﻿namespace cfcusaga.data
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace cfcusaga.data
 {
     public partial class CartItemRegistration
     {
+        [NotMapped]
         public string BirthDateDisplay
         {
             get

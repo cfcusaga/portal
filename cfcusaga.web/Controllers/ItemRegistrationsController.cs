@@ -175,6 +175,7 @@ namespace Cfcusaga.Web.Controllers
 
             var sessionInfo = ItemRegistrationsController.GetSessionCurrentRegistrationInfo(this.HttpContext);
             var newRegistratinItem = new ItemRegistrationModel();
+            newRegistratinItem.IsBirthDateRequired = item.IsRequireBirthDateInfo ?? false;
             newRegistratinItem.Gender = "M";
 
             if (item.IsRequireParentWaiver != null && item.IsRequireParentWaiver.Value)
@@ -204,7 +205,7 @@ namespace Cfcusaga.Web.Controllers
             {
                 newRegistratinItem.LastName = sessionInfo.Lastname;
             }
-
+            ViewBag.RelationToMemberTypes = newRegistratinItem.RelationToMemberTypes;
             return View(newRegistratinItem);
         }
 
@@ -215,12 +216,13 @@ namespace Cfcusaga.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "ID,CartID,MemberId,LastName,FirstName,BirthDate,RelationToMemberTypeId,Gender,Notes,Allergies,TshirtSize")] CartItemRegistration itemRegistration)
+        public async Task<ActionResult> Create(ItemRegistrationModel itemRegistration)
         {
+            var itemId = Convert.ToInt32(Request.QueryString["itemId"]);
             if (ModelState.IsValid)
             {
                 //TODO:
-                var itemId = Convert.ToInt32(Request.QueryString["itemId"]);
+                
 
                 var foundItem = await _cartSvc.GetItem(itemId);
 
@@ -255,7 +257,17 @@ namespace Cfcusaga.Web.Controllers
                 {
                     try
                     {
-                        _db.CartItemRegistrations.Add(itemRegistration);
+                        var cartItem = _db.CartItemRegistrations.Create();
+                        cartItem.CartID = itemRegistration.CartID;
+                        cartItem.Allergies = itemRegistration.Allergies;
+                        cartItem.BirthDate = itemRegistration.BirthDate;
+                        cartItem.FirstName = itemRegistration.LastName;
+                        cartItem.Gender = itemRegistration.Gender;
+                        cartItem.LastName = itemRegistration.LastName;
+                        cartItem.MemberId = itemRegistration.MemberId;
+                        cartItem.RelationToMemberTypeId = itemRegistration.RelationToMemberTypeId;
+                        cartItem.TshirtSize = itemRegistration.TshirtSize;
+                        _db.CartItemRegistrations.Add(cartItem);
                         //await _db.SaveChangesAsync();
 
                         await AddItemDiscount(foundItem, currentCart);
@@ -275,8 +287,51 @@ namespace Cfcusaga.Web.Controllers
 
                 return RedirectToAction("Index", "Items" );
             }
+            //
 
-            return View();
+
+            var item = await _db.Items.FindAsync(itemId);
+            ViewBag.SubTitle = item.Name;
+            ViewBag.ItemId = itemId;
+            ViewBag.IsRequireBirthDate = item.IsRequireBirthDateInfo ?? false;
+            ViewBag.IsRequireParentWaiver = item.IsRequireParentWaiver ?? false;
+            ViewBag.IsShirtIncluded = item.IsShirtIncluded ?? false;
+
+            var list = GetTShirtSizesList();
+            ViewBag.TshirtSizes = list;
+
+
+            var sessionInfo = ItemRegistrationsController.GetSessionCurrentRegistrationInfo(this.HttpContext);
+            //var newRegistratinItem = new ItemRegistrationModel();
+            itemRegistration.IsBirthDateRequired = item.IsRequireBirthDateInfo ?? false;
+            //itemRegistration.Gender = "M";
+
+            if (item.IsRequireParentWaiver != null && item.IsRequireParentWaiver.Value)
+            {
+                var relationTypes = _eventSvc.GetRelationToMemberTypesRequiresParentWaiver();
+                itemRegistration.RelationToMemberTypes = new SelectList(relationTypes, "Id", "Name");
+            }
+            else
+            {
+                var relationTypes = _eventSvc.GetRelationToMemberTypesAdults().ToList();
+                IEnumerable<RelationToMemberType> selectListItems = null;
+                //newRegistratinItem.RelationToMemberTypes = new SelectList(relationTypes, "Id", "Name");
+                if (sessionInfo != null && sessionInfo.IsSelfSelected)
+                {
+                    selectListItems = relationTypes.Where(m => m.Name.ToUpper() != "SELF");
+                    itemRegistration.Gender = sessionInfo.Gender == "F" ? "M" : "F";//TODO: need to make gender an Enum
+                }
+                else
+                {
+                    selectListItems = relationTypes.ToList();
+                }
+                var relationTypesList = new SelectList(selectListItems, "Id", "Name");
+                itemRegistration.RelationToMemberTypes = relationTypesList;
+            }
+
+
+
+            return View(itemRegistration);
         }
 
         private async Task AddItemDiscount(Item foundItem, Cart currentCart)

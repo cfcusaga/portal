@@ -1,12 +1,20 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using Cfcusaga.Web.Attributes;
 
 namespace Cfcusaga.Web.ViewModels
 {
     public class ItemRegistrationModel
     {
+        [Required]
         public string LastName { get; set; }
+        [Required]
         public string FirstName { get; set; }
+
+        public bool IsBirthDateRequired { get; set; }
+        //IsRequireBirthDateInfo
+        [RequiredIf("IsBirthDateRequired", true, "Birth Date is required")]
         public DateTime? BirthDate { get; set; }
         public short? RelationToMemberTypeId { get; set; }
         public string Gender { get; set; }

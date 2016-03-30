@@ -14,9 +14,9 @@
     <div class="form-horizontal">
         <h4>@ViewBag.SubTitle</h4>
         <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @*@Html.ValidationSummary(false, "", new { @class = "text-danger" })*@
 
-
+        @Html.HiddenFor(model => model.IsBirthDateRequired)
         @*<div class="form-group">
             @Html.LabelFor(model => model.RelationToMemberTypeId, "Registration is for my", htmlAttributes: new {@class = "control-label col-md-2"})
             <div class="col-md-10">
