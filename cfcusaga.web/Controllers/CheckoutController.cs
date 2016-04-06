@@ -134,7 +134,7 @@ namespace  Cfcusaga.Web.Controllers
                     var emailBody = new StringBuilder(order.ToString(order));
                     emailBody.Append("<p>");
                     emailBody.Append("Thank you for registering!<br/>");
-                    emailBody.Append("Please write \'Family Conference\' and the confirmation # in the check memo and mail your check to: <br /><br />");
+                    emailBody.Append("Please write your check payable to \"CFC-GA\". On the memo line, please write \"Family Conference\" and your registration confirmation #. Mail your check to: <br /><br />");
                     emailBody.Append("Allan/Kirsten Tejano <br />");
                     emailBody.Append("6425 Jonabell Lane <br />");
                     emailBody.Append("Cumming, GA 30040 <br />");
