@@ -261,7 +261,7 @@ namespace Cfcusaga.Web.Controllers
                         cartItem.CartID = itemRegistration.CartID;
                         cartItem.Allergies = itemRegistration.Allergies;
                         cartItem.BirthDate = itemRegistration.BirthDate;
-                        cartItem.FirstName = itemRegistration.LastName;
+                        cartItem.FirstName = itemRegistration.FirstName;
                         cartItem.Gender = itemRegistration.Gender;
                         cartItem.LastName = itemRegistration.LastName;
                         cartItem.MemberId = itemRegistration.MemberId;
