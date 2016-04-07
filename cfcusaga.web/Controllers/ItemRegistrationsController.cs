@@ -433,6 +433,8 @@ namespace Cfcusaga.Web.Controllers
             ViewBag.IsShirtIncluded = item.IsShirtIncluded ?? false;
 
             var sessionInfo = ItemRegistrationsController.GetSessionCurrentRegistrationInfo(this.HttpContext);
+
+            
             //IEnumerable relationTypes;
             SelectList relationTypesList = null;
             if (item.IsRequireParentWaiver != null && item.IsRequireParentWaiver.Value)
@@ -472,8 +474,9 @@ namespace Cfcusaga.Web.Controllers
                 Allergies = itemRegistration.Allergies,
                 ID = itemRegistration.ID,
                 CartID = itemRegistration.CartID,
-                RelationToMemberTypes = relationTypesList //new SelectList(relationTypes, "Id", "Name")
-        };
+                RelationToMemberTypes = relationTypesList, //new SelectList(relationTypes, "Id", "Name")
+                IsBirthDateRequired = item.IsRequireBirthDateInfo ?? false
+            };
 
             return View(itemRegModel);
         }
@@ -483,12 +486,14 @@ namespace Cfcusaga.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ID,CartID,MemberId,LastName,FirstName,BirthDate,RelationToMemberTypeId,Gender,Allergies,TshirtSize")] ItemRegistrationModel model)
+        public async Task<ActionResult> Edit(ItemRegistrationModel model)
         {
+            cfcusaga.data.Cart cartItem;
+            cfcusaga.data.Item item;
             if (ModelState.IsValid)
             {
-                var cartItem = await _db.Carts.FindAsync(model.CartID);
-                var item = await _db.Items.FindAsync(cartItem.ItemId);
+                cartItem = await _db.Carts.FindAsync(model.CartID);
+                item = await _db.Items.FindAsync(cartItem.ItemId);
 
                 var entity = _db.CartItemRegistrations.Find(model.ID);
 
@@ -511,6 +516,43 @@ namespace Cfcusaga.Web.Controllers
                 await _db.SaveChangesAsync();
                 return RedirectToAction("Index", "ShoppingCart");
             }
+
+            cartItem = await _db.Carts.FindAsync(model.CartID);
+
+            item = await _db.Items.FindAsync(cartItem.ItemId);
+            ViewBag.SubTitle = item.Name;
+            ViewBag.ItemId = item.ID;
+            ViewBag.IsRequireBirthDate = item.IsRequireBirthDateInfo ?? false;
+            ViewBag.IsRequireParentWaiver = item.IsRequireParentWaiver ?? false;
+            ViewBag.IsShirtIncluded = item.IsShirtIncluded ?? false;
+
+            SelectList relationTypesList = null;
+            if (item.IsRequireParentWaiver != null && item.IsRequireParentWaiver.Value)
+            {
+                var relationTypes = _eventSvc.GetRelationToMemberTypesRequiresParentWaiver();
+                relationTypesList = new SelectList(relationTypes, "Id", "Name");
+            }
+            else
+            {
+                var sessionInfo = ItemRegistrationsController.GetSessionCurrentRegistrationInfo(this.HttpContext);
+                //relationTypes = _svc.GetRelationToMemberTypesAdults();
+                var relationTypes = _eventSvc.GetRelationToMemberTypesAdults().ToList();
+                IEnumerable<RelationToMemberType> selectListItems = null;
+                //newRegistratinItem.RelationToMemberTypes = new SelectList(relationTypes, "Id", "Name");
+                if (sessionInfo != null && sessionInfo.IsSelfSelected)
+                {
+                    selectListItems = relationTypes.Where(m => m.Name.ToUpper() != "SELF");
+                }
+                else
+                {
+                    selectListItems = relationTypes.ToList();
+                }
+                relationTypesList = new SelectList(selectListItems, "Id", "Name");
+            }
+
+            var list = GetTShirtSizesList();
+            ViewBag.TshirtSizes = list;
+            model.RelationToMemberTypes = relationTypesList;
             return View(model);
         }
 

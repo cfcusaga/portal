@@ -15,6 +15,7 @@ namespace Cfcusaga.Web.ViewModels
         public bool IsBirthDateRequired { get; set; }
         //IsRequireBirthDateInfo
         [RequiredIf("IsBirthDateRequired", true, "Birth Date is required")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? BirthDate { get; set; }
         public short? RelationToMemberTypeId { get; set; }
         public string Gender { get; set; }
