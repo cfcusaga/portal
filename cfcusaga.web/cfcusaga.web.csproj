@@ -274,7 +274,6 @@
   <ItemGroup>
     <Content Include="Content\BarChart.css" />
     <Content Include="Content\bootstrap-ga.css" />
-    <Content Include="Content\bootstrap-orig.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
