@@ -1,8 +1,6 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Web.UI;
 using cfcusaga.data;
 using cfcusaga.domain.Helpers;
 using Cfcusaga.Web.Models;
@@ -74,7 +72,7 @@ namespace Cfcusaga.Web.Controllers
         //[Route("registrations")]
         public async Task<ActionResult> Registrations(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            
+            const int eventId = 7;
             InitIndexViewBag(sortOrder);
             if (searchString != null)
             {
@@ -87,72 +85,41 @@ namespace Cfcusaga.Web.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            var orders = RetrieveOrderDetailsReportItems(sortOrder, searchString);
-            const int pageSize = 50;
-            var pageNumber = (page ?? 1);
-            return View(await orders.ToPagedListAsync(pageNumber, pageSize));
-
-        }
-
-        private IQueryable<OrderItems> RetrieveOrderDetailsReportItems(string sortOrder, string searchString)
-        {
-            const int eventId = 7;
             var orders = from o in _db.Orders.AsNoTracking()
-                join od in _db.OrderDetails.AsNoTracking() on o.OrderId equals od.OrderId
-                join i in _db.Items.AsNoTracking() on od.ItemId equals i.ID
-                join e in _db.Events.AsNoTracking() on i.EventId equals e.Id
-                where e.Id == eventId
-                      && i.CatagoryID == (int) CategoryTypeEnum.Registration
-                //orderby o.OrderId descending 
-                select new OrderItems
-                {
-                    OrderId = o.OrderId,
-                    OrderDate = o.OrderDate,
-                    OrderDetailId = od.OrderDetailId,
-                    ItemId = i.ID,
-                    ItemName = i.Name,
-                    CategoryId = i.CatagoryID,
-                    Firstname = od.Firstname,
-                    Lastname = od.Lastname,
-                    BirthDate = od.BirthDate,
-                    OrderByLastname = o.LastName,
-                    OrderByFirstname = o.FirstName,
-                    TshirtSize = od.TshirtSize,
-                    Allergies = od.Allergies,
-                    City = o.City,
-                    State = o.State,
-                    ZipCode = o.PostalCode,
-                    Phone = o.Phone,
-                    Price = od.UnitPrice
-                }
-                ;
+                         join od in _db.OrderDetails.AsNoTracking() on o.OrderId equals od.OrderId
+                         join i in _db.Items.AsNoTracking() on od.ItemId equals i.ID
+                         join e in _db.Events.AsNoTracking() on i.EventId equals e.Id
+                         where e.Id == eventId
+                         && i.CatagoryID == (int)CategoryTypeEnum.Registration
+                         //orderby o.OrderId descending 
+                         select new OrderItems
+                         {
+                             OrderId = o.OrderId,
+                             OrderDate = o.OrderDate,
+                             OrderDetailId = od.OrderDetailId,
+                             ItemId = i.ID,
+                             ItemName = i.Name,
+                             CategoryId = i.CatagoryID,
+                             Firstname = od.Firstname,
+                             Lastname = od.Lastname,
+                             BirthDate = od.BirthDate,
+                             OrderByLastname = o.LastName,
+                             OrderByFirstname = o.FirstName,
+                             TshirtSize = od.TshirtSize,
+                             Allergies = od.Allergies,
+                             City = o.City,
+                             State = o.State,
+                             ZipCode = o.PostalCode,
+                             Phone = o.Phone,
+                             Price = od.UnitPrice
+                         }
+            ;
 
             orders = FilterItemsBy(searchString, orders);
             orders = SortItemsBy(sortOrder, orders);
-            return orders;
-        }
-
-        [Authorize(Roles = "SuperUser, Admin")]
-        public void ExportClientsListToExcel(string sortOrder, string currentFilter)
-        {
-            var grid = new System.Web.UI.WebControls.GridView();
-
-            var reportItems = RetrieveOrderDetailsReportItems(sortOrder, currentFilter);
-            grid.DataSource = reportItems.ToList();
-
-            grid.DataBind();
-
-            Response.ClearContent();
-            Response.AddHeader("content-disposition", "attachment; filename=Exported_Diners.xls");
-            Response.ContentType = "application/excel";
-            StringWriter sw = new StringWriter();
-            HtmlTextWriter htw = new HtmlTextWriter(sw);
-
-            grid.RenderControl(htw);
-
-            Response.Write(sw.ToString());
-
-            Response.End();
+            const int pageSize = 50;
+            var pageNumber = (page ?? 1);
+            return View(await orders.ToPagedListAsync(pageNumber, pageSize));
 
         }
 
@@ -181,7 +148,6 @@ namespace Cfcusaga.Web.Controllers
                                            || s.Firstname.ToString().Contains(searchString.ToUpper())
                                            || s.City.ToString().Contains(searchString.ToUpper())
                                            || s.State.ToString().Contains(searchString.ToUpper())
-                                           || s.ZipCode.ToString().Contains(searchString.ToUpper())
                                            || s.ItemName.ToString().Contains(searchString.ToUpper())
                                            || s.TshirtSize.ToString().Contains(searchString.ToUpper())
                     );
