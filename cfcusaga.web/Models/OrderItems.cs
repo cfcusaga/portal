@@ -10,6 +10,30 @@ namespace Cfcusaga.Web.Models
         public int OrderId { get; set; }
         public int OrderDetailId { get; set; }
         public int ItemId { get; set; }
+
+        public string ItemType
+        {
+            get
+            {
+                switch (ItemId)
+                {
+                    case 3:
+                        return "Kids";
+                    case 4:
+                        return "Youth";
+                    case 5:
+                        return "Parent";
+                    case 6:
+                        return "Room";
+                    case 8:
+                        return "BedSpace";
+                    case 7:
+                        return "TShirt";
+                    default:
+                        return "";
+                }
+            }
+        }
         public string ItemName { get; set; }
 
         public string ItemDisplayNameFor
@@ -67,8 +91,10 @@ namespace Cfcusaga.Web.Models
         public int? AgeOnEventDate => BirthDate?.Age(LaterDate);
 
         public DateTime LaterDate => new DateTime(2016, 6, 18);
-
-
+        public decimal OrderTotal { get; set; }
+        public string Gender { get; set; }
+        public string Email { get; set; }
+        public string Address { get; set; }
     }
 
     public static class DateTimeExtensions
