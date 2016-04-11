@@ -95,3 +95,10 @@
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
 @Html.PagedListPager(Model, page => Url.Action("Registrations",
 new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+@if (Request.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperUser")))
+{
+    <div class="ExportSection">
+        @Html.ActionLink("Export to Excel", "ExportClientsListToExcel", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+    </div>
+}
