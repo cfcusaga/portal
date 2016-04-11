@@ -1,8 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 using cfcusaga.data;
 using cfcusaga.domain.Helpers;
 using Cfcusaga.Web.Models;
@@ -10,16 +13,16 @@ using Enums = cfcusaga.domain.Enums;
 
 namespace Cfcusaga.Web.Controllers
 {
-
+   
     public class ReportsController : Controller
     {
         private PortalDbContext _db = new PortalDbContext();
 
-        // GET: ReportOrders
+        // GET: ReportOrders test
         [Authorize(Roles = "SuperUser, Admin")]
         public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            const int eventId = 7;
+            
             InitIndexViewBag(sortOrder);
             if (searchString != null)
             {
@@ -32,41 +35,52 @@ namespace Cfcusaga.Web.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            var orders = from o in _db.Orders.AsNoTracking()
-                         join od in _db.OrderDetails.AsNoTracking() on o.OrderId equals od.OrderId
-                         join i in _db.Items.AsNoTracking() on od.ItemId equals i.ID
-                         join e in _db.Events.AsNoTracking() on i.EventId equals e.Id
-                         where e.Id == eventId
-                         //orderby o.OrderId descending 
-                         select new OrderItems
-                         {
-                             OrderId = o.OrderId,
-                             OrderDate = o.OrderDate,
-                             OrderDetailId = od.OrderDetailId,
-                             ItemId = i.ID,
-                             ItemName = i.Name,
-                             CategoryId = i.CatagoryID,
-                             Firstname = od.Firstname,
-                             Lastname = od.Lastname,
-                             BirthDate = od.BirthDate,
-                             OrderByLastname = o.LastName,
-                             OrderByFirstname = o.FirstName,
-                             TshirtSize = od.TshirtSize,
-                             Allergies = od.Allergies,
-                             City = o.City,
-                             State = o.State,
-                             ZipCode = o.PostalCode,
-                             Phone = o.Phone,
-                             Price = od.UnitPrice
-                         }
-            ;
-
-            orders = FilterItemsBy(searchString, orders);
-            orders = SortItemsBy(sortOrder, orders);
+            var orders = RetrieveReportIndexItems(sortOrder, searchString);
             const int pageSize = 30;
             var pageNumber = (page ?? 1);
             return View(await orders.ToPagedListAsync(pageNumber, pageSize));
 
+        }
+
+        private IQueryable<OrderItems> RetrieveReportIndexItems(string sortOrder, string searchString)
+        {
+            const int eventId = 7;
+            var orders = from o in _db.Orders.AsNoTracking()
+                join od in _db.OrderDetails.AsNoTracking() on o.OrderId equals od.OrderId
+                join i in _db.Items.AsNoTracking() on od.ItemId equals i.ID
+                join e in _db.Events.AsNoTracking() on i.EventId equals e.Id
+                where e.Id == eventId
+                //orderby o.OrderId descending 
+                select new OrderItems
+                {
+                    OrderId = o.OrderId,
+                    OrderDate = o.OrderDate,
+                    OrderTotal = o.Total,
+                    OrderDetailId = od.OrderDetailId,
+                    ItemId = i.ID,
+                    ItemName = i.Name,
+                    CategoryId = i.CatagoryID,
+                    Firstname = od.Firstname,
+                    Lastname = od.Lastname,
+                    BirthDate = od.BirthDate,
+                    Gender = od.Gender,
+                    OrderByLastname = o.LastName,
+                    OrderByFirstname = o.FirstName,
+                    TshirtSize = od.TshirtSize,
+                    Allergies = od.Allergies,
+                    City = o.City,
+                    State = o.State,
+                    ZipCode = o.PostalCode,
+                    Phone = o.Phone,
+                    Email = o.Email,
+                    Price = od.UnitPrice,
+                    Address = o.Address,
+                }
+                ;
+
+            orders = FilterItemsBy(searchString, orders);
+            orders = SortItemsBy(sortOrder, orders);
+            return orders;
         }
 
         [AllowAnonymous]
@@ -74,7 +88,7 @@ namespace Cfcusaga.Web.Controllers
         //[Route("registrations")]
         public async Task<ActionResult> Registrations(string sortOrder, string currentFilter, string searchString, int? page)
         {
-
+            
             InitIndexViewBag(sortOrder);
             if (searchString != null)
             {
@@ -94,43 +108,6 @@ namespace Cfcusaga.Web.Controllers
 
         }
 
-        private IQueryable<OrderItems> RetrieveOrderDetailsReportItems(string sortOrder, string searchString)
-        {
-            const int eventId = 7;
-            var orders = from o in _db.Orders.AsNoTracking()
-                         join od in _db.OrderDetails.AsNoTracking() on o.OrderId equals od.OrderId
-                         join i in _db.Items.AsNoTracking() on od.ItemId equals i.ID
-                         join e in _db.Events.AsNoTracking() on i.EventId equals e.Id
-                         where e.Id == eventId
-                               && i.CatagoryID == (int)CategoryTypeEnum.Registration
-                         //orderby o.OrderId descending 
-                         select new OrderItems
-                         {
-                             OrderId = o.OrderId,
-                             OrderDate = o.OrderDate,
-                             OrderDetailId = od.OrderDetailId,
-                             ItemId = i.ID,
-                             ItemName = i.Name,
-                             CategoryId = i.CatagoryID,
-                             Firstname = od.Firstname,
-                             Lastname = od.Lastname,
-                             BirthDate = od.BirthDate,
-                             OrderByLastname = o.LastName,
-                             OrderByFirstname = o.FirstName,
-                             TshirtSize = od.TshirtSize,
-                             Allergies = od.Allergies,
-                             City = o.City,
-                             State = o.State,
-                             ZipCode = o.PostalCode,
-                             Phone = o.Phone,
-                             Price = od.UnitPrice
-                         }
-                ;
-
-            orders = FilterItemsBy(searchString, orders);
-            orders = SortItemsBy(sortOrder, orders);
-            return orders;
-        }
 
         [Authorize(Roles = "SuperUser, Admin")]
         public void ExportClientsListToExcel(string sortOrder, string currentFilter)
@@ -139,7 +116,7 @@ namespace Cfcusaga.Web.Controllers
 
             var reportItems = RetrieveOrderDetailsReportItems(sortOrder, currentFilter);
             grid.DataSource = reportItems.ToList();
-
+            
             grid.DataBind();
 
             Response.ClearContent();
@@ -154,6 +131,44 @@ namespace Cfcusaga.Web.Controllers
 
             Response.End();
 
+        }
+
+        private IQueryable<OrderItems> RetrieveOrderDetailsReportItems(string sortOrder, string searchString)
+        {
+            const int eventId = 7;
+            var orders = from o in _db.Orders.AsNoTracking()
+                join od in _db.OrderDetails.AsNoTracking() on o.OrderId equals od.OrderId
+                join i in _db.Items.AsNoTracking() on od.ItemId equals i.ID
+                join e in _db.Events.AsNoTracking() on i.EventId equals e.Id
+                where e.Id == eventId
+                      && i.CatagoryID == (int) CategoryTypeEnum.Registration
+                //orderby o.OrderId descending 
+                select new OrderItems
+                {
+                    OrderId = o.OrderId,
+                    OrderDate = o.OrderDate,
+                    OrderDetailId = od.OrderDetailId,
+                    ItemId = i.ID,
+                    ItemName = i.Name,
+                    CategoryId = i.CatagoryID,
+                    Firstname = od.Firstname,
+                    Lastname = od.Lastname,
+                    BirthDate = od.BirthDate,
+                    OrderByLastname = o.LastName,
+                    OrderByFirstname = o.FirstName,
+                    TshirtSize = od.TshirtSize,
+                    Allergies = od.Allergies,
+                    City = o.City,
+                    State = o.State,
+                    ZipCode = o.PostalCode,
+                    Phone = o.Phone,
+                    Price = od.UnitPrice
+                }
+                ;
+
+            orders = FilterItemsBy(searchString, orders);
+            orders = SortItemsBy(sortOrder, orders);
+            return orders;
         }
 
         private void InitIndexViewBag(string sortOrder)
@@ -181,9 +196,9 @@ namespace Cfcusaga.Web.Controllers
                                            || s.Firstname.ToString().Contains(searchString.ToUpper())
                                            || s.City.ToString().Contains(searchString.ToUpper())
                                            || s.State.ToString().Contains(searchString.ToUpper())
-                                           || s.ZipCode.ToString().Contains(searchString.ToUpper())
                                            || s.ItemName.ToString().Contains(searchString.ToUpper())
                                            || s.TshirtSize.ToString().Contains(searchString.ToUpper())
+                                           || s.ZipCode.ToString().Contains(searchString.ToUpper())
                     );
             }
             return orders;
@@ -259,5 +274,139 @@ namespace Cfcusaga.Web.Controllers
             }
             return orders;
         }
+
+        [Authorize(Roles = "SuperUser, Admin")]
+        public void DownloadReportIndex(string sortOrder, string currentFilter)
+        {
+            var grid = new System.Web.UI.WebControls.GridView();
+            grid.AutoGenerateColumns = false;
+            var reportItems = RetrieveReportIndexItems(sortOrder, currentFilter);
+            grid.DataSource = reportItems.Select(o => new ReportIndexReport()
+            {
+                CheckNumber = "",
+                OrderId = o.OrderId,
+                OrderDate = o.OrderDate,
+                OrderTotal = o.OrderTotal,
+                OrderByLastname = o.OrderByLastname,
+                OrderByFirstname = o.OrderByFirstname,
+                ItemName = o.ItemName,
+                ItemPrice = o.Price,
+                ItemId = o.ItemId,
+                Lastname = o.Lastname,
+                Firstname = o.Firstname,
+                Gender = o.Gender,
+                DateOfBirth = o.BirthDate,
+                EventDate = new DateTime(2016, 6, 18),
+                Allergies = o.Allergies,
+                TshirtSize = o.TshirtSize,
+                Phone = o.Phone,
+                Email = o.Email,
+                Address = o.Address,
+                City = o.City,
+                State = o.State,
+                Zip = o.ZipCode,
+            }).ToList();
+            grid.Columns.Add(new BoundField() { DataField = "CheckNumber", HeaderText = "CheckNumber" });
+            grid.Columns.Add(new BoundField() { DataField = "OrderId", HeaderText = "OrderId" });
+            grid.Columns.Add(new BoundField() { DataField = "OrderDate", HeaderText = "OrderDate", DataFormatString = "{0:d}" });
+            grid.Columns.Add(new BoundField() { DataField = "OrderTotal", HeaderText = "OrderTotal" });
+            grid.Columns.Add(new BoundField() { DataField = "OrderedBy", HeaderText = "OrderedBy" });
+            grid.Columns.Add(new TemplateField() {HeaderText = ""}); 
+            grid.Columns.Add(new BoundField() { DataField = "ItemName", HeaderText = "ItemName" });
+            grid.Columns.Add(new BoundField() { DataField = "ItemPrice", HeaderText = "ItemPrice" });
+            grid.Columns.Add(new BoundField() { DataField = "ItemType", HeaderText = "ItemType" });
+            grid.Columns.Add(new BoundField() { DataField = "Lastname", HeaderText = "Lastname" });
+            grid.Columns.Add(new BoundField() { DataField = "Firstname", HeaderText = "Firstname" });
+            grid.Columns.Add(new BoundField() { DataField = "Gender", HeaderText = "Gender" });
+            grid.Columns.Add(new BoundField() { DataField = "DateOfBirth", HeaderText = "DateOfBirth", DataFormatString = "{0:d}" });
+            grid.Columns.Add(new BoundField() { DataField = "AgeOnEventDate", HeaderText = "AgeDuringEvent" });
+            grid.Columns.Add(new BoundField() { DataField = "Allergies", HeaderText = "Allergies" });
+            grid.Columns.Add(new BoundField() { DataField = "TshirtSize", HeaderText = "TshirtSize" });
+            grid.Columns.Add(new BoundField() { DataField = "Phone", HeaderText = "Phone" });
+            grid.Columns.Add(new BoundField() { DataField = "Email", HeaderText = "Email" });
+            grid.Columns.Add(new BoundField() { DataField = "Address", HeaderText = "Address" });
+            grid.Columns.Add(new BoundField() { DataField = "City", HeaderText = "City" });
+            grid.Columns.Add(new BoundField() { DataField = "State", HeaderText = "State" });
+            grid.Columns.Add(new BoundField() { DataField = "Zip", HeaderText = "Zip" });
+            grid.DataBind();
+
+            Response.ClearContent();
+            Response.AddHeader("content-disposition", "attachment; filename=Exported_Diners.xls");
+            Response.ContentType = "application/excel";
+            StringWriter sw = new StringWriter();
+            HtmlTextWriter htw = new HtmlTextWriter(sw);
+
+            grid.RenderControl(htw);
+
+            Response.Write(sw.ToString());
+
+            Response.End();
+        }
     }
+
+    public class ReportIndexReport
+    {
+        public string CheckNumber { get; set; }
+        public int OrderId { get; set; }
+
+        public string OrderedBy => $"{OrderByLastname},{OrderByFirstname}";
+
+        [Browsable(false)]
+        public object OrderByFirstname { get; set; }
+
+        [Browsable(false)]
+        public object OrderByLastname { get; set; }
+
+        [Browsable(false)]
+        public DateTime OrderDate { get; set; }
+        public string TshirtSize { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
+        public string Zip { get; set; }
+        public decimal OrderTotal { get; set; }
+        public string ItemName { get; set; }
+        public decimal ItemPrice { get; set; }
+        //public string RegistrationType { get; set; }
+        public string Lastname { get; set; }
+        public string Firstname { get; set; }
+        public string Gender { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string Allergies { get; set; }
+        public string Address { get; set; }
+
+        [Browsable(false)]
+        public int ItemId { get; set; }
+
+        public int? AgeOnEventDate => DateOfBirth?.Age(EventDate);
+
+        [Browsable(false)]
+        public DateTime EventDate { get; set; }
+
+        public string ItemType
+        {
+            get
+            {
+                switch (ItemId)
+                {
+                    case 3:
+                        return "Kids";
+                    case 4:
+                        return "Youth";
+                    case 5:
+                        return "Parent";
+                    case 6:
+                        return "Room";
+                    case 8:
+                        return "BedSpace";
+                    case 7:
+                        return "TShirt";
+                    default:
+                        return "";
+                }
+            }
+        }
+    }
+
 }
