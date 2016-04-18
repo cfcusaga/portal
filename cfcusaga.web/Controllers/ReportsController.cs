@@ -309,12 +309,8 @@ namespace Cfcusaga.Web.Controllers
             grid.Columns.Add(new BoundField() { DataField = "CheckNumber", HeaderText = "CheckNumber" });
             grid.Columns.Add(new BoundField() { DataField = "OrderId", HeaderText = "OrderId" });
             grid.Columns.Add(new BoundField() { DataField = "OrderDate", HeaderText = "OrderDate", DataFormatString = "{0:d}" });
-            grid.Columns.Add(new BoundField() { DataField = "OrderTotal", HeaderText = "OrderTotal" });
-            grid.Columns.Add(new BoundField() { DataField = "OrderedBy", HeaderText = "OrderedBy" });
-            grid.Columns.Add(new TemplateField() {HeaderText = ""}); 
-            grid.Columns.Add(new BoundField() { DataField = "ItemName", HeaderText = "ItemName" });
-            grid.Columns.Add(new BoundField() { DataField = "ItemPrice", HeaderText = "ItemPrice" });
-            grid.Columns.Add(new BoundField() { DataField = "ItemType", HeaderText = "ItemType" });
+            //grid.Columns.Add(new BoundField() { DataField = "OrderedBy", HeaderText = "OrderedBy" });
+            //grid.Columns.Add(new TemplateField() {HeaderText = ""}); 
             grid.Columns.Add(new BoundField() { DataField = "Lastname", HeaderText = "Lastname" });
             grid.Columns.Add(new BoundField() { DataField = "Firstname", HeaderText = "Firstname" });
             grid.Columns.Add(new BoundField() { DataField = "Gender", HeaderText = "Gender" });
@@ -322,6 +318,13 @@ namespace Cfcusaga.Web.Controllers
             grid.Columns.Add(new BoundField() { DataField = "AgeOnEventDate", HeaderText = "AgeDuringEvent" });
             grid.Columns.Add(new BoundField() { DataField = "Allergies", HeaderText = "Allergies" });
             grid.Columns.Add(new BoundField() { DataField = "TshirtSize", HeaderText = "TshirtSize" });
+            grid.Columns.Add(new BoundField() { DataField = "ItemPrice", HeaderText = "ItemPrice" });
+            grid.Columns.Add(new BoundField() { DataField = "ItemType", HeaderText = "ItemType" });
+            grid.Columns.Add(new BoundField() { DataField = "OrderTotal", HeaderText = "OrderTotal" });
+
+            //grid.Columns.Add(new BoundField() { DataField = "ItemName", HeaderText = "ItemName" });
+
+
             grid.Columns.Add(new BoundField() { DataField = "Phone", HeaderText = "Phone" });
             grid.Columns.Add(new BoundField() { DataField = "Email", HeaderText = "Email" });
             grid.Columns.Add(new BoundField() { DataField = "Address", HeaderText = "Address" });
@@ -331,7 +334,8 @@ namespace Cfcusaga.Web.Controllers
             grid.DataBind();
 
             Response.ClearContent();
-            Response.AddHeader("content-disposition", "attachment; filename=Exported_Diners.xls");
+            var fileName = $"2016CfcKidsFamilyConfRegistrationExport{DateTime.Now.ToString("MM-dd-yyyy")}.xls";
+            Response.AddHeader("content-disposition", $"attachment; filename={fileName}");
             Response.ContentType = "application/excel";
             StringWriter sw = new StringWriter();
             HtmlTextWriter htw = new HtmlTextWriter(sw);
