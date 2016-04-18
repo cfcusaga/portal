@@ -331,6 +331,9 @@ namespace Cfcusaga.Web.Controllers
             grid.Columns.Add(new BoundField() { DataField = "City", HeaderText = "City" });
             grid.Columns.Add(new BoundField() { DataField = "State", HeaderText = "State" });
             grid.Columns.Add(new BoundField() { DataField = "Zip", HeaderText = "Zip" });
+
+            grid.RowDataBound += GridView1_RowDataBound;
+            grid.RowCreated += GridView1_RowCreated;
             grid.DataBind();
 
             Response.ClearContent();
@@ -345,6 +348,49 @@ namespace Cfcusaga.Web.Controllers
             Response.Write(sw.ToString());
 
             Response.End();
+        }
+
+        private int orderId;
+        private int rowIndex = 1;
+        protected void GridView1_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                orderId = Convert.ToInt32(DataBinder.Eval(e.Row.DataItem, "OrderId").ToString());
+            }
+        }
+
+        protected void GridView1_RowCreated(object sender, GridViewRowEventArgs e)
+        {
+            bool newRow = false;
+            if ((orderId > 0) && (DataBinder.Eval(e.Row.DataItem, "OrderId") != null))
+            {
+                if (orderId != Convert.ToInt32(DataBinder.Eval(e.Row.DataItem, "OrderId").ToString()))
+                    newRow = true;
+            }
+            if ((orderId > 0) && (DataBinder.Eval(e.Row.DataItem, "OrderId") == null))
+            {
+                newRow = true;
+                rowIndex = 0;
+            }
+            if (newRow)
+            {
+                AddNewRow(sender, e);
+            }
+        }
+        public void AddNewRow(object sender, GridViewRowEventArgs e)
+        {
+            GridView GridView1 = (GridView)sender;
+            GridViewRow NewTotalRow = new GridViewRow(0, 0, DataControlRowType.DataRow, DataControlRowState.Insert);
+            NewTotalRow.Font.Bold = true;
+            NewTotalRow.BackColor = System.Drawing.Color.Aqua;
+            TableCell HeaderCell = new TableCell();
+            HeaderCell.Height = 10;
+            HeaderCell.HorizontalAlign = HorizontalAlign.Center;
+            HeaderCell.ColumnSpan = 19;
+            NewTotalRow.Cells.Add(HeaderCell);
+            GridView1.Controls[0].Controls.AddAt(e.Row.RowIndex + rowIndex, NewTotalRow);
+            rowIndex++;
         }
     }
 
