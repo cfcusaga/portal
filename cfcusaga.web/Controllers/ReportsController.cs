@@ -204,7 +204,7 @@ namespace Cfcusaga.Web.Controllers
             //        Phone = o.Phone,
             //        Price = od.UnitPrice
             //RetrieveOrderDetailsReportItems
-            var grid = new GridView();
+            var grid = new GridView { AutoGenerateColumns = false };
             var reportItems = RetrieveOrderDetailsReportItems(sortOrder, currentFilter);
             grid.DataSource = reportItems.ToList();
             //var orders = RetrieveOrderDetailsReportItems(sortOrder, searchString);
@@ -237,8 +237,8 @@ namespace Cfcusaga.Web.Controllers
             grid.DataBind();
 
             Response.ClearContent();
-            Response.AddHeader("content-disposition", "attachment; filename=Exported_Diners.xls");
-            Response.ContentType = "application/excel";
+            var fileName = $"2016CfcKidsFamilyConfRegistrations{DateTime.Now.ToString("MM-dd-yyyy")}.xls";
+            Response.AddHeader("content-disposition", $"attachment; filename={fileName}");
             StringWriter sw = new StringWriter();
             HtmlTextWriter htw = new HtmlTextWriter(sw);
 
@@ -479,7 +479,8 @@ namespace Cfcusaga.Web.Controllers
         {
             var grid = new GridView { AutoGenerateColumns = false };
             sortOrder = string.IsNullOrEmpty(sortOrder) ? "OrderId" : sortOrder;
-            var reportItems = RetrieveReportIndexItems(sortOrder, currentFilter);
+            //var reportItems = RetrieveReportIndexItems(sortOrder, currentFilter);
+            var reportItems = RetrieveReportIndexItems(sortOrder, null);
 
 
             var summaryByState = GetRegistrationSummaryByState(reportItems);
@@ -524,7 +525,7 @@ namespace Cfcusaga.Web.Controllers
         {
             var grid = new GridView { AutoGenerateColumns = false };
             sortOrder = string.IsNullOrEmpty(sortOrder) ? "OrderId" : sortOrder;
-            var reportItems = RetrieveReportIndexItems(sortOrder, currentFilter);
+            var reportItems = RetrieveReportIndexItems(sortOrder, null);
 
             var queryable = GetRegistrationSummaryAll(reportItems);
 
@@ -597,9 +598,10 @@ namespace Cfcusaga.Web.Controllers
             }
             if (newRow)
             {
-                
                 AddSummaryRow(sender, e, _totalAmount);
                 AddNewRow(sender, e);
+                _notes = string.Empty;
+                _totalAmount = 0;
             }
         }
         public void AddNewRow(object sender, GridViewRowEventArgs e)
