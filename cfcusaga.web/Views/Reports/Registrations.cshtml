@@ -2,10 +2,9 @@
 @model PagedList.IPagedList<Cfcusaga.Web.Models.OrderItems>
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Registration Details Report";
 }
-
-<h2>2016 Kids Family Conference - Registrants</h2>
+<h3>2016 Kids Family Conference - Registrants</h3>
 <div class="bs-docs-section">
     <div class="row">
         @using (Html.BeginForm("Registrations", "Reports", FormMethod.Get))
@@ -95,9 +94,27 @@
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
 @Html.PagedListPager(Model, page => Url.Action("Registrations",
 new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
-@if (Request.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperUser")))
-{
-    <div class="ExportSection">
-        @Html.ActionLink("Export to Excel", "ExportClientsListToExcel", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
-    </div>
-}
+
+<div class="ExportSection">
+    @if (Request.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperUser")))
+    {
+        @Html.ActionLink("Admin View", "Index", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+        @:&nbsp;| &nbsp;
+        @Html.ActionLink("Download", "DownloadReportIndex", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+        @:&nbsp;&nbsp;//&nbsp; &nbsp;
+    }
+    @Html.ActionLink("Registrations", "Registrations", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }) &nbsp;| &nbsp;
+    @Html.ActionLink("Download", "DownloadReportRegistrations", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+    &nbsp;&nbsp;//&nbsp; &nbsp;
+    @Html.ActionLink("Summary By State", "RegistrationsByState", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }) &nbsp;| &nbsp;
+    @if (Request.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperUser")))
+    {
+        @Html.ActionLink("Download", "DownloadReportSummaryByStateIndex", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+        @:&nbsp;&nbsp;//&nbsp; &nbsp;
+    }
+    @Html.ActionLink("Summary All", "RegistrationsSummaryAll", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }) &nbsp;| &nbsp;
+    @if (Request.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperUser")))
+    {
+        @Html.ActionLink("Download", "DownloadReportSummaryAll", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+    }
+</div>

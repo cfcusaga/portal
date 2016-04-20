@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace Cfcusaga.Web.Controllers
             ViewBag.CurrentFilter = searchString;
 
             var orders = RetrieveReportIndexItems(sortOrder, searchString);
-            const int pageSize = 30;
+            const int pageSize = 20;
             var pageNumber = (page ?? 1);
             return View(await orders.ToPagedListAsync(pageNumber, pageSize));
 
@@ -136,20 +137,102 @@ namespace Cfcusaga.Web.Controllers
             ViewBag.CurrentFilter = searchString;
 
             var orders = RetrieveOrderDetailsReportItems(sortOrder, searchString);
-            const int pageSize = 50;
+            const int pageSize = 20;
             var pageNumber = (page ?? 1);
             return View(await orders.ToPagedListAsync(pageNumber, pageSize));
 
         }
 
-
-        [Authorize(Roles = "SuperUser, Admin")]
-        public void ExportClientsListToExcel(string sortOrder, string currentFilter)
+        [AllowAnonymous]
+        [HttpGet()]
+        //[Route("registrations")]
+        public async Task<ActionResult> RegistrationsByState(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            var grid = new GridView();
+            InitIndexViewBag(sortOrder);
+            if (searchString == null)
+            {
+                searchString = currentFilter;
+            }
 
+            ViewBag.CurrentFilter = searchString;
+
+            var orders = RetrieveOrderDetailsReportItems(sortOrder, searchString);
+            var summaryByState = GetRegistrationSummaryByState(orders);
+            return View(await summaryByState.ToListAsync());
+
+        }
+
+
+        [AllowAnonymous]
+        [HttpGet()]
+        //[Route("registrations")]
+        public async Task<ActionResult> RegistrationsSummaryAll(string sortOrder, string currentFilter, string searchString, int? page)
+        {
+            InitIndexViewBag(sortOrder);
+            if (searchString == null)
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
+            var orders = RetrieveOrderDetailsReportItems(sortOrder, searchString);
+            var summaryAll = GetRegistrationSummaryAll(orders);
+            return View(await summaryAll.ToListAsync());
+
+        }
+
+        //[Authorize(Roles = "SuperUser, Admin")]
+        public void DownloadReportRegistrations(string sortOrder, string currentFilter)
+        {
+            //OrderId = o.OrderId,
+            //        OrderDate = o.OrderDate,
+            //        OrderDetailId = od.OrderDetailId,
+            //        ItemId = i.ID,
+            //        ItemName = i.Name,
+            //        CategoryId = i.CatagoryID,
+            //        Firstname = od.Firstname,
+            //        Lastname = od.Lastname,
+            //        BirthDate = od.BirthDate,
+            //        OrderByLastname = o.LastName,
+            //        OrderByFirstname = o.FirstName,
+            //        TshirtSize = od.TshirtSize,
+            //        Allergies = od.Allergies,
+            //        City = o.City,
+            //        State = o.State,
+            //        ZipCode = o.PostalCode,
+            //        Phone = o.Phone,
+            //        Price = od.UnitPrice
+            //RetrieveOrderDetailsReportItems
+            var grid = new GridView();
             var reportItems = RetrieveOrderDetailsReportItems(sortOrder, currentFilter);
             grid.DataSource = reportItems.ToList();
+            //var orders = RetrieveOrderDetailsReportItems(sortOrder, searchString);
+            //grid.DataSource = reportItems.Select(o => new OrderItems())
+            //{
+            //    OrderDate = o.OrderDate,
+            //    ItemName = o.ItemName,
+            //    ItemPrice = o.Price,
+            //    ItemId = o.ItemId,
+            //    Lastname = o.Lastname,
+            //    Firstname = o.Firstname,
+            //    DateOfBirth = o.BirthDate,
+            //    EventDate = new DateTime(2016, 6, 18),
+            //    City = o.City,
+            //    State = o.State,
+            //    Zip = o.ZipCode,
+            //    Notes = o.Notes
+            //}).ToList();
+
+            grid.Columns.Add(new BoundField() { DataField = "OrderDate", HeaderText = "OrderDate", DataFormatString = "{0:d}" });
+            grid.Columns.Add(new BoundField() { DataField = "ItemName", HeaderText = "Description" });
+            grid.Columns.Add(new BoundField() { DataField = "FullName", HeaderText = "Name" });
+            grid.Columns.Add(new BoundField() { DataField = "AgeOnEventDate", HeaderText = "AgeDuringEvent" });
+            grid.Columns.Add(new BoundField() { DataField = "City", HeaderText = "Allergies" });
+            grid.Columns.Add(new BoundField() { DataField = "State", HeaderText = "State" });
+            grid.Columns.Add(new BoundField() { DataField = "ZipCode", HeaderText = "Zip" });
+
+
             
             grid.DataBind();
 
@@ -399,20 +482,13 @@ namespace Cfcusaga.Web.Controllers
             var reportItems = RetrieveReportIndexItems(sortOrder, currentFilter);
 
 
-            var newList = reportItems.GroupBy(x => new { x.ItemId, x.State})
-                    .Select(y => new RegistrationSummaryReport()
-                    {
-                        ItemId = y.Key.ItemId,
-                        State = y.Key.State,
-                        Count = y.Count(),
-                        TotalAmount = y.Sum(x => x.Price)
-                    }
-                    );
+            var summaryByState = GetRegistrationSummaryByState(reportItems);
 
-            grid.DataSource = newList.ToList();
+            grid.DataSource = summaryByState.ToList();
             grid.Columns.Add(new BoundField() { DataField = "ItemType", HeaderText = "ItemType" });
             grid.Columns.Add(new BoundField() { DataField = "State", HeaderText = "State" });
             grid.Columns.Add(new BoundField() { DataField = "Count", HeaderText = "Count" });
+            grid.Columns.Add(new BoundField() { DataField = "TotalAmount", HeaderText = "TotalAmount", DataFormatString = "C"});
             grid.DataBind();
 
             Response.ClearContent();
@@ -429,6 +505,20 @@ namespace Cfcusaga.Web.Controllers
             Response.End();
         }
 
+        private static IQueryable<RegistrationSummaryReport> GetRegistrationSummaryByState(IQueryable<OrderItems> reportItems)
+        {
+            var newList = reportItems.GroupBy(x => new {x.ItemId, x.State})
+                .Select(y => new RegistrationSummaryReport()
+                {
+                    ItemId = y.Key.ItemId,
+                    State = y.Key.State,
+                    Count = y.Count(),
+                    TotalAmount = y.Sum(x => x.Price)
+                }
+                );
+            return newList;
+        }
+
         [Authorize(Roles = "SuperUser, Admin")]
         public void DownloadReportSummaryAll(string sortOrder, string currentFilter)
         {
@@ -436,17 +526,9 @@ namespace Cfcusaga.Web.Controllers
             sortOrder = string.IsNullOrEmpty(sortOrder) ? "OrderId" : sortOrder;
             var reportItems = RetrieveReportIndexItems(sortOrder, currentFilter);
 
+            var queryable = GetRegistrationSummaryAll(reportItems);
 
-            var newList = reportItems.GroupBy(x => new { x.ItemId })
-                    .Select(y => new RegistrationSummaryReport()
-                    {
-                        ItemId = y.Key.ItemId,
-                        Count = y.Count(),
-                        TotalAmount = y.Sum(x => x.Price)
-                    }
-                    );
-
-            grid.DataSource = newList.ToList();
+            grid.DataSource = queryable.ToList();
             grid.Columns.Add(new BoundField() { DataField = "ItemType", HeaderText = "ItemType" });
             grid.Columns.Add(new BoundField() { DataField = "Count", HeaderText = "Count" });
             grid.Columns.Add(new BoundField() { DataField = "TotalAmount", HeaderText = "TotalAmount" });
@@ -464,6 +546,19 @@ namespace Cfcusaga.Web.Controllers
             Response.Write(sw.ToString());
 
             Response.End();
+        }
+
+        private static IQueryable<RegistrationSummaryReport> GetRegistrationSummaryAll(IQueryable<OrderItems> reportItems)
+        {
+            var newList = reportItems.GroupBy(x => new {x.ItemId})
+                .Select(y => new RegistrationSummaryReport()
+                {
+                    ItemId = y.Key.ItemId,
+                    Count = y.Count(),
+                    TotalAmount = y.Sum(x => x.Price)
+                }
+                );
+            return newList;
         }
 
 

@@ -31,11 +31,11 @@
         </th>
         <th>
             @Html.ActionLink("Date", "Index", new { sortOrder = ViewBag.OrderDateSortParm, currentFilter = ViewBag.CurrentFilter })
-            
+
         </th>
         <th>
             @Html.ActionLink("Description", "Index", new { sortOrder = ViewBag.ItemNameSortParm, currentFilter = ViewBag.CurrentFilter })
-            
+
         </th>
         <th>
             @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.FullNameSortParm, currentFilter = ViewBag.CurrentFilter })
@@ -48,22 +48,22 @@
         </th>
         <th>
             @Html.ActionLink("TShirt", "Index", new { sortOrder = ViewBag.TshirtSortParm, currentFilter = ViewBag.CurrentFilter })
-            
+
         </th>
         <th>
             @Html.ActionLink("OrderedBy", "Index", new { sortOrder = ViewBag.OrderedBySortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
             @Html.ActionLink("City", "Index", new { sortOrder = ViewBag.CitySortParm, currentFilter = ViewBag.CurrentFilter })
-            
+
         </th>
         <th>
             @Html.ActionLink("State", "Index", new { sortOrder = ViewBag.StateSortParm, currentFilter = ViewBag.CurrentFilter })
-            
+
         </th>
         <th>
             @Html.ActionLink("Zip", "Index", new { sortOrder = ViewBag.ZipSortParm, currentFilter = ViewBag.CurrentFilter })
-            
+
         </th>
 
     </tr>
@@ -121,8 +121,27 @@ Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.Page
 @Html.PagedListPager(Model, page => Url.Action("Index",
 new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
+
 <div class="ExportSection">
-    @Html.ActionLink("Export to Excel", "DownloadReportIndex", new {sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter})  &nbsp;| &nbsp;
-    @Html.ActionLink("Summary By State", "DownloadReportSummaryByStateIndex", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })&nbsp;| &nbsp;
-    @Html.ActionLink("Summary All", "DownloadReportSummaryAll", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+    @if (Request.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperUser")))
+    {
+        @Html.ActionLink("Admin View", "Index", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+        @:&nbsp;| &nbsp;
+        @Html.ActionLink("Download", "DownloadReportIndex", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+        @:&nbsp;&nbsp;//&nbsp; &nbsp;
+    }
+    @Html.ActionLink("Registrations", "Registrations", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }) &nbsp;| &nbsp;
+    @Html.ActionLink("Download", "DownloadReportRegistrations", new {sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter})
+    &nbsp;&nbsp;//&nbsp; &nbsp;
+    @Html.ActionLink("Summary By State", "RegistrationsByState", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }) &nbsp;| &nbsp;
+    @if (Request.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperUser")))
+    {
+        @Html.ActionLink("Download", "DownloadReportSummaryByStateIndex", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+        @:&nbsp;&nbsp;//&nbsp; &nbsp;
+    }
+    @Html.ActionLink("Summary All", "RegistrationsSummaryAll", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }) &nbsp;| &nbsp;
+    @if (Request.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperUser")))
+    {
+        @Html.ActionLink("Download", "DownloadReportSummaryAll", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+    }
 </div>
