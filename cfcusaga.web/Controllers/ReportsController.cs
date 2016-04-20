@@ -9,7 +9,7 @@ using System.Web.UI.WebControls;
 using cfcusaga.data;
 using cfcusaga.domain.Helpers;
 using Cfcusaga.Web.Models;
-using Enums = cfcusaga.domain.Enums;
+using Microsoft.Ajax.Utilities;
 
 namespace Cfcusaga.Web.Controllers
 {
@@ -47,6 +47,7 @@ namespace Cfcusaga.Web.Controllers
             const int eventId = 7;
             var orders = from o in _db.Orders.AsNoTracking()
                 join od in _db.OrderDetails.AsNoTracking() on o.OrderId equals od.OrderId
+                //join dscnt in _db.OrderDiscounts.AsNoTracking() on o.OrderId equals dscnt.OrderId
                 join i in _db.Items.AsNoTracking() on od.ItemId equals i.ID
                 join e in _db.Events.AsNoTracking() on i.EventId equals e.Id
                 where e.Id == eventId
@@ -56,6 +57,7 @@ namespace Cfcusaga.Web.Controllers
                     OrderId = o.OrderId,
                     OrderDate = o.OrderDate,
                     OrderTotal = o.Total,
+                    OrderNotes = o.Notes,
                     OrderDetailId = od.OrderDetailId,
                     ItemId = i.ID,
                     ItemName = i.Name,
@@ -75,12 +77,44 @@ namespace Cfcusaga.Web.Controllers
                     Email = o.Email,
                     Price = od.UnitPrice,
                     Address = o.Address,
+                    Notes = o.Notes
                 }
                 ;
-
-            orders = FilterItemsBy(searchString, orders);
-            orders = SortItemsBy(sortOrder, orders);
-            return orders;
+            var uniqueOrderIds = orders.DistinctBy(x => x.OrderId).Select(o => o.OrderId).ToList();
+            var ordersWithDscnts = orders.Union(from o in _db.Orders.AsNoTracking()
+                join ods in _db.OrderDiscounts.AsNoTracking() on o.OrderId equals ods.OrderId
+                                                where uniqueOrderIds.Contains(o.OrderId)
+                select new OrderItems
+                {
+                    OrderId = o.OrderId,
+                    OrderDate = o.OrderDate,
+                    OrderTotal = null,
+                    OrderNotes = null,
+                    OrderDetailId = null,
+                    ItemId = int.MaxValue,
+                    ItemName = "Discount",
+                    CategoryId = null,
+                    Firstname = null,
+                    Lastname = o.LastName,
+                    BirthDate = null,
+                    Gender = null,
+                    OrderByLastname = o.LastName,
+                    OrderByFirstname = null,
+                    TshirtSize = null,
+                    Allergies = null,
+                    City = null,
+                    State = null,
+                    ZipCode = null,
+                    Phone = null,
+                    Email = null,
+                    Price = -1*ods.Discount,
+                    Address = null,
+                    Notes = null
+                }
+                );
+            ordersWithDscnts = FilterItemsBy(searchString, ordersWithDscnts);
+            ordersWithDscnts = SortItemsBy(sortOrder, ordersWithDscnts);
+            return ordersWithDscnts;
         }
 
         [AllowAnonymous]
@@ -112,7 +146,7 @@ namespace Cfcusaga.Web.Controllers
         [Authorize(Roles = "SuperUser, Admin")]
         public void ExportClientsListToExcel(string sortOrder, string currentFilter)
         {
-            var grid = new System.Web.UI.WebControls.GridView();
+            var grid = new GridView();
 
             var reportItems = RetrieveOrderDetailsReportItems(sortOrder, currentFilter);
             grid.DataSource = reportItems.ToList();
@@ -278,8 +312,8 @@ namespace Cfcusaga.Web.Controllers
         [Authorize(Roles = "SuperUser, Admin")]
         public void DownloadReportIndex(string sortOrder, string currentFilter)
         {
-            var grid = new System.Web.UI.WebControls.GridView();
-            grid.AutoGenerateColumns = false;
+            var grid = new GridView {AutoGenerateColumns = false};
+            sortOrder = string.IsNullOrEmpty(sortOrder) ? "OrderId" : sortOrder;
             var reportItems = RetrieveReportIndexItems(sortOrder, currentFilter);
             grid.DataSource = reportItems.Select(o => new ReportIndexReport()
             {
@@ -287,6 +321,7 @@ namespace Cfcusaga.Web.Controllers
                 OrderId = o.OrderId,
                 OrderDate = o.OrderDate,
                 OrderTotal = o.OrderTotal,
+                OrderNotes = o.OrderNotes,
                 OrderByLastname = o.OrderByLastname,
                 OrderByFirstname = o.OrderByFirstname,
                 ItemName = o.ItemName,
@@ -305,13 +340,14 @@ namespace Cfcusaga.Web.Controllers
                 City = o.City,
                 State = o.State,
                 Zip = o.ZipCode,
+                Notes = o.Notes
             }).ToList();
             grid.Columns.Add(new BoundField() { DataField = "CheckNumber", HeaderText = "CheckNumber" });
             grid.Columns.Add(new BoundField() { DataField = "OrderId", HeaderText = "OrderId" });
             grid.Columns.Add(new BoundField() { DataField = "OrderDate", HeaderText = "OrderDate", DataFormatString = "{0:d}" });
             //grid.Columns.Add(new BoundField() { DataField = "OrderedBy", HeaderText = "OrderedBy" });
             //grid.Columns.Add(new TemplateField() {HeaderText = ""}); 
-            grid.Columns.Add(new BoundField() { DataField = "Lastname", HeaderText = "Lastname" });
+            grid.Columns.Add(new BoundField() { DataField = "LastnameReport", HeaderText = "Lastname" });
             grid.Columns.Add(new BoundField() { DataField = "Firstname", HeaderText = "Firstname" });
             grid.Columns.Add(new BoundField() { DataField = "Gender", HeaderText = "Gender" });
             grid.Columns.Add(new BoundField() { DataField = "DateOfBirth", HeaderText = "DateOfBirth", DataFormatString = "{0:d}" });
@@ -320,7 +356,10 @@ namespace Cfcusaga.Web.Controllers
             grid.Columns.Add(new BoundField() { DataField = "TshirtSize", HeaderText = "TshirtSize" });
             grid.Columns.Add(new BoundField() { DataField = "ItemPrice", HeaderText = "ItemPrice" });
             grid.Columns.Add(new BoundField() { DataField = "ItemType", HeaderText = "ItemType" });
-            grid.Columns.Add(new BoundField() { DataField = "OrderTotal", HeaderText = "OrderTotal" });
+            //grid.Columns.Add(new BoundField() { DataField = "OrderTotal", HeaderText = "OrderTotal" });
+            grid.Columns.Add(new TemplateField() {HeaderText = "OrderTotal"}); //{ DataField = "OrderTotal", HeaderText = "OrderTotal" });
+            //grid.Columns.Add(new BoundField() { DataField = "Notes", HeaderText = "Notes" });
+            grid.Columns.Add(new TemplateField() { HeaderText = "Notes" });
 
             //grid.Columns.Add(new BoundField() { DataField = "ItemName", HeaderText = "ItemName" });
 
@@ -350,47 +389,90 @@ namespace Cfcusaga.Web.Controllers
             Response.End();
         }
 
-        private int orderId;
-        private int rowIndex = 1;
+        private int _orderId;
+        private int _rowIndex = 1;
+        private decimal _totalAmount;
+        private string _notes;
         protected void GridView1_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
-                orderId = Convert.ToInt32(DataBinder.Eval(e.Row.DataItem, "OrderId").ToString());
+                _orderId = Convert.ToInt32(DataBinder.Eval(e.Row.DataItem, "OrderId").ToString());
+                if (DataBinder.Eval(e.Row.DataItem, "OrderTotal") != null)
+                    _totalAmount = Convert.ToDecimal(DataBinder.Eval(e.Row.DataItem, "OrderTotal").ToString());
+
+                if (DataBinder.Eval(e.Row.DataItem, "Notes") != null)
+                    _notes = DataBinder.Eval(e.Row.DataItem, "Notes").ToString();
             }
         }
 
         protected void GridView1_RowCreated(object sender, GridViewRowEventArgs e)
         {
             bool newRow = false;
-            if ((orderId > 0) && (DataBinder.Eval(e.Row.DataItem, "OrderId") != null))
+            if ((_orderId > 0) && (DataBinder.Eval(e.Row.DataItem, "OrderId") != null))
             {
-                if (orderId != Convert.ToInt32(DataBinder.Eval(e.Row.DataItem, "OrderId").ToString()))
+                if (_orderId != Convert.ToInt32(DataBinder.Eval(e.Row.DataItem, "OrderId").ToString()))
+                {
                     newRow = true;
+                }
+                    
             }
-            if ((orderId > 0) && (DataBinder.Eval(e.Row.DataItem, "OrderId") == null))
+            if ((_orderId > 0) && (DataBinder.Eval(e.Row.DataItem, "OrderId") == null))
             {
                 newRow = true;
-                rowIndex = 0;
+                _rowIndex = 0;
             }
             if (newRow)
             {
+                
+                AddSummaryRow(sender, e, _totalAmount);
                 AddNewRow(sender, e);
             }
         }
         public void AddNewRow(object sender, GridViewRowEventArgs e)
         {
-            GridView GridView1 = (GridView)sender;
-            GridViewRow NewTotalRow = new GridViewRow(0, 0, DataControlRowType.DataRow, DataControlRowState.Insert);
-            NewTotalRow.Font.Bold = true;
-            NewTotalRow.BackColor = System.Drawing.Color.Aqua;
-            TableCell HeaderCell = new TableCell();
-            HeaderCell.Height = 10;
-            HeaderCell.HorizontalAlign = HorizontalAlign.Center;
-            HeaderCell.ColumnSpan = 19;
-            NewTotalRow.Cells.Add(HeaderCell);
-            GridView1.Controls[0].Controls.AddAt(e.Row.RowIndex + rowIndex, NewTotalRow);
-            rowIndex++;
+            GridView gridView1 = (GridView)sender;
+            GridViewRow newTotalRow = new GridViewRow(0, 0, DataControlRowType.DataRow, DataControlRowState.Insert);
+            newTotalRow.Font.Bold = true;
+            newTotalRow.BackColor = System.Drawing.Color.Aqua;
+            TableCell headerCell = new TableCell();
+            headerCell.Height = 10;
+            headerCell.HorizontalAlign = HorizontalAlign.Center;
+            headerCell.ColumnSpan = 20;
+            newTotalRow.Cells.Add(headerCell);
+            gridView1.Controls[0].Controls.AddAt(e.Row.RowIndex + _rowIndex, newTotalRow);
+            _rowIndex++;
+        }
+
+        public void AddSummaryRow(object sender, GridViewRowEventArgs e, decimal totalAmount)
+        {
+            GridView gridView1 = (GridView)sender;
+            GridViewRow newTotalRow = new GridViewRow(0, 0, DataControlRowType.DataRow, DataControlRowState.Insert);
+            newTotalRow.Font.Bold = true;
+            //NewTotalRow.BackColor = System.Drawing.Color.Aqua;
+            TableCell totalLabelCell = new TableCell();
+            totalLabelCell.Height = 20;
+            totalLabelCell.HorizontalAlign = HorizontalAlign.Right;
+            totalLabelCell.ColumnSpan = 12;
+            totalLabelCell.Text = "Total";
+            newTotalRow.Cells.Add(totalLabelCell);
+
+            TableCell totalAmountCell = new TableCell();
+            totalAmountCell.Height = 20;
+            totalAmountCell.HorizontalAlign = HorizontalAlign.Right;
+            totalAmountCell.ColumnSpan = 1;
+            totalAmountCell.Text = totalAmount.ToString("C");
+            newTotalRow.Cells.Add(totalAmountCell);
+
+            TableCell notesCell = new TableCell();
+            notesCell.Height = 20;
+            notesCell.HorizontalAlign = HorizontalAlign.Left;
+            notesCell.ColumnSpan = 7;
+            notesCell.Text = _notes;
+            newTotalRow.Cells.Add(notesCell);
+
+            gridView1.Controls[0].Controls.AddAt(e.Row.RowIndex + _rowIndex, newTotalRow);
+            _rowIndex++;
         }
     }
 
@@ -402,10 +484,10 @@ namespace Cfcusaga.Web.Controllers
         public string OrderedBy => $"{OrderByLastname},{OrderByFirstname}";
 
         [Browsable(false)]
-        public object OrderByFirstname { get; set; }
+        public string OrderByFirstname { get; set; }
 
         [Browsable(false)]
-        public object OrderByLastname { get; set; }
+        public string OrderByLastname { get; set; }
 
         [Browsable(false)]
         public DateTime OrderDate { get; set; }
@@ -415,7 +497,7 @@ namespace Cfcusaga.Web.Controllers
         public string City { get; set; }
         public string State { get; set; }
         public string Zip { get; set; }
-        public decimal OrderTotal { get; set; }
+        public decimal? OrderTotal { get; set; }
         public string ItemName { get; set; }
         public decimal ItemPrice { get; set; }
         //public string RegistrationType { get; set; }
@@ -427,7 +509,7 @@ namespace Cfcusaga.Web.Controllers
         public string Address { get; set; }
 
         [Browsable(false)]
-        public int ItemId { get; set; }
+        public int? ItemId { get; set; }
 
         public int? AgeOnEventDate => DateOfBirth?.Age(EventDate);
 
@@ -452,11 +534,18 @@ namespace Cfcusaga.Web.Controllers
                         return "BedSpace";
                     case 7:
                         return "TShirt";
+                    case int.MaxValue:
+                        return "Discount";
                     default:
                         return "";
                 }
             }
         }
+
+        public string OrderNotes { get; set; }
+        public string Notes { get; set; }
+
+        public string LastnameReport => string.IsNullOrEmpty(Lastname) ? OrderByLastname : Lastname;
     }
 
 }
