@@ -389,6 +389,55 @@ namespace Cfcusaga.Web.Controllers
             Response.End();
         }
 
+
+
+        [Authorize(Roles = "SuperUser, Admin")]
+        public void DownloadReportSummaryByStateIndex(string sortOrder, string currentFilter)
+        {
+            var grid = new GridView { AutoGenerateColumns = false };
+            sortOrder = string.IsNullOrEmpty(sortOrder) ? "OrderId" : sortOrder;
+            var reportItems = RetrieveReportIndexItems(sortOrder, currentFilter);
+
+            //var newList = list.GroupBy(x => new { x.School, x.Friend, x.FavoriteColor })
+            //        .Select(y => new ConsolidatedChild()
+            //        {
+            //            FavoriteColor = y.Key.FavoriteColor,
+            //            Friend = y.Key.Friend,
+            //            School = y.Key.School,
+            //            Children = y.ToList()
+            //        }
+            //        );
+
+            var newList = reportItems.GroupBy(x => new { x.ItemId, x.State})
+                    .Select(y => new ReportSummaryByState()
+                    {
+                        ItemId = y.Key.ItemId,
+                        State = y.Key.State,
+                        Count = y.Count()
+                    }
+                    );
+
+            grid.DataSource = newList.ToList();
+            grid.Columns.Add(new BoundField() { DataField = "ItemType", HeaderText = "ItemType" });
+            grid.Columns.Add(new BoundField() { DataField = "State", HeaderText = "State" });
+            grid.Columns.Add(new BoundField() { DataField = "Count", HeaderText = "Count" });
+            grid.DataBind();
+
+            Response.ClearContent();
+            var fileName = $"2016CfcKidsFamilyConfSummaryByState{DateTime.Now.ToString("MM-dd-yyyy")}.xls";
+            Response.AddHeader("content-disposition", $"attachment; filename={fileName}");
+            Response.ContentType = "application/excel";
+            StringWriter sw = new StringWriter();
+            HtmlTextWriter htw = new HtmlTextWriter(sw);
+
+            grid.RenderControl(htw);
+
+            Response.Write(sw.ToString());
+
+            Response.End();
+        }
+
+
         private int _orderId;
         private int _rowIndex = 1;
         private decimal _totalAmount;
@@ -473,6 +522,38 @@ namespace Cfcusaga.Web.Controllers
 
             gridView1.Controls[0].Controls.AddAt(e.Row.RowIndex + _rowIndex, newTotalRow);
             _rowIndex++;
+        }
+    }
+
+    public class ReportSummaryByState
+    {
+        public string State { get; set; }
+        public int Count { get; set; }
+        public int? ItemId
+        { get; set; }
+
+        public string ItemType
+        {
+            get
+            {
+                switch (ItemId)
+                {
+                    case 3:
+                        return "Kids";
+                    case 4:
+                        return "Youth";
+                    case 5:
+                        return "Parent";
+                    case 6:
+                        return "Room";
+                    case 8:
+                        return "BedSpace";
+                    case 7:
+                        return "TShirt";
+                    default:
+                        return "";
+                }
+            }
         }
     }
 

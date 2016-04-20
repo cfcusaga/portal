@@ -122,5 +122,6 @@ Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.Page
 new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <div class="ExportSection">
-    @Html.ActionLink("Export to Excel", "DownloadReportIndex", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+    @Html.ActionLink("Export to Excel", "DownloadReportIndex", new {sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter}) |
+    @Html.ActionLink("Summary By State", "DownloadReportSummaryByStateIndex", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
 </div>
