@@ -315,7 +315,7 @@ namespace Cfcusaga.Web.Controllers
             var grid = new GridView {AutoGenerateColumns = false};
             sortOrder = string.IsNullOrEmpty(sortOrder) ? "OrderId" : sortOrder;
             var reportItems = RetrieveReportIndexItems(sortOrder, currentFilter);
-            grid.DataSource = reportItems.Select(o => new ReportIndexReport()
+            grid.DataSource = reportItems.Select(o => new RegistrationDetailsReport()
             {
                 CheckNumber = "",
                 OrderId = o.OrderId,
@@ -398,22 +398,14 @@ namespace Cfcusaga.Web.Controllers
             sortOrder = string.IsNullOrEmpty(sortOrder) ? "OrderId" : sortOrder;
             var reportItems = RetrieveReportIndexItems(sortOrder, currentFilter);
 
-            //var newList = list.GroupBy(x => new { x.School, x.Friend, x.FavoriteColor })
-            //        .Select(y => new ConsolidatedChild()
-            //        {
-            //            FavoriteColor = y.Key.FavoriteColor,
-            //            Friend = y.Key.Friend,
-            //            School = y.Key.School,
-            //            Children = y.ToList()
-            //        }
-            //        );
 
             var newList = reportItems.GroupBy(x => new { x.ItemId, x.State})
-                    .Select(y => new ReportSummaryByState()
+                    .Select(y => new RegistrationSummaryReport()
                     {
                         ItemId = y.Key.ItemId,
                         State = y.Key.State,
-                        Count = y.Count()
+                        Count = y.Count(),
+                        TotalAmount = y.Sum(x => x.Price)
                     }
                     );
 
@@ -425,6 +417,43 @@ namespace Cfcusaga.Web.Controllers
 
             Response.ClearContent();
             var fileName = $"2016CfcKidsFamilyConfSummaryByState{DateTime.Now.ToString("MM-dd-yyyy")}.xls";
+            Response.AddHeader("content-disposition", $"attachment; filename={fileName}");
+            Response.ContentType = "application/excel";
+            StringWriter sw = new StringWriter();
+            HtmlTextWriter htw = new HtmlTextWriter(sw);
+
+            grid.RenderControl(htw);
+
+            Response.Write(sw.ToString());
+
+            Response.End();
+        }
+
+        [Authorize(Roles = "SuperUser, Admin")]
+        public void DownloadReportSummaryAll(string sortOrder, string currentFilter)
+        {
+            var grid = new GridView { AutoGenerateColumns = false };
+            sortOrder = string.IsNullOrEmpty(sortOrder) ? "OrderId" : sortOrder;
+            var reportItems = RetrieveReportIndexItems(sortOrder, currentFilter);
+
+
+            var newList = reportItems.GroupBy(x => new { x.ItemId })
+                    .Select(y => new RegistrationSummaryReport()
+                    {
+                        ItemId = y.Key.ItemId,
+                        Count = y.Count(),
+                        TotalAmount = y.Sum(x => x.Price)
+                    }
+                    );
+
+            grid.DataSource = newList.ToList();
+            grid.Columns.Add(new BoundField() { DataField = "ItemType", HeaderText = "ItemType" });
+            grid.Columns.Add(new BoundField() { DataField = "Count", HeaderText = "Count" });
+            grid.Columns.Add(new BoundField() { DataField = "TotalAmount", HeaderText = "TotalAmount" });
+            grid.DataBind();
+
+            Response.ClearContent();
+            var fileName = $"2016CfcKidsFamilyConfSummaryAll{DateTime.Now.ToString("MM-dd-yyyy")}.xls";
             Response.AddHeader("content-disposition", $"attachment; filename={fileName}");
             Response.ContentType = "application/excel";
             StringWriter sw = new StringWriter();
@@ -525,40 +554,23 @@ namespace Cfcusaga.Web.Controllers
         }
     }
 
-    public class ReportSummaryByState
+    public class RegistrationSummaryReport: ReportBase
     {
         public string State { get; set; }
         public int Count { get; set; }
-        public int? ItemId
-        { get; set; }
 
-        public string ItemType
-        {
-            get
-            {
-                switch (ItemId)
-                {
-                    case 3:
-                        return "Kids";
-                    case 4:
-                        return "Youth";
-                    case 5:
-                        return "Parent";
-                    case 6:
-                        return "Room";
-                    case 8:
-                        return "BedSpace";
-                    case 7:
-                        return "TShirt";
-                    default:
-                        return "";
-                }
-            }
-        }
+        public decimal TotalAmount { get; set; }
     }
 
-    public class ReportIndexReport
+    public class RegistrationDetailsReport: ReportBase
     {
+        //private readonly ReportBase _reportBase;
+
+        ////public ReportIndexReport()
+        ////{
+        ////    _reportBase = new ReportBase(this);
+        ////}
+
         public string CheckNumber { get; set; }
         public int OrderId { get; set; }
 
@@ -589,39 +601,12 @@ namespace Cfcusaga.Web.Controllers
         public string Allergies { get; set; }
         public string Address { get; set; }
 
-        [Browsable(false)]
-        public int? ItemId { get; set; }
+
 
         public int? AgeOnEventDate => DateOfBirth?.Age(EventDate);
 
         [Browsable(false)]
         public DateTime EventDate { get; set; }
-
-        public string ItemType
-        {
-            get
-            {
-                switch (ItemId)
-                {
-                    case 3:
-                        return "Kids";
-                    case 4:
-                        return "Youth";
-                    case 5:
-                        return "Parent";
-                    case 6:
-                        return "Room";
-                    case 8:
-                        return "BedSpace";
-                    case 7:
-                        return "TShirt";
-                    case int.MaxValue:
-                        return "Discount";
-                    default:
-                        return "";
-                }
-            }
-        }
 
         public string OrderNotes { get; set; }
         public string Notes { get; set; }

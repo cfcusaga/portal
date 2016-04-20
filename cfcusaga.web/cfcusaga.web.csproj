@@ -236,6 +236,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\MyOrdersController.cs" />
     <Compile Include="Controllers\OrdersController.cs" />
+    <Compile Include="Controllers\ReportBase.cs" />
     <Compile Include="Controllers\ReportOrdersController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
     <Compile Include="Controllers\RolesAdminController.cs" />
