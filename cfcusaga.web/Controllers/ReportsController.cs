@@ -489,7 +489,7 @@ namespace Cfcusaga.Web.Controllers
             grid.Columns.Add(new BoundField() { DataField = "ItemType", HeaderText = "ItemType" });
             grid.Columns.Add(new BoundField() { DataField = "State", HeaderText = "State" });
             grid.Columns.Add(new BoundField() { DataField = "Count", HeaderText = "Count" });
-            grid.Columns.Add(new BoundField() { DataField = "TotalAmount", HeaderText = "TotalAmount", DataFormatString = "C"});
+            grid.Columns.Add(new BoundField() { DataField = "TotalAmount", HeaderText = "TotalAmount", DataFormatString = "{0:N2}" });
             grid.DataBind();
 
             Response.ClearContent();
@@ -532,7 +532,7 @@ namespace Cfcusaga.Web.Controllers
             grid.DataSource = queryable.ToList();
             grid.Columns.Add(new BoundField() { DataField = "ItemType", HeaderText = "ItemType" });
             grid.Columns.Add(new BoundField() { DataField = "Count", HeaderText = "Count" });
-            grid.Columns.Add(new BoundField() { DataField = "TotalAmount", HeaderText = "TotalAmount" });
+            grid.Columns.Add(new BoundField() { DataField = "TotalAmount", HeaderText = "TotalAmount" , DataFormatString = "{0:N2}" });
             grid.DataBind();
 
             Response.ClearContent();
