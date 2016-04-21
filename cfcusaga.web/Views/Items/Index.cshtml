@@ -143,3 +143,19 @@ Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.Page
 
 @Html.PagedListPager(Model, page => Url.Action("Index",
 new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+<div>
+    *After you submit your registration during checkout, you will receive a confirmation email (after 5-15 minutes) and the names should appear here in the
+    <a href="~/Reports/Registrations" title="Registrants">current registrants</a>
+</div><br/>
+<div>
+    Checkout Process:
+    <ul>
+        <li>Review your 'Cart' and click 'Checkout'</li>
+        <li>If you have not login yet, you will be ask to create an account(email and password) by clicking the 'Register a new user' link</li>
+        <li>After creating the account, please login with email and password you created in the previous step.</li>
+        <li>In the Address and Payment page, check the  'Consent and Release Waiver' and click'Submit Order'.</li>
+        <li>If the registration is successful, you will receive an email (in 5-15 minutes) with the confirmation number and order details/registrants.</li>
+        <li>You may also check here to see the <a href="~/Reports/Registrations" title="Registrants">current registrants</a></li>
+    </ul>
+</div>
