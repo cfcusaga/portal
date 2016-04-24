@@ -459,7 +459,7 @@ namespace Cfcusaga.Web.Controllers
             grid.DataBind();
 
             Response.ClearContent();
-            var fileName = $"2016CfcKidsFamilyConfRegistrationExport{DateTime.Now.ToString("MM-dd-yyyy")}.xls";
+            var fileName = $"{DateTime.Now.ToString("MM-dd-yyyy")}-Admin-2016FConf.xls";
             Response.AddHeader("content-disposition", $"attachment; filename={fileName}");
             Response.ContentType = "application/excel";
             StringWriter sw = new StringWriter();
@@ -493,7 +493,7 @@ namespace Cfcusaga.Web.Controllers
             grid.DataBind();
 
             Response.ClearContent();
-            var fileName = $"2016CfcKidsFamilyConfSummaryByState{DateTime.Now.ToString("MM-dd-yyyy")}.xls";
+            var fileName = $"{DateTime.Now.ToString("MM-dd-yyyy")}-ByState-2016FConf.xls";
             Response.AddHeader("content-disposition", $"attachment; filename={fileName}");
             Response.ContentType = "application/excel";
             StringWriter sw = new StringWriter();
@@ -536,7 +536,7 @@ namespace Cfcusaga.Web.Controllers
             grid.DataBind();
 
             Response.ClearContent();
-            var fileName = $"2016CfcKidsFamilyConfSummaryAll{DateTime.Now.ToString("MM-dd-yyyy")}.xls";
+            var fileName = $"{DateTime.Now.ToString("MM-dd-yyyy")}-AllSummary-2016FConf.xls";
             Response.AddHeader("content-disposition", $"attachment; filename={fileName}");
             Response.ContentType = "application/excel";
             StringWriter sw = new StringWriter();
