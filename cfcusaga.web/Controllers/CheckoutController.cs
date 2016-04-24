@@ -58,6 +58,7 @@ namespace  Cfcusaga.Web.Controllers
                     sessionOrder.FirstName = sessionOrder.FirstName;
                     sessionOrder.IsAgreeToWaiver = false;
                     sessionOrder.Country = "USA";
+                    sessionOrder.Email = sessionOrder.Email;
                     return View(sessionOrder);
                 }
                 else
@@ -85,7 +86,7 @@ namespace  Cfcusaga.Web.Controllers
                     //order.CreditCard = result;
 
                     order.Username = User.Identity.Name;
-                order.Email = User.Identity.Name;
+                //order.Email = User.Identity.Name;
                 var timeUtc = DateTime.UtcNow;
                 var easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                 var easternTime = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone);
