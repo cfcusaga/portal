@@ -80,7 +80,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.State, htmlAttributes: new { @class = "col-lg-2 control-label" })
             <div class="col-lg-10">
-                @Html.EditorFor(model => model.State, new { htmlAttributes = new { @class = "form-control", @type = "text", @placeholder = "State" } })
+                @Html.EditorFor(model => model.State, new { htmlAttributes = new { @class = "form-control", @type = "text", @placeholder = "GA | FL | NC | AL | MS | TN" } }) 
                 @Html.ValidationMessageFor(model => model.State, "", new { @class = "text-danger" })
             </div>
         </div>
