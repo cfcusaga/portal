@@ -429,7 +429,7 @@ namespace Cfcusaga.Web.Controllers
                 State = o.State,
                 Zip = o.ZipCode,
                 Notes = o.Notes,
-                CheckNumber = "",
+                CheckNumber = o.CheckNumber,
                 CheckAmount = o.CheckAmount,
                 CheckDeposited = o.CheckDeposited
             }).ToList();
