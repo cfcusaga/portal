@@ -30,7 +30,7 @@
     
     foreach (var item in Model)
     {
-        if (string.IsNullOrEmpty(currentState) || currentState == item.State)
+        if (string.IsNullOrEmpty(currentState))
         {
             currentState = item.State;
             totalCount += item.Count;
@@ -46,9 +46,9 @@
                     @Html.DisplayFor(modelItem => item.Count)
                 </td>
             </tr>
-        }
-        else
-        {
+       }
+          else  if (!string.IsNullOrEmpty(currentState) && currentState != item.State)
+            {
             <tr>
                 <td colspan="2">
                     &nbsp;
@@ -57,9 +57,32 @@
                     @totalCount
                 </td>
             </tr>
-            totalCount = 0;
+                totalCount = 0;
+                currentState = item.State;
+                totalCount += item.Count;
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.State)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Count)
+                </td>
+            </tr>
+            }
         }
     }
+    @{
+        <tr>
+            <td colspan="2">
+                &nbsp;
+            </td>
+            <td>
+                @totalCount
+            </td>
+        </tr>
     }
 </table>
 <br />

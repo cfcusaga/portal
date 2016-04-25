@@ -527,7 +527,7 @@ namespace Cfcusaga.Web.Controllers
                     Count = y.Count(),
                     TotalAmount = y.Sum(x => x.Price)
                 }
-                );
+                ).OrderBy(s => s.State);
             return newList;
         }
 
