@@ -154,12 +154,14 @@ namespace Cfcusaga.Web.Controllers
         //[Route("registrations")]
         public async Task<ActionResult> RegistrationsByState(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            sortOrder = "State";
             InitIndexViewBag(sortOrder);
             if (searchString == null)
             {
                 searchString = currentFilter;
             }
-
+            searchString = string.Empty;
+            //sortOrder = "State";
             ViewBag.CurrentFilter = searchString;
 
             var orders = RetrieveOrderDetailsReportItems(sortOrder, searchString);
@@ -423,7 +425,6 @@ namespace Cfcusaga.Web.Controllers
                 Allergies = o.Allergies,
                 TshirtSize = o.TshirtSize,
                 Phone = o.Phone,
-                Email = o.Email,
                 Address = o.Address,
                 City = o.City,
                 State = o.State,
