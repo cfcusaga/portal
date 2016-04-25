@@ -101,7 +101,8 @@
     }
 </table>
 <br />
-
+<br />
+<b>Total Registrants: @Model.Sum(m => m.Count)</b>
 <div class="ExportSection">
     @if (Request.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperUser")))
     {
