@@ -21,6 +21,7 @@ namespace cfcusaga.domain.Orders
         Task<Item> GetItem(int id);
         //ShoppingCart GetCart(HttpContextBase httpContext);
         Order GetOrderByIdentity(string name);
+        Task<Order> GetOrderById(int? id);
         Task SaveChangesAsync();
         //Task AddOrder(Order order);
         Task SaveOrderDetails(OrderDetail detail);
@@ -39,6 +40,7 @@ namespace cfcusaga.domain.Orders
         Task<int> AddEventRegistrations(Member aMember, Order order, Cart item);
         Task<int> AddOrder(Order order, List<Cart> cartItems, string shoppingCartId, string currentUserId);
         Task<List<CartDiscount>> GetCartDiscounts(string shoppingCartId);
+        Task SaveOrder(Order order);
     }
 
     public class ShoppingCartService : IShoppingCartService
@@ -103,6 +105,30 @@ namespace cfcusaga.domain.Orders
                 CheckNumber = o.CheckNumber,
                 Notes = o.Notes
             }).FirstOrDefault(x => x.Username == name);
+            return anOrder;
+        }
+
+        public Task<Order> GetOrderById(int? id)
+        {
+            var anOrder = _db.Orders.Select(o => new Order()
+            {
+                OrderDate = o.OrderDate,
+                Address = o.Address,
+                City = o.City,
+                Country = o.Country,
+                Email = o.Email,
+                FirstName = o.FirstName,
+                LastName = o.LastName,
+                OrderId = o.OrderId,
+                Phone = o.Phone,
+                PostalCode = o.PostalCode,
+                State = o.State,
+                Total = o.Total,
+                Username = o.Username,
+                CheckNumber = o.CheckNumber,
+                Notes = o.Notes,
+                IsAgreeToWaiver = o.IsAgreeToWaiver
+            }).FirstOrDefaultAsync(x => x.OrderId == id);
             return anOrder;
         }
 
@@ -274,6 +300,27 @@ namespace cfcusaga.domain.Orders
                 var msg = ex.Message;
                 throw;
             }
+        }
+
+        public async Task SaveOrder(Order order)
+        {
+            var entity = _db.Orders.FirstOrDefault(c => c.OrderId == order.OrderId);
+            if (entity != null)
+            {
+                entity.FirstName = order.FirstName;
+                entity.LastName = order.LastName;
+                entity.Address = order.Address;
+                entity.City = order.City;
+                entity.State = order.State;
+                entity.Country = order.Country;
+                entity.Email = order.Email;
+                entity.Phone = order.Phone;
+                entity.PostalCode = order.PostalCode;
+                entity.CheckNumber = order.CheckNumber;
+                entity.Notes = order.Notes;
+                entity.CheckNumber = order.CheckNumber;
+            }
+            await _db.SaveChangesAsync();
         }
 
         private async Task<Member> GetMemberInfoFromAspNetUserId(string currentUserId)

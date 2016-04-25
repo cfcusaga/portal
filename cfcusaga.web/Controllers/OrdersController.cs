@@ -5,13 +5,20 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Web.Mvc;
 using cfcusaga.data;
+using cfcusaga.domain.Orders;
 using PagedList;
 
 namespace Cfcusaga.Web.Controllers
 {
     public class OrdersController : Controller
     {
+        private readonly IShoppingCartService _svc;
         private PortalDbContext db = new PortalDbContext();
+
+        public OrdersController(IShoppingCartService svc)
+        {
+            _svc = svc;
+        }
 
         // GET: Orders
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
@@ -75,11 +82,7 @@ namespace Cfcusaga.Web.Controllers
 
             order.OrderDetails = await orderDetails.ToListAsync();
             order.OrderDiscounts = await orderDiscounts.ToListAsync();
-            
-            if (order == null)
-            {
-                return HttpNotFound();
-            }
+
             return View(order);
         }
 
@@ -111,7 +114,8 @@ namespace Cfcusaga.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var order = await db.Orders.FindAsync(id);
+            //var order = await db.Orders.FindAsync(id);
+            var order = await _svc.GetOrderById(id);
             if (order == null)
             {
                 return HttpNotFound();
@@ -122,13 +126,15 @@ namespace Cfcusaga.Web.Controllers
         // POST: Orders/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(cfcusaga.data.Order order)
+        public async Task<ActionResult> Edit(cfcusaga.domain.Orders.Order order)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(order).State = EntityState.Modified;
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                //db.Entry(order).State = EntityState.Modified;
+                //await db.SaveChangesAsync();
+                await _svc.SaveOrder(order);
+                return RedirectToAction("Details", new { id = order.OrderId });
+                //return RedirectToAction("Register", "Items", new {eventId = id});
             }
             return View(order);
         }
