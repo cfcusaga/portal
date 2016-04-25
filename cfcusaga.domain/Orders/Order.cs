@@ -82,8 +82,17 @@ namespace cfcusaga.domain.Orders
         public List<OrderDetail> OrderDetails { get; set; } = new List<domain.Orders.OrderDetail>();
         public List<OrderDiscount> OrderDiscounts { get; set; } = new List<domain.Orders.OrderDiscount>();
         public string CheckNumber { get; set; }
+
+        public decimal? CheckAmount { get; set; }
+
         public string Notes { get; set; }
 
+        [Display(Name = "Check Deposited")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? CheckDeposited { get; set; }
+
+        public string PaymentNotes { get; set; }
 
         public string ToString(Order order)
         {

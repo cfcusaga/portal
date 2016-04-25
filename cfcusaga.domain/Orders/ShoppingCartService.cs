@@ -127,7 +127,10 @@ namespace cfcusaga.domain.Orders
                 Username = o.Username,
                 CheckNumber = o.CheckNumber,
                 Notes = o.Notes,
-                IsAgreeToWaiver = o.IsAgreeToWaiver
+                IsAgreeToWaiver = o.IsAgreeToWaiver,
+                CheckAmount = o.CheckAmount,
+                CheckDeposited = o.CheckDeposited,
+                PaymentNotes = o.PaymentNotes
             }).FirstOrDefaultAsync(x => x.OrderId == id);
             return anOrder;
         }
@@ -319,6 +322,9 @@ namespace cfcusaga.domain.Orders
                 entity.CheckNumber = order.CheckNumber;
                 entity.Notes = order.Notes;
                 entity.CheckNumber = order.CheckNumber;
+                entity.CheckAmount = order.CheckAmount;
+                entity.CheckDeposited = order.CheckDeposited;
+                entity.PaymentNotes = order.PaymentNotes;
             }
             await _db.SaveChangesAsync();
         }

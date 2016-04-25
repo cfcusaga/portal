@@ -102,6 +102,9 @@ namespace Cfcusaga.Web.Models
         public string OrderNotes { get; set; }
         public decimal Discount { get; set; }
         public string Notes { get; set; }
+        public string CheckNumber { get; set; }
+        public decimal? CheckAmount { get; set; }
+        public DateTime? CheckDeposited { get; set; }
     }
 
     public static class DateTimeExtensions

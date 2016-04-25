@@ -41,6 +41,9 @@ namespace cfcusaga.data
         public string AspNetUserId { get; set; }
         public Nullable<int> MemberId { get; set; }
         public bool IsAgreeToWaiver { get; set; }
+        public Nullable<decimal> CheckAmount { get; set; }
+        public Nullable<System.DateTime> CheckDeposited { get; set; }
+        public string PaymentNotes { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EventRegistration> EventRegistrations { get; set; }

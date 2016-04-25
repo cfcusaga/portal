@@ -192,6 +192,9 @@
           <Property Name="AspNetUserId" Type="nvarchar" MaxLength="128" />
           <Property Name="MemberId" Type="int" />
           <Property Name="IsAgreeToWaiver" Type="bit" Nullable="false" />
+          <Property Name="CheckAmount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="CheckDeposited" Type="smalldatetime" />
+          <Property Name="PaymentNotes" Type="varchar" MaxLength="1500" />
         </EntityType>
         <EntityType Name="RelationToMemberTypes">
           <Key>
@@ -542,18 +545,23 @@
             <End Role="OrderDiscount" EntitySet="OrderDiscounts" />
           </AssociationSet>
           <EntitySet Name="Events" EntityType="PortalDbModel.Event" />
-          <EntitySet Name="Orders" EntityType="PortalDbModel.Order" />
           <AssociationSet Name="FK_EventRegistrations_Events" Association="PortalDbModel.FK_EventRegistrations_Events">
             <End Role="Event" EntitySet="Events" />
-            <End Role="EventRegistration" EntitySet="EventRegistrations" />
-          </AssociationSet>
-          <AssociationSet Name="FK_EventRegistrations_Orders" Association="PortalDbModel.FK_EventRegistrations_Orders">
-            <End Role="Order" EntitySet="Orders" />
             <End Role="EventRegistration" EntitySet="EventRegistrations" />
           </AssociationSet>
           <AssociationSet Name="FK_Items_Events_EventId" Association="PortalDbModel.FK_Items_Events_EventId">
             <End Role="Event" EntitySet="Events" />
             <End Role="Item" EntitySet="Items" />
+          </AssociationSet>
+          <EntitySet Name="ItemImages" EntityType="PortalDbModel.ItemImage" />
+          <AssociationSet Name="FK_ItemImages_Items" Association="PortalDbModel.FK_ItemImages_Items">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="ItemImage" EntitySet="ItemImages" />
+          </AssociationSet>
+          <EntitySet Name="Orders" EntityType="PortalDbModel.Order" />
+          <AssociationSet Name="FK_EventRegistrations_Orders" Association="PortalDbModel.FK_EventRegistrations_Orders">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="EventRegistration" EntitySet="EventRegistrations" />
           </AssociationSet>
           <AssociationSet Name="FK_Orders_Members" Association="PortalDbModel.FK_Orders_Members">
             <End Role="Member" EntitySet="Members" />
@@ -566,11 +574,6 @@
           <AssociationSet Name="FK_OrderDiscounts_OrderDiscounts" Association="PortalDbModel.FK_OrderDiscounts_OrderDiscounts">
             <End Role="Order" EntitySet="Orders" />
             <End Role="OrderDiscount" EntitySet="OrderDiscounts" />
-          </AssociationSet>
-          <EntitySet Name="ItemImages" EntityType="PortalDbModel.ItemImage" />
-          <AssociationSet Name="FK_ItemImages_Items" Association="PortalDbModel.FK_ItemImages_Items">
-            <End Role="Item" EntitySet="Items" />
-            <End Role="ItemImage" EntitySet="ItemImages" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="CartItemRegistration">
@@ -878,6 +881,53 @@
           <NavigationProperty Name="EventRegistrations" Relationship="PortalDbModel.FK_EventRegistrations_Events" FromRole="Event" ToRole="EventRegistration" />
           <NavigationProperty Name="Items" Relationship="PortalDbModel.FK_Items_Events_EventId" FromRole="Event" ToRole="Item" />
         </EntityType>
+        <Association Name="FK_EventRegistrations_Events">
+          <End Type="PortalDbModel.Event" Role="Event" Multiplicity="1" />
+          <End Type="PortalDbModel.EventRegistration" Role="EventRegistration" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Event">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EventRegistration">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Items_Events_EventId">
+          <End Type="PortalDbModel.Event" Role="Event" Multiplicity="0..1" />
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Event">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Item">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ItemImage">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ItemId" Type="Int32" Nullable="false" />
+          <Property Name="ImageData" Type="Binary" Nullable="false" MaxLength="Max" FixedLength="false" />
+          <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_ItemImages_Items" FromRole="ItemImage" ToRole="Item" />
+        </EntityType>
+        <Association Name="FK_ItemImages_Items">
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="PortalDbModel.ItemImage" Role="ItemImage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ItemImage">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="Order">
           <Key>
             <PropertyRef Name="OrderId" />
@@ -901,23 +951,14 @@
           <Property Name="AspNetUserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="MemberId" Type="Int32" />
           <Property Name="IsAgreeToWaiver" Type="Boolean" Nullable="false" />
+          <Property Name="CheckAmount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="CheckDeposited" Type="DateTime" Precision="0" />
+          <Property Name="PaymentNotes" Type="String" MaxLength="1500" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="EventRegistrations" Relationship="PortalDbModel.FK_EventRegistrations_Orders" FromRole="Order" ToRole="EventRegistration" />
           <NavigationProperty Name="Member" Relationship="PortalDbModel.FK_Orders_Members" FromRole="Order" ToRole="Member" />
           <NavigationProperty Name="OrderDetails" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" FromRole="Order" ToRole="OrderDetail" />
           <NavigationProperty Name="OrderDiscounts" Relationship="PortalDbModel.FK_OrderDiscounts_OrderDiscounts" FromRole="Order" ToRole="OrderDiscount" />
         </EntityType>
-        <Association Name="FK_EventRegistrations_Events">
-          <End Type="PortalDbModel.Event" Role="Event" Multiplicity="1" />
-          <End Type="PortalDbModel.EventRegistration" Role="EventRegistration" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Event">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="EventRegistration">
-              <PropertyRef Name="EventId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_EventRegistrations_Orders">
           <End Type="PortalDbModel.Order" Role="Order" Multiplicity="1" />
           <End Type="PortalDbModel.EventRegistration" Role="EventRegistration" Multiplicity="*" />
@@ -927,18 +968,6 @@
             </Principal>
             <Dependent Role="EventRegistration">
               <PropertyRef Name="OrderId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Items_Events_EventId">
-          <End Type="PortalDbModel.Event" Role="Event" Multiplicity="0..1" />
-          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Event">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Item">
-              <PropertyRef Name="EventId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -977,29 +1006,6 @@
             </Principal>
             <Dependent Role="OrderDiscount">
               <PropertyRef Name="OrderId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="ItemImage">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ItemId" Type="Int32" Nullable="false" />
-          <Property Name="ImageData" Type="Binary" Nullable="false" MaxLength="Max" FixedLength="false" />
-          <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_ItemImages_Items" FromRole="ItemImage" ToRole="Item" />
-        </EntityType>
-        <Association Name="FK_ItemImages_Items">
-          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="PortalDbModel.ItemImage" Role="ItemImage" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Item">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="ItemImage">
-              <PropertyRef Name="ItemId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1185,9 +1191,21 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="ItemImages">
+            <EntityTypeMapping TypeName="PortalDbModel.ItemImage">
+              <MappingFragment StoreEntitySet="ItemImages">
+                <ScalarProperty Name="ImageData" ColumnName="ImageData" />
+                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Orders">
             <EntityTypeMapping TypeName="PortalDbModel.Order">
               <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="PaymentNotes" ColumnName="PaymentNotes" />
+                <ScalarProperty Name="CheckDeposited" ColumnName="CheckDeposited" />
+                <ScalarProperty Name="CheckAmount" ColumnName="CheckAmount" />
                 <ScalarProperty Name="IsAgreeToWaiver" ColumnName="IsAgreeToWaiver" />
                 <ScalarProperty Name="MemberId" ColumnName="MemberId" />
                 <ScalarProperty Name="AspNetUserId" ColumnName="AspNetUserId" />
@@ -1207,15 +1225,6 @@
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
                 <ScalarProperty Name="OrderId" ColumnName="OrderId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="ItemImages">
-            <EntityTypeMapping TypeName="PortalDbModel.ItemImage">
-              <MappingFragment StoreEntitySet="ItemImages">
-                <ScalarProperty Name="ImageData" ColumnName="ImageData" />
-                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

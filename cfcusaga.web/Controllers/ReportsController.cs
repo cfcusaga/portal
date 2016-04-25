@@ -78,7 +78,10 @@ namespace Cfcusaga.Web.Controllers
                     Email = o.Email,
                     Price = od.UnitPrice,
                     Address = o.Address,
-                    Notes = o.Notes
+                    Notes = o.Notes,
+                    CheckNumber = o.CheckNumber,
+                    CheckAmount = o.CheckAmount,
+                    CheckDeposited = o.CheckDeposited
                 }
                 ;
             var uniqueOrderIds = orders.DistinctBy(x => x.OrderId).Select(o => o.OrderId).ToList();
@@ -110,7 +113,10 @@ namespace Cfcusaga.Web.Controllers
                     Email = null,
                     Price = -1*ods.Discount,
                     Address = null,
-                    Notes = null
+                    Notes = null,
+                    CheckNumber = null,
+                    CheckAmount = null,
+                    CheckDeposited = null
                 }
                 );
             ordersWithDscnts = FilterItemsBy(searchString, ordersWithDscnts);
@@ -400,7 +406,6 @@ namespace Cfcusaga.Web.Controllers
             var reportItems = RetrieveReportIndexItems(sortOrder, currentFilter);
             grid.DataSource = reportItems.Select(o => new RegistrationDetailsReport()
             {
-                CheckNumber = "",
                 OrderId = o.OrderId,
                 OrderDate = o.OrderDate,
                 OrderTotal = o.OrderTotal,
@@ -423,9 +428,12 @@ namespace Cfcusaga.Web.Controllers
                 City = o.City,
                 State = o.State,
                 Zip = o.ZipCode,
-                Notes = o.Notes
+                Notes = o.Notes,
+                CheckNumber = "",
+                CheckAmount = o.CheckAmount,
+                CheckDeposited = o.CheckDeposited
             }).ToList();
-            grid.Columns.Add(new BoundField() { DataField = "CheckNumber", HeaderText = "CheckNumber" });
+            
             grid.Columns.Add(new BoundField() { DataField = "OrderId", HeaderText = "OrderId" });
             grid.Columns.Add(new BoundField() { DataField = "OrderDate", HeaderText = "OrderDate", DataFormatString = "{0:d}" });
             //grid.Columns.Add(new BoundField() { DataField = "OrderedBy", HeaderText = "OrderedBy" });
@@ -453,7 +461,9 @@ namespace Cfcusaga.Web.Controllers
             grid.Columns.Add(new BoundField() { DataField = "City", HeaderText = "City" });
             grid.Columns.Add(new BoundField() { DataField = "State", HeaderText = "State" });
             grid.Columns.Add(new BoundField() { DataField = "Zip", HeaderText = "Zip" });
-
+            grid.Columns.Add(new TemplateField() { HeaderText = "CheckNumber" });
+            grid.Columns.Add(new TemplateField() { HeaderText = "CheckAmount" });
+            grid.Columns.Add(new TemplateField() { HeaderText = "DepositDate" });
             grid.RowDataBound += GridView1_RowDataBound;
             grid.RowCreated += GridView1_RowCreated;
             grid.DataBind();
@@ -567,6 +577,10 @@ namespace Cfcusaga.Web.Controllers
         private int _rowIndex = 1;
         private decimal _totalAmount;
         private string _notes;
+        private string _checkNumber;
+        private decimal? _checkAmount;
+        private DateTime? _checkDepositDate;
+
         protected void GridView1_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)
@@ -577,6 +591,15 @@ namespace Cfcusaga.Web.Controllers
 
                 if (DataBinder.Eval(e.Row.DataItem, "Notes") != null)
                     _notes = DataBinder.Eval(e.Row.DataItem, "Notes").ToString();
+
+                if (DataBinder.Eval(e.Row.DataItem, "CheckNumber") != null)
+                    _checkNumber = DataBinder.Eval(e.Row.DataItem, "CheckNumber").ToString();
+
+                if (DataBinder.Eval(e.Row.DataItem, "CheckAmount") != null)
+                    _checkAmount = Convert.ToDecimal(DataBinder.Eval(e.Row.DataItem, "CheckAmount").ToString());
+
+                if (DataBinder.Eval(e.Row.DataItem, "CheckDeposited") != null)
+                    _checkDepositDate = Convert.ToDateTime(DataBinder.Eval(e.Row.DataItem, "CheckDeposited").ToString());
             }
         }
 
@@ -599,9 +622,13 @@ namespace Cfcusaga.Web.Controllers
             if (newRow)
             {
                 AddSummaryRow(sender, e, _totalAmount);
-                AddNewRow(sender, e);
+                if (_rowIndex > 1) AddNewRow(sender, e);
                 _notes = string.Empty;
                 _totalAmount = 0;
+                _checkNumber = string.Empty;
+                _checkAmount = null;
+                _checkDepositDate = null;
+
             }
         }
         public void AddNewRow(object sender, GridViewRowEventArgs e)
@@ -613,7 +640,7 @@ namespace Cfcusaga.Web.Controllers
             TableCell headerCell = new TableCell();
             headerCell.Height = 10;
             headerCell.HorizontalAlign = HorizontalAlign.Center;
-            headerCell.ColumnSpan = 20;
+            headerCell.ColumnSpan = 22;
             newTotalRow.Cells.Add(headerCell);
             gridView1.Controls[0].Controls.AddAt(e.Row.RowIndex + _rowIndex, newTotalRow);
             _rowIndex++;
@@ -628,23 +655,54 @@ namespace Cfcusaga.Web.Controllers
             TableCell totalLabelCell = new TableCell();
             totalLabelCell.Height = 20;
             totalLabelCell.HorizontalAlign = HorizontalAlign.Right;
-            totalLabelCell.ColumnSpan = 12;
+            totalLabelCell.ColumnSpan = 11;
             totalLabelCell.Text = "Total";
             newTotalRow.Cells.Add(totalLabelCell);
 
-            TableCell totalAmountCell = new TableCell();
-            totalAmountCell.Height = 20;
-            totalAmountCell.HorizontalAlign = HorizontalAlign.Right;
-            totalAmountCell.ColumnSpan = 1;
-            totalAmountCell.Text = totalAmount.ToString("C");
+            TableCell totalAmountCell = new TableCell
+            {
+                Height = 20,
+                HorizontalAlign = HorizontalAlign.Right,
+                ColumnSpan = 1,
+                Text = totalAmount.ToString("C")
+            };
             newTotalRow.Cells.Add(totalAmountCell);
 
-            TableCell notesCell = new TableCell();
-            notesCell.Height = 20;
-            notesCell.HorizontalAlign = HorizontalAlign.Left;
-            notesCell.ColumnSpan = 7;
-            notesCell.Text = _notes;
+            TableCell notesCell = new TableCell
+            {
+                Height = 20,
+                HorizontalAlign = HorizontalAlign.Left,
+                ColumnSpan = 7,
+                Text = _notes
+            };
             newTotalRow.Cells.Add(notesCell);
+
+            TableCell checkNumCell = new TableCell
+            {
+                Height = 20,
+                HorizontalAlign = HorizontalAlign.Center,
+                ColumnSpan = 1,
+                Text = _checkNumber
+            };
+            newTotalRow.Cells.Add(checkNumCell);
+
+            TableCell checkAmtCell = new TableCell
+            {
+                Height = 20,
+                HorizontalAlign = HorizontalAlign.Right,
+                ColumnSpan = 1,
+                Text = _checkAmount?.ToString("C")
+            };
+            newTotalRow.Cells.Add(checkAmtCell);
+
+            TableCell checkDepositCell = new TableCell
+            {
+                Height = 20,
+                HorizontalAlign = HorizontalAlign.Right,
+                ColumnSpan = 1,
+                Text = _checkDepositDate?.ToString("MM/dd/yyyy")
+            };
+            newTotalRow.Cells.Add(checkDepositCell);
 
             gridView1.Controls[0].Controls.AddAt(e.Row.RowIndex + _rowIndex, newTotalRow);
             _rowIndex++;
@@ -709,6 +767,8 @@ namespace Cfcusaga.Web.Controllers
         public string Notes { get; set; }
 
         public string LastnameReport => string.IsNullOrEmpty(Lastname) ? OrderByLastname : Lastname;
+        public decimal? CheckAmount { get; set; }
+        public DateTime? CheckDeposited { get; set; }
     }
 
 }
