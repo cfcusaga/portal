@@ -464,8 +464,9 @@ namespace Cfcusaga.Web.Controllers
             grid.Columns.Add(new BoundField() { DataField = "State", HeaderText = "State" });
             grid.Columns.Add(new BoundField() { DataField = "Zip", HeaderText = "Zip" });
             grid.Columns.Add(new TemplateField() { HeaderText = "CheckNumber" });
-            grid.Columns.Add(new TemplateField() { HeaderText = "CheckAmount" });
             grid.Columns.Add(new TemplateField() { HeaderText = "DepositDate" });
+            grid.Columns.Add(new TemplateField() { HeaderText = "CheckAmount" });
+
             grid.RowDataBound += GridView1_RowDataBound;
             grid.RowCreated += GridView1_RowCreated;
             grid.DataBind();
