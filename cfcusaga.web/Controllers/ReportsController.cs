@@ -404,8 +404,8 @@ namespace Cfcusaga.Web.Controllers
         public void DownloadReportIndex(string sortOrder, string currentFilter)
         {
             var grid = new GridView {AutoGenerateColumns = false};
-            sortOrder = string.IsNullOrEmpty(sortOrder) ? "OrderId" : sortOrder;
-            var reportItems = RetrieveReportIndexItems(sortOrder, currentFilter);
+            sortOrder = "OrderId"; //string.IsNullOrEmpty(sortOrder) ? "OrderId" : sortOrder;
+            var reportItems = RetrieveReportIndexItems(sortOrder, String.Empty);
             grid.DataSource = reportItems.Select(o => new RegistrationDetailsReport()
             {
                 OrderId = o.OrderId,
@@ -425,6 +425,7 @@ namespace Cfcusaga.Web.Controllers
                 Allergies = o.Allergies,
                 TshirtSize = o.TshirtSize,
                 Phone = o.Phone,
+                Email = o.Email,
                 Address = o.Address,
                 City = o.City,
                 State = o.State,
