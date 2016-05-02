@@ -56,7 +56,7 @@ namespace Cfcusaga.Web.Controllers
                 select new OrderItems
                 {
                     OrderId = o.OrderId,
-                    OrderDate = o.OrderDate,
+                    OrderDateUtc = o.OrderDate,
                     OrderTotal = o.Total,
                     OrderNotes = o.Notes,
                     OrderDetailId = od.OrderDetailId,
@@ -91,7 +91,7 @@ namespace Cfcusaga.Web.Controllers
                 select new OrderItems
                 {
                     OrderId = o.OrderId,
-                    OrderDate = o.OrderDate,
+                    OrderDateUtc = o.OrderDate,
                     OrderTotal = null,
                     OrderNotes = null,
                     OrderDetailId = null,
@@ -271,7 +271,7 @@ namespace Cfcusaga.Web.Controllers
                 select new OrderItems
                 {
                     OrderId = o.OrderId,
-                    OrderDate = o.OrderDate,
+                    OrderDateUtc = o.OrderDate,
                     OrderDetailId = od.OrderDetailId,
                     ItemId = i.ID,
                     ItemName = i.Name,

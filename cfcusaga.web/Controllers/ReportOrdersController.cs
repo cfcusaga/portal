@@ -31,7 +31,7 @@ namespace Cfcusaga.Web.Controllers
                          {
                              Id = $"{o.OrderId}/{od.OrderDetailId}",
                              OrderId = o.OrderId,
-                             OrderDate = o.OrderDate,
+                             OrderDateUtc = o.OrderDate,
                              OrderDetailId = od.OrderDetailId,
                              ItemId = i.ID,
                              ItemName = i.Name,

@@ -7,6 +7,8 @@ namespace Cfcusaga.Web.Models
 {
     public class OrderItems
     {
+        TimeZoneInfo easternTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
+                                                         "Eastern Standard Time");
         public int OrderId { get; set; }
         public int? OrderDetailId { get; set; }
         public int? ItemId { get; set; }
@@ -84,7 +86,9 @@ namespace Cfcusaga.Web.Models
         [Key]
         public string Id { get; set; }
 
-        public DateTime OrderDate { get; set; }
+        public DateTime OrderDate => TimeZoneInfo.ConvertTimeFromUtc(OrderDateUtc,
+            easternTimeZone);
+
         public string OrderdBy => $"{OrderByLastname},{OrderByFirstname}";
         public decimal Price { get; set; }
         public string OrderByLastname { get; set; }
@@ -105,6 +109,8 @@ namespace Cfcusaga.Web.Models
         public string CheckNumber { get; set; }
         public decimal? CheckAmount { get; set; }
         public DateTime? CheckDeposited { get; set; }
+        public DateTime OrderDateUtc
+        { get; set; }
     }
 
     public static class DateTimeExtensions
