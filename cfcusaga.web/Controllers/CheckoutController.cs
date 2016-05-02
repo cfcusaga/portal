@@ -94,7 +94,18 @@ namespace  Cfcusaga.Web.Controllers
                 var currentUserId = User.Identity.GetUserId();
 
                     //TODO: force set to true
-                    order.SaveInfo = true; 
+                    order.SaveInfo = true;
+                    //TODO: temp solution
+                    order.State = order.State.ToUpper();
+                    switch (order.State)
+                    {
+                        case "FLORIDA":
+                            order.State = "FL";
+                            break;
+                        case "GEORGIA":
+                            order.State = "GA";
+                            break;
+                    }
                     if (order.SaveInfo && !order.Username.Equals("guest@guest.com"))
                     {
                         var manager =
