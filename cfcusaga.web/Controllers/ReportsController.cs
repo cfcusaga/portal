@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.IO;
@@ -316,15 +317,24 @@ namespace Cfcusaga.Web.Controllers
         {
             if (!string.IsNullOrEmpty(searchString))
             {
-                orders = orders.Where(s => s.Lastname.ToUpper().Contains(searchString.ToUpper())
-                                           || s.OrderId.ToString().Contains(searchString.ToUpper())
-                                           || s.Firstname.ToString().Contains(searchString.ToUpper())
-                                           || s.City.ToString().Contains(searchString.ToUpper())
-                                           || s.State.ToString().Contains(searchString.ToUpper())
-                                           || s.ItemName.ToString().Contains(searchString.ToUpper())
-                                           || s.TshirtSize.ToString().Contains(searchString.ToUpper())
-                                           || s.ZipCode.ToString().Contains(searchString.ToUpper())
-                    );
+                var statesLists = new List<string> { "AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY" };
+                if (searchString.Length == 2 && statesLists.Contains(searchString))
+                {
+                    orders = orders.Where(s => s.State.ToString().Contains(searchString.ToUpper()));
+                }
+                else
+                {
+                    orders = orders.Where(s => s.Lastname.ToUpper().Contains(searchString.ToUpper())
+                                               || s.OrderId.ToString().Contains(searchString.ToUpper())
+                                               || s.Firstname.ToString().Contains(searchString.ToUpper())
+                                               || s.City.ToString().Contains(searchString.ToUpper())
+                                               || s.State.ToString().Contains(searchString.ToUpper())
+                                               || s.ItemName.ToString().Contains(searchString.ToUpper())
+                                               || s.TshirtSize.ToString().Contains(searchString.ToUpper())
+                                               || s.ZipCode.ToString().Contains(searchString.ToUpper())
+                        );
+                }
+
             }
             return orders;
         }
