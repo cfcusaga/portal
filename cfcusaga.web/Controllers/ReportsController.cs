@@ -318,7 +318,7 @@ namespace Cfcusaga.Web.Controllers
             if (!string.IsNullOrEmpty(searchString))
             {
                 var statesLists = new List<string> { "AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY" };
-                if (searchString.Length == 2 && statesLists.Contains(searchString))
+                if (searchString.Length == 2 && statesLists.Contains(searchString.ToUpper()))
                 {
                     orders = orders.Where(s => s.State.ToString().Contains(searchString.ToUpper()));
                 }
