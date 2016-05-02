@@ -343,7 +343,7 @@ namespace Cfcusaga.Web.Controllers
                     orders = orders.OrderBy(s => s.OrderDateUtc);
                     break;
                 case "OrderDate_desc":
-                    orders = orders.OrderByDescending(s => s.OrderDate);
+                    orders = orders.OrderByDescending(s => s.OrderDateUtc);
                     break;
                 case "ItemName":
                     orders = orders.OrderBy(s => s.ItemName);
