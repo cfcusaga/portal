@@ -419,7 +419,7 @@ namespace Cfcusaga.Web.Controllers
             grid.DataSource = reportItems.Select(o => new RegistrationDetailsReport()
             {
                 OrderId = o.OrderId,
-                OrderDate = o.OrderDate,
+                OrderDateUtc = o.OrderDateUtc,
                 OrderTotal = o.OrderTotal,
                 OrderNotes = o.OrderNotes,
                 OrderByLastname = o.OrderByLastname,
@@ -750,8 +750,10 @@ namespace Cfcusaga.Web.Controllers
         [Browsable(false)]
         public string OrderByLastname { get; set; }
 
-        [Browsable(false)]
-        public DateTime OrderDate { get; set; }
+        TimeZoneInfo easternTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
+                                                         "Eastern Standard Time");
+        public DateTime OrderDate => TimeZoneInfo.ConvertTimeFromUtc(OrderDateUtc,
+            easternTimeZone);
         public string TshirtSize { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
@@ -782,6 +784,7 @@ namespace Cfcusaga.Web.Controllers
         public string LastnameReport => string.IsNullOrEmpty(Lastname) ? OrderByLastname : Lastname;
         public decimal? CheckAmount { get; set; }
         public DateTime? CheckDeposited { get; set; }
+        public DateTime OrderDateUtc { get; set; }
     }
 
 }
