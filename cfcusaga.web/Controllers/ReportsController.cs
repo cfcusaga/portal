@@ -44,6 +44,7 @@ namespace Cfcusaga.Web.Controllers
 
         }
 
+        readonly List<short> _validStatus = new List<short> { 1, 5, 7, 9 };
         private IQueryable<OrderItems> RetrieveReportIndexItems(string sortOrder, string searchString)
         {
             const int eventId = 7;
@@ -52,7 +53,7 @@ namespace Cfcusaga.Web.Controllers
                 //join dscnt in _db.OrderDiscounts.AsNoTracking() on o.OrderId equals dscnt.OrderId
                 join i in _db.Items.AsNoTracking() on od.ItemId equals i.ID
                 join e in _db.Events.AsNoTracking() on i.EventId equals e.Id
-                where e.Id == eventId
+                where e.Id == eventId && _validStatus.Contains(o.OrderStatusID.Value)
                 //orderby o.OrderId descending 
                 select new OrderItems
                 {
@@ -194,44 +195,9 @@ namespace Cfcusaga.Web.Controllers
         //[Authorize(Roles = "SuperUser, Admin")]
         public void DownloadReportRegistrations(string sortOrder, string currentFilter)
         {
-            //OrderId = o.OrderId,
-            //        OrderDate = o.OrderDate,
-            //        OrderDetailId = od.OrderDetailId,
-            //        ItemId = i.ID,
-            //        ItemName = i.Name,
-            //        CategoryId = i.CatagoryID,
-            //        Firstname = od.Firstname,
-            //        Lastname = od.Lastname,
-            //        BirthDate = od.BirthDate,
-            //        OrderByLastname = o.LastName,
-            //        OrderByFirstname = o.FirstName,
-            //        TshirtSize = od.TshirtSize,
-            //        Allergies = od.Allergies,
-            //        City = o.City,
-            //        State = o.State,
-            //        ZipCode = o.PostalCode,
-            //        Phone = o.Phone,
-            //        Price = od.UnitPrice
-            //RetrieveOrderDetailsReportItems
             var grid = new GridView { AutoGenerateColumns = false };
             var reportItems = RetrieveOrderDetailsReportItems(sortOrder, currentFilter);
             grid.DataSource = reportItems.ToList();
-            //var orders = RetrieveOrderDetailsReportItems(sortOrder, searchString);
-            //grid.DataSource = reportItems.Select(o => new OrderItems())
-            //{
-            //    OrderDate = o.OrderDate,
-            //    ItemName = o.ItemName,
-            //    ItemPrice = o.Price,
-            //    ItemId = o.ItemId,
-            //    Lastname = o.Lastname,
-            //    Firstname = o.Firstname,
-            //    DateOfBirth = o.BirthDate,
-            //    EventDate = new DateTime(2016, 6, 18),
-            //    City = o.City,
-            //    State = o.State,
-            //    Zip = o.ZipCode,
-            //    Notes = o.Notes
-            //}).ToList();
 
             grid.Columns.Add(new BoundField() { DataField = "OrderDate", HeaderText = "OrderDate", DataFormatString = "{0:d}" });
             grid.Columns.Add(new BoundField() { DataField = "ItemName", HeaderText = "Description" });
@@ -268,7 +234,7 @@ namespace Cfcusaga.Web.Controllers
                 join e in _db.Events.AsNoTracking() on i.EventId equals e.Id
                 where e.Id == eventId
                       && i.CatagoryID == (int) CategoryTypeEnum.Registration
-                //orderby o.OrderId descending 
+                      && _validStatus.Contains(o.OrderStatusID.Value)
                 select new OrderItems
                 {
                     OrderId = o.OrderId,
@@ -732,13 +698,6 @@ namespace Cfcusaga.Web.Controllers
 
     public class RegistrationDetailsReport: ReportBase
     {
-        //private readonly ReportBase _reportBase;
-
-        ////public ReportIndexReport()
-        ////{
-        ////    _reportBase = new ReportBase(this);
-        ////}
-
         public string CheckNumber { get; set; }
         public int OrderId { get; set; }
 
@@ -750,10 +709,10 @@ namespace Cfcusaga.Web.Controllers
         [Browsable(false)]
         public string OrderByLastname { get; set; }
 
-        TimeZoneInfo easternTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
+        readonly TimeZoneInfo _easternTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
                                                          "Eastern Standard Time");
         public DateTime OrderDate => TimeZoneInfo.ConvertTimeFromUtc(OrderDateUtc,
-            easternTimeZone);
+            _easternTimeZone);
         public string TshirtSize { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
