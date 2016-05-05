@@ -30,11 +30,13 @@
         <AssociationConnector Association="PortalDbModel.FK_Items_Events_EventId" />
         <EntityTypeShape EntityType="PortalDbModel.ItemImage" Width="1.5" PointX="5.25" PointY="0.75" />
         <AssociationConnector Association="PortalDbModel.FK_ItemImages_Items" />
-        <EntityTypeShape EntityType="PortalDbModel.Order" Width="1.5" PointX="12.625" PointY="7.375" />
+        <EntityTypeShape EntityType="PortalDbModel.Order" Width="1.5" PointX="12.625" PointY="7" />
         <AssociationConnector Association="PortalDbModel.FK_EventRegistrations_Orders" />
         <AssociationConnector Association="PortalDbModel.FK_Orders_Members" />
         <AssociationConnector Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" />
         <AssociationConnector Association="PortalDbModel.FK_OrderDiscounts_OrderDiscounts" />
+        <EntityTypeShape EntityType="PortalDbModel.OrderStatus" Width="1.5" PointX="16.5" PointY="11.625" />
+        <AssociationConnector Association="PortalDbModel.FK_Orders_OrderStatus" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -44,6 +44,8 @@ namespace cfcusaga.data
         public Nullable<decimal> CheckAmount { get; set; }
         public Nullable<System.DateTime> CheckDeposited { get; set; }
         public string PaymentNotes { get; set; }
+        public Nullable<short> OrderStatusID { get; set; }
+        public string StatusNotes { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EventRegistration> EventRegistrations { get; set; }
@@ -52,5 +54,6 @@ namespace cfcusaga.data
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderDiscount> OrderDiscounts { get; set; }
+        public virtual OrderStatus OrderStatus { get; set; }
     }
 }

@@ -92,6 +92,9 @@
     <Compile Include="OrderDiscount.cs">
       <DependentUpon>PortalDbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="OrderStatus.cs">
+      <DependentUpon>PortalDbModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Partials\CartItemRegistration.cs" />
     <Compile Include="Partials\OrderDetail.cs" />
     <Compile Include="PortalDbModel.Context.cs">

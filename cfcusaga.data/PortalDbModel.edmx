@@ -195,6 +195,16 @@
           <Property Name="CheckAmount" Type="decimal" Precision="18" Scale="2" />
           <Property Name="CheckDeposited" Type="smalldatetime" />
           <Property Name="PaymentNotes" Type="varchar" MaxLength="1500" />
+          <Property Name="OrderStatusID" Type="smallint" />
+          <Property Name="StatusNotes" Type="varchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="OrderStatus">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="smallint" Nullable="false" />
+          <Property Name="Name" Type="nchar" MaxLength="20" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <EntityType Name="RelationToMemberTypes">
           <Key>
@@ -406,6 +416,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Orders_OrderStatus">
+          <End Role="OrderStatus" Type="Self.OrderStatus" Multiplicity="0..1" />
+          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrderStatus">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="OrderStatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Function Name="ReportOrdersByEvent" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="eventid" Type="int" Mode="In" />
           <Parameter Name="page" Type="int" Mode="In" />
@@ -426,6 +448,7 @@
           <EntitySet Name="OrderDetails" EntityType="Self.OrderDetails" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderDiscounts" EntityType="Self.OrderDiscounts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderStatus" EntityType="Self.OrderStatus" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RelationToMemberTypes" EntityType="Self.RelationToMemberTypes" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_CartDiscounts_Discounts" Association="Self.FK_CartDiscounts_Discounts">
             <End Role="Discounts" EntitySet="Discounts" />
@@ -489,6 +512,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_Orders_Members" Association="Self.FK_Orders_Members">
             <End Role="Members" EntitySet="Members" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Orders_OrderStatus" Association="Self.FK_Orders_OrderStatus">
+            <End Role="OrderStatus" EntitySet="OrderStatus" />
             <End Role="Orders" EntitySet="Orders" />
           </AssociationSet>
         </EntityContainer>
@@ -574,6 +601,11 @@
           <AssociationSet Name="FK_OrderDiscounts_OrderDiscounts" Association="PortalDbModel.FK_OrderDiscounts_OrderDiscounts">
             <End Role="Order" EntitySet="Orders" />
             <End Role="OrderDiscount" EntitySet="OrderDiscounts" />
+          </AssociationSet>
+          <EntitySet Name="OrderStatus" EntityType="PortalDbModel.OrderStatus" />
+          <AssociationSet Name="FK_Orders_OrderStatus" Association="PortalDbModel.FK_Orders_OrderStatus">
+            <End Role="OrderStatus" EntitySet="OrderStatus" />
+            <End Role="Order" EntitySet="Orders" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="CartItemRegistration">
@@ -954,10 +986,13 @@
           <Property Name="CheckAmount" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="CheckDeposited" Type="DateTime" Precision="0" />
           <Property Name="PaymentNotes" Type="String" MaxLength="1500" FixedLength="false" Unicode="false" />
+          <Property Name="OrderStatusID" Type="Int16" />
+          <Property Name="StatusNotes" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="EventRegistrations" Relationship="PortalDbModel.FK_EventRegistrations_Orders" FromRole="Order" ToRole="EventRegistration" />
           <NavigationProperty Name="Member" Relationship="PortalDbModel.FK_Orders_Members" FromRole="Order" ToRole="Member" />
           <NavigationProperty Name="OrderDetails" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" FromRole="Order" ToRole="OrderDetail" />
           <NavigationProperty Name="OrderDiscounts" Relationship="PortalDbModel.FK_OrderDiscounts_OrderDiscounts" FromRole="Order" ToRole="OrderDiscount" />
+          <NavigationProperty Name="OrderStatus" Relationship="PortalDbModel.FK_Orders_OrderStatus" FromRole="Order" ToRole="OrderStatus" />
         </EntityType>
         <Association Name="FK_EventRegistrations_Orders">
           <End Type="PortalDbModel.Order" Role="Order" Multiplicity="1" />
@@ -1006,6 +1041,27 @@
             </Principal>
             <Dependent Role="OrderDiscount">
               <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="OrderStatus">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int16" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Orders" Relationship="PortalDbModel.FK_Orders_OrderStatus" FromRole="OrderStatus" ToRole="Order" />
+        </EntityType>
+        <Association Name="FK_Orders_OrderStatus">
+          <End Type="PortalDbModel.OrderStatus" Role="OrderStatus" Multiplicity="0..1" />
+          <End Type="PortalDbModel.Order" Role="Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrderStatus">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="OrderStatusID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1203,6 +1259,8 @@
           <EntitySetMapping Name="Orders">
             <EntityTypeMapping TypeName="PortalDbModel.Order">
               <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="StatusNotes" ColumnName="StatusNotes" />
+                <ScalarProperty Name="OrderStatusID" ColumnName="OrderStatusID" />
                 <ScalarProperty Name="PaymentNotes" ColumnName="PaymentNotes" />
                 <ScalarProperty Name="CheckDeposited" ColumnName="CheckDeposited" />
                 <ScalarProperty Name="CheckAmount" ColumnName="CheckAmount" />
@@ -1228,6 +1286,15 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="OrderStatus">
+            <EntityTypeMapping TypeName="PortalDbModel.OrderStatus">
+              <MappingFragment StoreEntitySet="OrderStatus">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -1242,7 +1309,7 @@
     <Options>
       <DesignerInfoPropertySet>
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
-        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
         <DesignerProperty Name="UseLegacyProvider" Value="false" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
