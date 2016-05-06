@@ -464,7 +464,8 @@ namespace cfcusaga.domain.Orders
                 Username = order.Username,
                 CheckNumber = order.CheckNumber,
                 Notes = order.Notes,
-                IsAgreeToWaiver = order.IsAgreeToWaiver
+                IsAgreeToWaiver = order.IsAgreeToWaiver,
+                OrderStatusID = 1
             };
             return entity;
         }
