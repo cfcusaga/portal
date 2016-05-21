@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using System.Web.Mvc;
 using cfcusaga.data;
 using cfcusaga.domain.Orders;
 using PagedList;
+using Order = cfcusaga.data.Order;
 
 namespace Cfcusaga.Web.Controllers
 {
@@ -23,9 +25,7 @@ namespace Cfcusaga.Web.Controllers
         // GET: Orders
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            ViewBag.CurrentSort = sortOrder;
-            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewBag.PriceSortParm = sortOrder == "Price" ? "price_desc" : "Price";
+            InitIndexViewBag(sortOrder);
 
             if (searchString != null)
             {
@@ -41,32 +41,122 @@ namespace Cfcusaga.Web.Controllers
             var orders = from o in db.Orders
                         select o;
 
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                orders = orders.Where(s => s.FirstName.ToUpper().Contains(searchString.ToUpper())
-                                       || s.LastName.ToUpper().Contains(searchString.ToUpper()));
-            }
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    orders = orders.OrderByDescending(s => s.FirstName);
-                    break;
-                case "Price":
-                    orders = orders.OrderBy(s => s.Total);
-                    break;
-                case "price_desc":
-                    orders = orders.OrderByDescending(s => s.Total);
-                    break;
-                default:  // Name ascending 
-                    orders = orders.OrderByDescending(s => s.OrderId);
-                    break;
-            }
+            orders = FilterBy(searchString, orders);
+            orders = SortItemsBy(sortOrder, orders);
 
             int pageSize = 20;
             int pageNumber = (page ?? 1);
             return View(orders.ToPagedList(pageNumber, pageSize));
 
             //return View(await db.Orders.ToListAsync());
+        }
+
+        private void InitIndexViewBag(string sortOrder)
+        {
+            ViewBag.CurrentSort = sortOrder;
+            //ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            //ViewBag.PriceSortParm = sortOrder == "Price" ? "price_desc" : "Price";
+
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.OrderIdSortParm = sortOrder == "OrderId" ? "OrderId_desc" : "OrderId";
+            ViewBag.OrderDateSortParm = sortOrder == "OrderDate" ? "OrderDate_desc" : "OrderDate";
+            ViewBag.FirstNameSortParm = sortOrder == "Firstname" ? "Firstname_desc" : "Firstname";
+            ViewBag.LastNameSortParm = sortOrder == "Lastname" ? "Lastname_desc" : "Lastname";
+            ViewBag.TotalSortParm = sortOrder == "Total" ? "Total_desc" : "Total";
+
+            ViewBag.CitySortParm = sortOrder == "City" ? "City_desc" : "City";
+            ViewBag.StateSortParm = sortOrder == "State" ? "State_desc" : "State";
+            ViewBag.ZipCodeSortParm = sortOrder == "Zip" ? "Zip_desc" : "Zip";
+            ViewBag.OrderStatusSortParm = sortOrder == "OrderStatus" ? "OrderStatus_desc" : "OrderStatus";
+        }
+
+        private static IQueryable<Order> SortItemsBy(string sortOrder, IQueryable<Order> orders)
+        {
+            switch (sortOrder)
+            {
+                case "OrderId":
+                    orders = orders.OrderBy(s => s.OrderId);
+                    break;
+                case "OrderId_desc":
+                    orders = orders.OrderByDescending(s => s.OrderId);
+                    break;
+                case "OrderDate":
+                    orders = orders.OrderBy(s => s.OrderDate);
+                    break;
+                case "OrderDate_desc":
+                    orders = orders.OrderByDescending(s => s.OrderDate);
+                    break;
+                case "Firstname_desc":
+                    orders = orders.OrderByDescending(s => s.FirstName);
+                    break;
+                case "Firstname":
+                    orders = orders.OrderBy(s => s.FirstName);
+                    break;
+                case "Lastname":
+                    orders = orders.OrderBy(s => s.LastName);
+                    break;
+                case "Lastname_desc":
+                    orders = orders.OrderByDescending(s => s.LastName);
+                    break;
+                case "Total":
+                    orders = orders.OrderBy(s => s.Total);
+                    break;
+                case "Total_desc":
+                    orders = orders.OrderByDescending(s => s.Total);
+                    break;
+                case "City":
+                    orders = orders.OrderBy(s => s.City);
+                    break;
+                case "City_desc":
+                    orders = orders.OrderByDescending(s => s.City);
+                    break;
+                case "State":
+                    orders = orders.OrderBy(s => s.State);
+                    break;
+                case "State_desc":
+                    orders = orders.OrderByDescending(s => s.State);
+                    break;
+                case "Zip":
+                    orders = orders.OrderBy(s => s.PostalCode);
+                    break;
+                case "Zip_desc":
+                    orders = orders.OrderByDescending(s => s.PostalCode);
+                    break;
+                case "OrderStatus":
+                    orders = orders.OrderBy(s => s.OrderStatus.Name);
+                    break;
+                case "OrderStatus_desc":
+                    orders = orders.OrderByDescending(s => s.OrderStatus.Name);
+                    break;
+                default: // Name ascending 
+                    orders = orders.OrderByDescending(s => s.OrderId);
+                    break;
+            }
+            return orders;
+        }
+
+        private static IQueryable<Order> FilterBy(string searchString, IQueryable<Order> orders)
+        {
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                var statesLists = new List<string> { "AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY" };
+                if (searchString.Length == 2 && statesLists.Contains(searchString.ToUpper()))
+                {
+                    orders = orders.Where(s => s.State.ToString().Contains(searchString.ToUpper()));
+                }
+                else
+                {
+                    orders = orders.Where(s => s.LastName.ToUpper().Contains(searchString.ToUpper())
+                                               || s.OrderId.ToString().Contains(searchString.ToUpper())
+                                               || s.FirstName.ToString().Contains(searchString.ToUpper())
+                                               || s.City.ToString().Contains(searchString.ToUpper())
+                                               || s.State.ToString().Contains(searchString.ToUpper())
+                                               || s.OrderStatus.Name.ToString().Contains(searchString.ToUpper())
+                        );
+                }
+
+            }
+            return orders;
         }
 
         // GET: Orders/Details/5
