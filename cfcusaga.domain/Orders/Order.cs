@@ -93,6 +93,8 @@ namespace cfcusaga.domain.Orders
         public DateTime? CheckDeposited { get; set; }
 
         public string PaymentNotes { get; set; }
+        public short? OrderStatusId { get; set; }
+        public string OrderStatus { get; set; }
 
         public string ToString(Order order)
         {

@@ -120,6 +120,7 @@ namespace Cfcusaga.Web.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.OrderStatusID = new SelectList(_svc.GetOrderStatuses(), "ID", "Name");
             return View(order);
         }
 
@@ -136,6 +137,7 @@ namespace Cfcusaga.Web.Controllers
                 return RedirectToAction("Details", new { id = order.OrderId });
                 //return RedirectToAction("Register", "Items", new {eventId = id});
             }
+            ViewBag.OrderStatusID = new SelectList(_svc.GetOrderStatuses(), "ID", "Name");
             return View(order);
         }
 

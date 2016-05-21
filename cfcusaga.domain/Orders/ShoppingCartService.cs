@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -41,6 +42,7 @@ namespace cfcusaga.domain.Orders
         Task<int> AddOrder(Order order, List<Cart> cartItems, string shoppingCartId, string currentUserId);
         Task<List<CartDiscount>> GetCartDiscounts(string shoppingCartId);
         Task SaveOrder(Order order);
+        IEnumerable GetOrderStatuses();
     }
 
     public class ShoppingCartService : IShoppingCartService
@@ -110,7 +112,9 @@ namespace cfcusaga.domain.Orders
 
         public Task<Order> GetOrderById(int? id)
         {
-            var anOrder = _db.Orders.Select(o => new Order()
+            var anOrder = _db.Orders
+                .Include(s => s.OrderStatus)
+                .Select(o => new Order()
             {
                 OrderDate = o.OrderDate,
                 Address = o.Address,
@@ -130,7 +134,8 @@ namespace cfcusaga.domain.Orders
                 IsAgreeToWaiver = o.IsAgreeToWaiver,
                 CheckAmount = o.CheckAmount,
                 CheckDeposited = o.CheckDeposited,
-                PaymentNotes = o.PaymentNotes
+                PaymentNotes = o.PaymentNotes,
+                OrderStatusId = o.OrderStatusID
             }).FirstOrDefaultAsync(x => x.OrderId == id);
             return anOrder;
         }
@@ -325,8 +330,14 @@ namespace cfcusaga.domain.Orders
                 entity.CheckAmount = order.CheckAmount;
                 entity.CheckDeposited = order.CheckDeposited;
                 entity.PaymentNotes = order.PaymentNotes;
+                entity.OrderStatusID = order.OrderStatusId;
             }
             await _db.SaveChangesAsync();
+        }
+
+        public IEnumerable GetOrderStatuses()
+        {
+            return _db.OrderStatus;
         }
 
         private async Task<Member> GetMemberInfoFromAspNetUserId(string currentUserId)
