@@ -33,7 +33,20 @@ namespace Cfcusaga.Web.Controllers
             }
             else
             {
-                searchString = currentFilter;
+                if (Request.UrlReferrer != null && Request.UrlReferrer.ToString().Contains("Details"))
+                {
+                    var sessionFilter = this.HttpContext.Session?["Orders.Filter"];
+                    searchString = sessionFilter as string;
+
+                    var sessionSort = this.HttpContext.Session?["Orders.SortBy"];
+                    sortOrder = sessionSort as string;
+                }
+                else
+                {
+                    searchString = currentFilter;
+                }
+                //return o as CurrentRegistrationInfo;
+                
             }
 
             ViewBag.CurrentFilter = searchString;
@@ -43,6 +56,10 @@ namespace Cfcusaga.Web.Controllers
 
             orders = FilterBy(searchString, orders);
             orders = SortItemsBy(sortOrder, orders);
+
+            var httpSessionStateBase = this.HttpContext.Session;
+            if (httpSessionStateBase != null) httpSessionStateBase["Orders.Filter"] = searchString;
+            if (httpSessionStateBase != null) httpSessionStateBase["Orders.SortBy"] = sortOrder;
 
             int pageSize = 20;
             int pageNumber = (page ?? 1);
