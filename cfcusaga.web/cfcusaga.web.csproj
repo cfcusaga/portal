@@ -471,6 +471,7 @@
     <Content Include="Views\Reports\Registrations.cshtml" />
     <Content Include="Views\Reports\RegistrationsByState.cshtml" />
     <Content Include="Views\Reports\RegistrationsSummaryAll.cshtml" />
+    <Content Include="Views\Events\Links.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -510,7 +511,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>44300</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44300/</IISUrl>
+          <IISUrl>http://localhost:44305/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

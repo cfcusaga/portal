@@ -30,7 +30,10 @@ namespace cfcusaga.domain.Events
         IEnumerable GetRelationToMemberTypes();
         IEnumerable<RelationToMemberType> GetRelationToMemberTypesRequiresParentWaiver();
         IEnumerable<RelationToMemberType> GetRelationToMemberTypesAdults();
+        EventInfo GetEventLinks(int? id);
     }
+
+
 
     public class EventServices : IEventServices
     {
@@ -243,6 +246,22 @@ namespace cfcusaga.domain.Events
         public IEnumerable<RelationToMemberType> GetRelationToMemberTypesAdults()
         {
             return _db.RelationToMemberTypes.Where(m => (m.Id == 0) || (m.Id == 1) || (m.Id ==3) || (m.Id == 9));
+        }
+
+        public EventInfo GetEventLinks(int? id)
+        {
+            return new EventInfo()
+            {
+                Links = new List<EventLink>()
+                {
+                    new EventLink() { Name = "Committees", Url = @"https://docs.google.com/document/d/1ZrR5wKy0BunGnZHuKsow6ijcVXUV0G9srVUnvt7ETNM/edit?usp=sharing " },
+                    new EventLink() { Name = "Conference Theme Song", Url = @"https://youtu.be/b62Da8KQGzk" },
+                    new EventLink() { Name = "Youth Music Playlist", Url = @"https://www.youtube.com/playlist?list=PLUHxiDPe2rHqR9URjks1YxMwCVq08b7Qv" },
+                    new EventLink() { Name = "Registered Participants", Url = @"http://cfcusaga.azurewebsites.net/Reports/Registrations" },
+                }
+
+            }
+            ;
         }
 
         public async Task<IPagedList<Item>> GetEventItems(int? eventId, string sortOrder, string searchString, int pageSize, int pageNumber)

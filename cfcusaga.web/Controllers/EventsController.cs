@@ -77,7 +77,22 @@ namespace  Cfcusaga.Web.Controllers
             return View(anEvent);
         }
 
-         [Authorize(Roles = "Admin")]
+        public ActionResult Links(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var anEvent =  _svc.GetEventLinks(id);
+            if (anEvent == null)
+            {
+                return HttpNotFound();
+            }
+            return View(anEvent);
+        }
+
+        [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
             return View();

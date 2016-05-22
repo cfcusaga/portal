@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\Enums.cs" />
+    <Compile Include="Events\EventLinks.cs" />
     <Compile Include="Extensions\JsonExtension.cs" />
     <Compile Include="Membership\IMembershipService.cs" />
     <Compile Include="Membership\Member.cs" />

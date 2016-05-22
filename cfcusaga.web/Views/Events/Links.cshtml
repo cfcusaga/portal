@@ -1,0 +1,30 @@
+﻿@model cfcusaga.domain.Events.EventInfo
+
+@{
+    ViewBag.Title = "Servant Board";
+}
+
+<h2>Event Info and Important Links</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("Name", "Links", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.ActionLink("Links", "Links", new { sortOrder = ViewBag.LinksParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+
+    </tr>
+    @foreach (var item in Model.Links)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                <a href=@Html.DisplayFor(modelItem => item.Url)>@Html.DisplayFor(modelItem => item.Url)</a>
+            </td>
+        </tr>
+    }
+</table>
