@@ -92,6 +92,7 @@ namespace cfcusaga.domain.Orders
         [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? CheckDeposited { get; set; }
 
+        [DisplayName("Comments")]
         public string PaymentNotes { get; set; }
         public short? OrderStatusId { get; set; }
         public string OrderStatus { get; set; }

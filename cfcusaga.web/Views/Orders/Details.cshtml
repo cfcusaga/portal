@@ -129,16 +129,16 @@
             @Html.DisplayFor(model => model.CheckDeposited)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.PaymentNotes)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PaymentNotes)
-        </dd>
-        <dt>
             @Html.DisplayNameFor(model => model.OrderStatus)
         </dt>
         <dd>
             @Html.DisplayFor(model => model.OrderStatus.Name)
+        </dd>
+        <dt>
+            Comments
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PaymentNotes)
         </dd>
     </dl>
 </div>

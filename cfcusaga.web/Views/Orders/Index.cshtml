@@ -46,7 +46,7 @@
             @Html.ActionLink("Last Name", "Index", new { sortOrder = ViewBag.LastNameSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Order Total", "Index", new {sortOrder = ViewBag.TotalSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Total", "Index", new {sortOrder = ViewBag.TotalSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
             @Html.ActionLink("City", "Index", new { sortOrder = ViewBag.CitySortParm, currentFilter = ViewBag.CurrentFilter })
@@ -55,12 +55,9 @@
             @Html.ActionLink("State", "Index", new { sortOrder = ViewBag.StateSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Postal Code", "Index", new { sortOrder = ViewBag.ZipCodeSortParm, currentFilter = ViewBag.CurrentFilter })
+            @Html.ActionLink("Status", "Index", new { sortOrder = ViewBag.OrderStatusSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
-        <th>
-            @Html.ActionLink("Order Status", "Index", new { sortOrder = ViewBag.OrderStatusSortParm, currentFilter = ViewBag.CurrentFilter })
-        </th>
-        <th></th>
+        <th style="width: 200px">Comments</th>
     </tr>
 
     @foreach (var item in Model)
@@ -70,7 +67,8 @@
                 @Html.ActionLink(item.OrderId.ToString(), "Details", new {id = item.OrderId.ToString()})
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.OrderDate)
+                @*@Html.DisplayFor(modelItem => item.OrderDate, "ShortDateTime")*@
+                @item.OrderDate.ToString("MM/dd/yyyy")
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
@@ -88,24 +86,10 @@
                 @Html.DisplayFor(modelItem => item.State)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PostalCode)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.OrderStatus.Name)
             </td>
-            @*<td>
-                @Html.DisplayFor(modelItem => item.Country)
-            </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Phone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>*@
-            <td>
-                @*@Html.ActionLink("Edit", "Edit", new {id = item.OrderId}) |
-    @Html.ActionLink("Details", "Details", new {id = item.OrderId}) |
-    @Html.ActionLink("Delete", "Delete", new {id = item.OrderId})*@
+                @Html.DisplayFor(modelItem => item.PaymentNotes)
             </td>
         </tr>
     }
