@@ -83,7 +83,9 @@ namespace Cfcusaga.Web.Controllers
                     Notes = o.Notes,
                     CheckNumber = o.CheckNumber,
                     CheckAmount = o.CheckAmount,
-                    CheckDeposited = o.CheckDeposited
+                    CheckDeposited = o.CheckDeposited,
+                    RegistrationNotes = o.PaymentNotes,
+                    RegistrationStatus = o.OrderStatus.Name
                 }
                 ;
             var uniqueOrderIds = orders.DistinctBy(x => x.OrderId).Select(o => o.OrderId).ToList();
@@ -118,7 +120,9 @@ namespace Cfcusaga.Web.Controllers
                     Notes = null,
                     CheckNumber = null,
                     CheckAmount = null,
-                    CheckDeposited = null
+                    CheckDeposited = null,
+                    RegistrationNotes = null,
+                    RegistrationStatus = null
                 }
                 );
             ordersWithDscnts = FilterItemsBy(searchString, ordersWithDscnts);
@@ -409,7 +413,9 @@ namespace Cfcusaga.Web.Controllers
                 Notes = o.Notes,
                 CheckNumber = o.CheckNumber,
                 CheckAmount = o.CheckAmount,
-                CheckDeposited = o.CheckDeposited
+                CheckDeposited = o.CheckDeposited,
+                RegistrationNotes = o.RegistrationNotes,
+                RegistrationStatus = o.RegistrationStatus
             }).ToList();
             
             grid.Columns.Add(new BoundField() { DataField = "OrderId", HeaderText = "OrderId" });
@@ -439,9 +445,14 @@ namespace Cfcusaga.Web.Controllers
             grid.Columns.Add(new BoundField() { DataField = "City", HeaderText = "City" });
             grid.Columns.Add(new BoundField() { DataField = "State", HeaderText = "State" });
             grid.Columns.Add(new BoundField() { DataField = "Zip", HeaderText = "Zip" });
+            grid.Columns.Add(new TemplateField() { HeaderText = "Date Payment Rcvd" });
             grid.Columns.Add(new TemplateField() { HeaderText = "CheckNumber" });
-            grid.Columns.Add(new TemplateField() { HeaderText = "DepositDate" });
-            grid.Columns.Add(new TemplateField() { HeaderText = "CheckAmount" });
+            grid.Columns.Add(new TemplateField() { HeaderText = "Date Check Depostd" });
+            grid.Columns.Add(new TemplateField() { HeaderText = "AmountPaid" });
+            grid.Columns.Add(new TemplateField() { HeaderText = "Amount c/o CFC" });
+            grid.Columns.Add(new TemplateField() { HeaderText = "Amount ToBe Refunded" });
+            grid.Columns.Add(new TemplateField() { HeaderText = "Registration Notes" });
+            grid.Columns.Add(new TemplateField() { HeaderText = "Status" });
 
             grid.RowDataBound += GridView1_RowDataBound;
             grid.RowCreated += GridView1_RowCreated;
@@ -556,6 +567,8 @@ namespace Cfcusaga.Web.Controllers
         private int _rowIndex = 1;
         private decimal _totalAmount;
         private string _notes;
+        private string _registrationNotes;
+        private string _registrationStatus;
         private string _checkNumber;
         private decimal? _checkAmount;
         private DateTime? _checkDepositDate;
@@ -579,6 +592,12 @@ namespace Cfcusaga.Web.Controllers
 
                 if (DataBinder.Eval(e.Row.DataItem, "CheckDeposited") != null)
                     _checkDepositDate = Convert.ToDateTime(DataBinder.Eval(e.Row.DataItem, "CheckDeposited").ToString());
+
+                if (DataBinder.Eval(e.Row.DataItem, "RegistrationNotes") != null)
+                    _registrationNotes = DataBinder.Eval(e.Row.DataItem, "RegistrationNotes").ToString();
+
+                if (DataBinder.Eval(e.Row.DataItem, "RegistrationStatus") != null)
+                    _registrationStatus = DataBinder.Eval(e.Row.DataItem, "RegistrationStatus").ToString();
             }
         }
 
@@ -603,6 +622,8 @@ namespace Cfcusaga.Web.Controllers
                 AddSummaryRow(sender, e, _totalAmount);
                 if (_rowIndex > 1) AddNewRow(sender, e);
                 _notes = string.Empty;
+                _registrationNotes = string.Empty;
+                _registrationStatus = string.Empty;
                 _totalAmount = 0;
                 _checkNumber = string.Empty;
                 _checkAmount = null;
@@ -616,10 +637,12 @@ namespace Cfcusaga.Web.Controllers
             GridViewRow newTotalRow = new GridViewRow(0, 0, DataControlRowType.DataRow, DataControlRowState.Insert);
             newTotalRow.Font.Bold = true;
             newTotalRow.BackColor = System.Drawing.Color.Aqua;
-            TableCell headerCell = new TableCell();
-            headerCell.Height = 10;
-            headerCell.HorizontalAlign = HorizontalAlign.Center;
-            headerCell.ColumnSpan = 22;
+            TableCell headerCell = new TableCell
+            {
+                Height = 10,
+                HorizontalAlign = HorizontalAlign.Center,
+                ColumnSpan = 27
+            };
             newTotalRow.Cells.Add(headerCell);
             gridView1.Controls[0].Controls.AddAt(e.Row.RowIndex + _rowIndex, newTotalRow);
             _rowIndex++;
@@ -631,10 +654,17 @@ namespace Cfcusaga.Web.Controllers
             GridViewRow newTotalRow = new GridViewRow(0, 0, DataControlRowType.DataRow, DataControlRowState.Insert);
             newTotalRow.Font.Bold = true;
             //NewTotalRow.BackColor = System.Drawing.Color.Aqua;
+            TableCell orerIdLabelCell = new TableCell();
+            orerIdLabelCell.Height = 20;
+            orerIdLabelCell.HorizontalAlign = HorizontalAlign.Right;
+            orerIdLabelCell.ColumnSpan = 1;
+            orerIdLabelCell.Text = _orderId.ToString();
+            newTotalRow.Cells.Add(orerIdLabelCell);
+
             TableCell totalLabelCell = new TableCell();
             totalLabelCell.Height = 20;
             totalLabelCell.HorizontalAlign = HorizontalAlign.Right;
-            totalLabelCell.ColumnSpan = 11;
+            totalLabelCell.ColumnSpan = 10;
             totalLabelCell.Text = "Total";
             newTotalRow.Cells.Add(totalLabelCell);
 
@@ -656,6 +686,15 @@ namespace Cfcusaga.Web.Controllers
             };
             newTotalRow.Cells.Add(notesCell);
 
+            TableCell datePaymentRcvd = new TableCell
+            {
+                Height = 20,
+                HorizontalAlign = HorizontalAlign.Center,
+                ColumnSpan = 1,
+                Text = ""
+            };
+            newTotalRow.Cells.Add(datePaymentRcvd);
+
             TableCell checkNumCell = new TableCell
             {
                 Height = 20,
@@ -665,14 +704,14 @@ namespace Cfcusaga.Web.Controllers
             };
             newTotalRow.Cells.Add(checkNumCell);
 
-            TableCell checkAmtCell = new TableCell
-            {
-                Height = 20,
-                HorizontalAlign = HorizontalAlign.Right,
-                ColumnSpan = 1,
-                Text = _checkAmount?.ToString("C")
-            };
-            newTotalRow.Cells.Add(checkAmtCell);
+            //TableCell checkAmtCell = new TableCell
+            //{
+            //    Height = 20,
+            //    HorizontalAlign = HorizontalAlign.Right,
+            //    ColumnSpan = 1,
+            //    Text = _checkAmount?.ToString("C")
+            //};
+            //newTotalRow.Cells.Add(checkAmtCell);
 
             TableCell checkDepositCell = new TableCell
             {
@@ -682,6 +721,51 @@ namespace Cfcusaga.Web.Controllers
                 Text = _checkDepositDate?.ToString("MM/dd/yyyy")
             };
             newTotalRow.Cells.Add(checkDepositCell);
+
+            TableCell amtPaidCell = new TableCell
+            {
+                Height = 20,
+                HorizontalAlign = HorizontalAlign.Right,
+                ColumnSpan = 1,
+                Text = ""
+            };
+            newTotalRow.Cells.Add(amtPaidCell);
+
+            TableCell amtCareOfCfc = new TableCell
+            {
+                Height = 20,
+                HorizontalAlign = HorizontalAlign.Right,
+                ColumnSpan = 1,
+                Text = ""
+            };
+            newTotalRow.Cells.Add(amtCareOfCfc);
+
+            TableCell amtToBeRefundedCell = new TableCell
+            {
+                Height = 20,
+                HorizontalAlign = HorizontalAlign.Right,
+                ColumnSpan = 1,
+                Text = ""
+            };
+            newTotalRow.Cells.Add(amtToBeRefundedCell);
+
+            TableCell internalNotesCell = new TableCell
+            {
+                Height = 20,
+                HorizontalAlign = HorizontalAlign.Right,
+                ColumnSpan = 1,
+                Text = _registrationNotes
+            };
+            newTotalRow.Cells.Add(internalNotesCell);
+
+            TableCell statusCell = new TableCell
+            {
+                Height = 20,
+                HorizontalAlign = HorizontalAlign.Right,
+                ColumnSpan = 1,
+                Text = _registrationStatus
+            };
+            newTotalRow.Cells.Add(statusCell);
 
             gridView1.Controls[0].Controls.AddAt(e.Row.RowIndex + _rowIndex, newTotalRow);
             _rowIndex++;
@@ -744,6 +828,8 @@ namespace Cfcusaga.Web.Controllers
         public decimal? CheckAmount { get; set; }
         public DateTime? CheckDeposited { get; set; }
         public DateTime OrderDateUtc { get; set; }
+        public string RegistrationNotes { get; set; }
+        public string RegistrationStatus { get; set; }
     }
 
 }

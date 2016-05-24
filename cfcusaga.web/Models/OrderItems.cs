@@ -111,6 +111,9 @@ namespace Cfcusaga.Web.Models
         public DateTime? CheckDeposited { get; set; }
         public DateTime OrderDateUtc
         { get; set; }
+
+        public string RegistrationNotes { get; set; }
+        public string RegistrationStatus { get; set; }
     }
 
     public static class DateTimeExtensions

@@ -145,7 +145,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.PaymentNotes, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextAreaFor(model => model.PaymentNotes, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.TextAreaFor(model => model.PaymentNotes,10,80, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.PaymentNotes, "", new { @class = "text-danger" })
             </div>
         </div>
