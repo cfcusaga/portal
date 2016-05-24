@@ -452,7 +452,7 @@ namespace Cfcusaga.Web.Controllers
             grid.Columns.Add(new TemplateField() { HeaderText = "Amount c/o CFC" });
             grid.Columns.Add(new TemplateField() { HeaderText = "Amount ToBe Refunded" });
             grid.Columns.Add(new TemplateField() { HeaderText = "Registration Notes" });
-            grid.Columns.Add(new TemplateField() { HeaderText = "Status" });
+            //grid.Columns.Add(new TemplateField() { HeaderText = "Status" });
 
             grid.RowDataBound += GridView1_RowDataBound;
             grid.RowCreated += GridView1_RowCreated;
@@ -641,7 +641,7 @@ namespace Cfcusaga.Web.Controllers
             {
                 Height = 10,
                 HorizontalAlign = HorizontalAlign.Center,
-                ColumnSpan = 27
+                ColumnSpan = 26
             };
             newTotalRow.Cells.Add(headerCell);
             gridView1.Controls[0].Controls.AddAt(e.Row.RowIndex + _rowIndex, newTotalRow);
@@ -758,14 +758,14 @@ namespace Cfcusaga.Web.Controllers
             };
             newTotalRow.Cells.Add(internalNotesCell);
 
-            TableCell statusCell = new TableCell
-            {
-                Height = 20,
-                HorizontalAlign = HorizontalAlign.Right,
-                ColumnSpan = 1,
-                Text = _registrationStatus
-            };
-            newTotalRow.Cells.Add(statusCell);
+            //TableCell statusCell = new TableCell
+            //{
+            //    Height = 20,
+            //    HorizontalAlign = HorizontalAlign.Right,
+            //    ColumnSpan = 1,
+            //    Text = _registrationStatus
+            //};
+            //newTotalRow.Cells.Add(statusCell);
 
             gridView1.Controls[0].Controls.AddAt(e.Row.RowIndex + _rowIndex, newTotalRow);
             _rowIndex++;
