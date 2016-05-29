@@ -168,6 +168,7 @@ namespace Cfcusaga.Web.Controllers
                                                || s.FirstName.ToString().Contains(searchString.ToUpper())
                                                || s.City.ToString().Contains(searchString.ToUpper())
                                                || s.State.ToString().Contains(searchString.ToUpper())
+                                               || s.PaymentNotes.ToString().Contains(searchString.ToUpper())
                                                || s.OrderStatus.Name.ToString().Contains(searchString.ToUpper())
                         );
                 }
