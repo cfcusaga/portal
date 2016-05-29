@@ -254,11 +254,13 @@ namespace cfcusaga.domain.Events
             {
                 Links = new List<EventLink>()
                 {
+                    new EventLink() { Name = "Conference Theme Song", Url = @"https://youtu.be/b62Da8KQGzk" },
+                    new EventLink() { Name = "Theme Song Lyrics w Chords", Url = @"https://drive.google.com/file/d/0B9OFL8fWg0tWQVNHV0I2X3dUSEk/view?usp=sharing" },
+                    new EventLink() { Name = "Youth Music Playlist", Url = @"https://www.youtube.com/playlist?list=PLUHxiDPe2rHqR9URjks1YxMwCVq08b7Qv" },
                     new EventLink() { Name = "Committees", Url = @"https://docs.google.com/document/d/1ZrR5wKy0BunGnZHuKsow6ijcVXUV0G9srVUnvt7ETNM/edit?usp=sharing " },
                     new EventLink() { Name = "Parent Summit Talks", Url = @"https://drive.google.com/folderview?id=0B9OFL8fWg0tWR0dTU0IzRUVtc1U&usp=sharing" },
-                    new EventLink() { Name = "Conference Theme Song", Url = @"https://youtu.be/b62Da8KQGzk" },
-                    new EventLink() { Name = "Youth Music Playlist", Url = @"https://www.youtube.com/playlist?list=PLUHxiDPe2rHqR9URjks1YxMwCVq08b7Qv" },
                     new EventLink() { Name = "Registered Participants", Url = @"http://cfcusaga.azurewebsites.net/Reports/Registrations" },
+                    //
                     //
                 }
 
