@@ -274,6 +274,7 @@ namespace cfcusaga.domain.Events
                 join e in _db.Events.AsNoTracking() on i.EventId equals e.Id
                 join c in _db.Catagories.AsNoTracking() on i.CatagoryID equals  c.ID
                         where i.EventId == eventId.Value
+                        && i.IsActive.Value == true
                         orderby c.SortOrder ascending 
                 select new Item
                 {
