@@ -32,7 +32,6 @@ namespace cfcusaga.data
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<Member> Members { get; set; }
         public virtual DbSet<Catagory> Catagories { get; set; }
-        public virtual DbSet<Item> Items { get; set; }
         public virtual DbSet<Discount> Discounts { get; set; }
         public virtual DbSet<CartDiscount> CartDiscounts { get; set; }
         public virtual DbSet<OrderDiscount> OrderDiscounts { get; set; }
@@ -40,5 +39,6 @@ namespace cfcusaga.data
         public virtual DbSet<ItemImage> ItemImages { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderStatus> OrderStatus { get; set; }
+        public virtual DbSet<Item> Items { get; set; }
     }
 }

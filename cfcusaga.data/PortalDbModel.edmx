@@ -119,6 +119,7 @@
           <Property Name="IsRequireTshirtSize" Type="bit" />
           <Property Name="TshirtSize" Type="varchar" MaxLength="20" />
           <Property Name="OrgTypeId" Type="smallint" />
+          <Property Name="IsActive" Type="bit" />
         </EntityType>
         <EntityType Name="Members">
           <Key>
@@ -543,24 +544,7 @@
             <End Role="EventRegistration" EntitySet="EventRegistrations" />
           </AssociationSet>
           <EntitySet Name="Catagories" EntityType="PortalDbModel.Catagory" />
-          <EntitySet Name="Items" EntityType="PortalDbModel.Item" />
-          <AssociationSet Name="FK_dbo_Carts_dbo_Items_ItemId" Association="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId">
-            <End Role="Item" EntitySet="Items" />
-            <End Role="Cart" EntitySet="Carts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_dbo_Items_dbo_Catagories_CatagorieId" Association="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId">
-            <End Role="Catagory" EntitySet="Catagories" />
-            <End Role="Item" EntitySet="Items" />
-          </AssociationSet>
-          <AssociationSet Name="FK_dbo_OrderDetails_dbo_Items_ItemId" Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId">
-            <End Role="Item" EntitySet="Items" />
-            <End Role="OrderDetail" EntitySet="OrderDetails" />
-          </AssociationSet>
           <EntitySet Name="Discounts" EntityType="PortalDbModel.Discount" />
-          <AssociationSet Name="FK_Discounts_Items" Association="PortalDbModel.FK_Discounts_Items">
-            <End Role="Item" EntitySet="Items" />
-            <End Role="Discount" EntitySet="Discounts" />
-          </AssociationSet>
           <EntitySet Name="CartDiscounts" EntityType="PortalDbModel.CartDiscount" />
           <AssociationSet Name="FK_CartDiscounts_Discounts" Association="PortalDbModel.FK_CartDiscounts_Discounts">
             <End Role="Discount" EntitySet="Discounts" />
@@ -576,15 +560,7 @@
             <End Role="Event" EntitySet="Events" />
             <End Role="EventRegistration" EntitySet="EventRegistrations" />
           </AssociationSet>
-          <AssociationSet Name="FK_Items_Events_EventId" Association="PortalDbModel.FK_Items_Events_EventId">
-            <End Role="Event" EntitySet="Events" />
-            <End Role="Item" EntitySet="Items" />
-          </AssociationSet>
           <EntitySet Name="ItemImages" EntityType="PortalDbModel.ItemImage" />
-          <AssociationSet Name="FK_ItemImages_Items" Association="PortalDbModel.FK_ItemImages_Items">
-            <End Role="Item" EntitySet="Items" />
-            <End Role="ItemImage" EntitySet="ItemImages" />
-          </AssociationSet>
           <EntitySet Name="Orders" EntityType="PortalDbModel.Order" />
           <AssociationSet Name="FK_EventRegistrations_Orders" Association="PortalDbModel.FK_EventRegistrations_Orders">
             <End Role="Order" EntitySet="Orders" />
@@ -606,6 +582,31 @@
           <AssociationSet Name="FK_Orders_OrderStatus" Association="PortalDbModel.FK_Orders_OrderStatus">
             <End Role="OrderStatus" EntitySet="OrderStatus" />
             <End Role="Order" EntitySet="Orders" />
+          </AssociationSet>
+          <EntitySet Name="Items" EntityType="PortalDbModel.Item" />
+          <AssociationSet Name="FK_dbo_Carts_dbo_Items_ItemId" Association="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="Cart" EntitySet="Carts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Items_dbo_Catagories_CatagorieId" Association="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId">
+            <End Role="Catagory" EntitySet="Catagories" />
+            <End Role="Item" EntitySet="Items" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Discounts_Items" Association="PortalDbModel.FK_Discounts_Items">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="Discount" EntitySet="Discounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Items_Events_EventId" Association="PortalDbModel.FK_Items_Events_EventId">
+            <End Role="Event" EntitySet="Events" />
+            <End Role="Item" EntitySet="Items" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ItemImages_Items" Association="PortalDbModel.FK_ItemImages_Items">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="ItemImage" EntitySet="ItemImages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_OrderDetails_dbo_Items_ItemId" Association="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="OrderDetail" EntitySet="OrderDetails" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="CartItemRegistration">
@@ -703,8 +704,8 @@
           <Property Name="Gender" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="Allergies" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
           <Property Name="TshirtSize" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" FromRole="OrderDetail" ToRole="Item" />
           <NavigationProperty Name="Order" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Orders_OrderId" FromRole="OrderDetail" ToRole="Order" />
+          <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" FromRole="OrderDetail" ToRole="Item" />
         </EntityType>
         <EntityType Name="Member">
           <Key>
@@ -752,74 +753,6 @@
           <Property Name="SortOrder" Type="Int16" />
           <NavigationProperty Name="Items" Relationship="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId" FromRole="Catagory" ToRole="Item" />
         </EntityType>
-        <EntityType Name="Item">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CatagoryID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="160" FixedLength="false" Unicode="true" />
-          <Property Name="Price" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="ItemPictureUrl" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
-          <Property Name="InternalImage" Type="Binary" MaxLength="Max" FixedLength="false" />
-          <Property Name="EventId" Type="Int32" />
-          <Property Name="IsRequireRegistrationInfo" Type="Boolean" />
-          <Property Name="IsRequireParentWaiver" Type="Boolean" />
-          <Property Name="IsRequireBirthDateInfo" Type="Boolean" />
-          <Property Name="IsShirtIncluded" Type="Boolean" />
-          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="IsRequireTshirtSize" Type="Boolean" />
-          <Property Name="TshirtSize" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="OrgTypeId" Type="Int16" />
-          <NavigationProperty Name="Carts" Relationship="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId" FromRole="Item" ToRole="Cart" />
-          <NavigationProperty Name="Catagory" Relationship="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId" FromRole="Item" ToRole="Catagory" />
-          <NavigationProperty Name="OrderDetails" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" FromRole="Item" ToRole="OrderDetail" />
-          <NavigationProperty Name="Discounts" Relationship="PortalDbModel.FK_Discounts_Items" FromRole="Item" ToRole="Discount" />
-          <NavigationProperty Name="Event" Relationship="PortalDbModel.FK_Items_Events_EventId" FromRole="Item" ToRole="Event" />
-          <NavigationProperty Name="ItemImages" Relationship="PortalDbModel.FK_ItemImages_Items" FromRole="Item" ToRole="ItemImage" />
-        </EntityType>
-        <Association Name="FK_dbo_Carts_dbo_Items_ItemId">
-          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="PortalDbModel.Cart" Role="Cart" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Item">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Cart">
-              <PropertyRef Name="ItemId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_dbo_Items_dbo_Catagories_CatagorieId">
-          <End Type="PortalDbModel.Catagory" Role="Catagory" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Catagory">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Item">
-              <PropertyRef Name="CatagoryID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_dbo_OrderDetails_dbo_Items_ItemId">
-          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="PortalDbModel.OrderDetail" Role="OrderDetail" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Item">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="OrderDetail">
-              <PropertyRef Name="ItemId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="Discount">
           <Key>
             <PropertyRef Name="Id" />
@@ -832,22 +765,10 @@
           <Property Name="DiscountEndAtNthItem" Type="Int16" />
           <Property Name="Price" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="IsActive" Type="Boolean" />
-          <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_Discounts_Items" FromRole="Discount" ToRole="Item" />
           <NavigationProperty Name="CartDiscounts" Relationship="PortalDbModel.FK_CartDiscounts_Discounts" FromRole="Discount" ToRole="CartDiscount" />
           <NavigationProperty Name="OrderDiscounts" Relationship="PortalDbModel.FK_OrderDiscounts_Discounts" FromRole="Discount" ToRole="OrderDiscount" />
+          <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_Discounts_Items" FromRole="Discount" ToRole="Item" />
         </EntityType>
-        <Association Name="FK_Discounts_Items">
-          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="0..1" />
-          <End Type="PortalDbModel.Discount" Role="Discount" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Item">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Discount">
-              <PropertyRef Name="ItemId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="CartDiscount">
           <Key>
             <PropertyRef Name="Id" />
@@ -925,18 +846,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Items_Events_EventId">
-          <End Type="PortalDbModel.Event" Role="Event" Multiplicity="0..1" />
-          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Event">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Item">
-              <PropertyRef Name="EventId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="ItemImage">
           <Key>
             <PropertyRef Name="Id" />
@@ -946,20 +855,6 @@
           <Property Name="ImageData" Type="Binary" Nullable="false" MaxLength="Max" FixedLength="false" />
           <NavigationProperty Name="Item" Relationship="PortalDbModel.FK_ItemImages_Items" FromRole="ItemImage" ToRole="Item" />
         </EntityType>
-        <Association Name="FK_ItemImages_Items">
-          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="PortalDbModel.ItemImage" Role="ItemImage" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Item">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="ItemImage">
-              <PropertyRef Name="ItemId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="Order">
           <Key>
             <PropertyRef Name="OrderId" />
@@ -1062,6 +957,113 @@
             </Principal>
             <Dependent Role="Order">
               <PropertyRef Name="OrderStatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Item">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CatagoryID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="160" FixedLength="false" Unicode="true" />
+          <Property Name="Price" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="ItemPictureUrl" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
+          <Property Name="InternalImage" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="EventId" Type="Int32" />
+          <Property Name="IsRequireRegistrationInfo" Type="Boolean" />
+          <Property Name="IsRequireParentWaiver" Type="Boolean" />
+          <Property Name="IsRequireBirthDateInfo" Type="Boolean" />
+          <Property Name="IsShirtIncluded" Type="Boolean" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IsRequireTshirtSize" Type="Boolean" />
+          <Property Name="TshirtSize" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="OrgTypeId" Type="Int16" />
+          <Property Name="IsActive" Type="Boolean" />
+          <NavigationProperty Name="Carts" Relationship="PortalDbModel.FK_dbo_Carts_dbo_Items_ItemId" FromRole="Item" ToRole="Cart" />
+          <NavigationProperty Name="Catagory" Relationship="PortalDbModel.FK_dbo_Items_dbo_Catagories_CatagorieId" FromRole="Item" ToRole="Catagory" />
+          <NavigationProperty Name="Discounts" Relationship="PortalDbModel.FK_Discounts_Items" FromRole="Item" ToRole="Discount" />
+          <NavigationProperty Name="Event" Relationship="PortalDbModel.FK_Items_Events_EventId" FromRole="Item" ToRole="Event" />
+          <NavigationProperty Name="ItemImages" Relationship="PortalDbModel.FK_ItemImages_Items" FromRole="Item" ToRole="ItemImage" />
+          <NavigationProperty Name="OrderDetails" Relationship="PortalDbModel.FK_dbo_OrderDetails_dbo_Items_ItemId" FromRole="Item" ToRole="OrderDetail" />
+        </EntityType>
+        <Association Name="FK_dbo_Carts_dbo_Items_ItemId">
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="PortalDbModel.Cart" Role="Cart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Cart">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Items_dbo_Catagories_CatagorieId">
+          <End Type="PortalDbModel.Catagory" Role="Catagory" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Catagory">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Item">
+              <PropertyRef Name="CatagoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Discounts_Items">
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="0..1" />
+          <End Type="PortalDbModel.Discount" Role="Discount" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Discount">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Items_Events_EventId">
+          <End Type="PortalDbModel.Event" Role="Event" Multiplicity="0..1" />
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Event">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Item">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ItemImages_Items">
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="PortalDbModel.ItemImage" Role="ItemImage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ItemImage">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_OrderDetails_dbo_Items_ItemId">
+          <End Type="PortalDbModel.Item" Role="Item" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="PortalDbModel.OrderDetail" Role="OrderDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="OrderDetail">
+              <PropertyRef Name="ItemId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1173,27 +1175,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Items">
-            <EntityTypeMapping TypeName="PortalDbModel.Item">
-              <MappingFragment StoreEntitySet="Items">
-                <ScalarProperty Name="OrgTypeId" ColumnName="OrgTypeId" />
-                <ScalarProperty Name="TshirtSize" ColumnName="TshirtSize" />
-                <ScalarProperty Name="IsRequireTshirtSize" ColumnName="IsRequireTshirtSize" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="IsShirtIncluded" ColumnName="IsShirtIncluded" />
-                <ScalarProperty Name="IsRequireBirthDateInfo" ColumnName="IsRequireBirthDateInfo" />
-                <ScalarProperty Name="IsRequireParentWaiver" ColumnName="IsRequireParentWaiver" />
-                <ScalarProperty Name="IsRequireRegistrationInfo" ColumnName="IsRequireRegistrationInfo" />
-                <ScalarProperty Name="EventId" ColumnName="EventId" />
-                <ScalarProperty Name="InternalImage" ColumnName="InternalImage" />
-                <ScalarProperty Name="ItemPictureUrl" ColumnName="ItemPictureUrl" />
-                <ScalarProperty Name="Price" ColumnName="Price" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="CatagoryID" ColumnName="CatagoryID" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Discounts">
             <EntityTypeMapping TypeName="PortalDbModel.Discount">
               <MappingFragment StoreEntitySet="Discounts">
@@ -1291,6 +1272,28 @@
               <MappingFragment StoreEntitySet="OrderStatus">
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Items">
+            <EntityTypeMapping TypeName="PortalDbModel.Item">
+              <MappingFragment StoreEntitySet="Items">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="OrgTypeId" ColumnName="OrgTypeId" />
+                <ScalarProperty Name="TshirtSize" ColumnName="TshirtSize" />
+                <ScalarProperty Name="IsRequireTshirtSize" ColumnName="IsRequireTshirtSize" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="IsShirtIncluded" ColumnName="IsShirtIncluded" />
+                <ScalarProperty Name="IsRequireBirthDateInfo" ColumnName="IsRequireBirthDateInfo" />
+                <ScalarProperty Name="IsRequireParentWaiver" ColumnName="IsRequireParentWaiver" />
+                <ScalarProperty Name="IsRequireRegistrationInfo" ColumnName="IsRequireRegistrationInfo" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="InternalImage" ColumnName="InternalImage" />
+                <ScalarProperty Name="ItemPictureUrl" ColumnName="ItemPictureUrl" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CatagoryID" ColumnName="CatagoryID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
