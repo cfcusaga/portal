@@ -26,11 +26,15 @@ namespace Cfcusaga.Web.Models
                     case 5:
                         return "Parent";
                     case 6:
-                        return "Room";
+                        return "Room(Sat)";
                     case 8:
-                        return "BedSpace";
+                        return "BedSpace(Sat)";
                     case 7:
                         return "TShirt";
+                    case 9:
+                        return "Room(Fri)";
+                    case 10:
+                        return "Bedspace(Fri)";
                     default:
                         return "";
                 }

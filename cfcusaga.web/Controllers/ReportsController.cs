@@ -115,7 +115,7 @@ namespace Cfcusaga.Web.Controllers
                     ZipCode = null,
                     Phone = null,
                     Email = null,
-                    Price = -1*ods.Discount,
+                    Price = -ods.Quantity*ods.Discount,
                     Address = null,
                     Notes = null,
                     CheckNumber = null,
@@ -531,6 +531,7 @@ namespace Cfcusaga.Web.Controllers
 
             grid.DataSource = queryable.ToList();
             grid.Columns.Add(new BoundField() { DataField = "ItemType", HeaderText = "ItemType" });
+            grid.Columns.Add(new BoundField() { DataField = "Price", HeaderText = "Price" });
             grid.Columns.Add(new BoundField() { DataField = "Count", HeaderText = "Count" });
             grid.Columns.Add(new BoundField() { DataField = "TotalAmount", HeaderText = "TotalAmount" , DataFormatString = "{0:N2}" });
             grid.DataBind();
@@ -551,11 +552,12 @@ namespace Cfcusaga.Web.Controllers
 
         private static IQueryable<RegistrationSummaryReport> GetRegistrationSummaryAll(IQueryable<OrderItems> reportItems)
         {
-            var newList = reportItems.GroupBy(x => new {x.ItemId})
+            var newList = reportItems.GroupBy(x => new {x.ItemId, x.Price})
                 .Select(y => new RegistrationSummaryReport()
                 {
                     ItemId = y.Key.ItemId,
-                    Count = y.Count(),
+                    Price = y.Key.Price, 
+                    Count = y.Count()  ,
                     TotalAmount = y.Sum(x => x.Price)
                 }
                 );
@@ -778,6 +780,7 @@ namespace Cfcusaga.Web.Controllers
         public int Count { get; set; }
 
         public decimal TotalAmount { get; set; }
+        public decimal Price { get; set; }
     }
 
     public class RegistrationDetailsReport: ReportBase
