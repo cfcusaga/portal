@@ -25,6 +25,14 @@ namespace Cfcusaga.Web.Controllers
                         return "BedSpace";
                     case 7:
                         return "TShirt";
+                    case 9:
+                        return "Room(Fri)";
+                    case 10:
+                        return "Bedspace(Fri)";
+                    case 11:
+                        return "Room (w 2 Beds) for Sat";
+                    case 12:
+                        return "Room (w 2 Beds) for Fri";
                     case int.MaxValue:
                         return "Discount";
                     default:

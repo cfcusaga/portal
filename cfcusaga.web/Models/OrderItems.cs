@@ -35,6 +35,10 @@ namespace Cfcusaga.Web.Models
                         return "Room(Fri)";
                     case 10:
                         return "Bedspace(Fri)";
+                    case 11:
+                        return "Room (w 2 Beds) for Sat";
+                    case 12:
+                        return "Room (w 2 Beds) for Fri";
                     default:
                         return "";
                 }
